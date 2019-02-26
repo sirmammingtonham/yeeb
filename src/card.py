@@ -92,29 +92,30 @@ class Hearthstone:
                     try:
                         action = await self.bot.wait_for_message(author=self.players[game_instance.current_player.name], channel=ctx.message.channel, check=check)
                         embed_target = self.create_target_embed(int(action.content), game_instance, ctx)
+
+                        if embed_target.fields:
+                            await self.bot.say(embed=embed_target)
+                            target = await self.bot.wait_for_message(author=self.players[game_instance.current_player.name], channel=ctx.message.channel, check=check)
+                            target = int(target.content)
+                        else:
+                            target = 0
+
+                        if int(action.content) == -1:
+                            action.content = 19
+
+                        _, curPlayer = self.g.getNextState(curPlayer, (int(action.content), target), game_instance)
+
                     except IndexError:
                         await self.bot.say('Invalid action you absolute melon, try again')
                         continue
-                    except InvalidAction:
-                        await self.bot.say('Invalid action you absolute melon, try again')
+                    except InvalidAction as e:
+                        await self.bot.say(f'Invalid action you absolute melon, try again\n{e}')
                         continue
                     except:
                         await self.bot.say('BRUH, you broke something that i havent checked for... fix it yourself\nhttps://github.com/sirmammingtonham/yeeb')
                         ctx.invoke(reset)
                         return
                     break
-
-                if embed_target.fields:
-                    await self.bot.say(embed=embed_target)
-                    target = await self.bot.wait_for_message(author=self.players[game_instance.current_player.name], channel=ctx.message.channel, check=check)
-                    target = int(target.content)
-                else:
-                    target = 0
-
-                if int(action.content) == -1:
-                    action.content = 19
-
-                _, curPlayer = self.g.getNextState(curPlayer, (int(action.content), target), game_instance)
 
             if self.g.getGameEnded(curPlayer, game_instance) == 1:
                 await self.bot.say(f'gg you\'re both garbage\n@{self.players[game_instance.player_to_start.name]} won')

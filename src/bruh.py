@@ -164,6 +164,10 @@ class Bruh:
 		await self.bot.say(f'Bobby Shmurda will be released in {td.years} years, {td.months} months, {td.days} days, {td.hours} hours, {td.minutes} minutes, and {td.seconds} seconds.')
 
 	@commands.command(pass_context=True)
+	async def code(self, ctx):
+		await self.bot.say('https://github.com/sirmammingtonham/yeeb')
+	
+	@commands.command(pass_context=True)
 	async def die(self, ctx):
 		if user_is_me(ctx):
 			await self.bot.logout()

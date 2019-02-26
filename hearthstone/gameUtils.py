@@ -137,18 +137,6 @@ class Board:
                     player.choice.choose(player.choice.cards[a[1]])
                 else:
                     raise InvalidAction
-            except InvalidAction:
-                print("Attempted to take an inappropriate action!")
-                print(a)
-                raise
-            except InvalidAction:
-                print("Attempted to do something I can't!")
-                player.game.end_turn()
-            except IndexError:
-                try:
-                    player.game.end_turn()
-                except GameOver:
-                    pass
             except GameOver:
                 pass
 
