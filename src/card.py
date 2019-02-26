@@ -1,5 +1,5 @@
-import sys
-sys.path.append('C:/Users/ethan/OneDrive/discord/hearthstone')
+import os, sys
+sys.path.append(os.path.join(os.getcwd(), "../hearthstone"))
 from Game import YEET
 import asyncio
 import discord
