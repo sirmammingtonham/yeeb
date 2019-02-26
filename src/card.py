@@ -4,6 +4,7 @@ from Game import YEET
 import asyncio
 import discord
 from discord.ext import commands
+from fireplace.exceptions import InvalidAction
 
 class Hearthstone:
     ICONS = {'Rexxar': 'https://i.imgur.com/b3MUi1H.png',
@@ -59,16 +60,25 @@ class Hearthstone:
             await self.bot.say('Too late, two ppl already joined')
 
     @hearthstone.command(pass_context=True, no_pm=False)
+    async def reset(self, ctx):
+        self.p1, self.p2 = '', ''
+        self.game_active = False
+
+    @hearthstone.command(pass_context=True, no_pm=False)
     async def itstimetoduel(self, ctx):
         if ctx.message.author == self.p1 or ctx.message.author == self.p2:
             await self.bot.say('Game starting... (it might take a while and has a 1/5 chance of breaking)')
-            game_instance = self.g.getInitGame()
+            try:
+                game_instance = self.g.getInitGame()
+            except KeyError:
+                await self.bot.say('Goddammit your terrible rng broke it. Run ```bruh hearthstone itstimetoduel``` to try again')
+                return
             curPlayer = 0 #useless, just need it because i haven't cleaned up the other functions
             self.players[game_instance.players[0].name] = self.p1
             self.players[game_instance.players[1].name] = self.p2
 
             def check(message):
-                return message.content.isdigit()
+                return message.content.isdigit() or message.content == '-1'
 
             while not game_instance.ended or game_instance.turn > 180:
                 embed, embed_hand, embed_field, embed_oppfield, embed_other = self.create_action_embed(game_instance, ctx)
@@ -77,9 +87,23 @@ class Hearthstone:
                 await self.bot.say(embed=embed_field)
                 await self.bot.say(embed=embed_oppfield)
                 await self.bot.say(embed=embed_other)
-                action = await self.bot.wait_for_message(author=self.players[game_instance.current_player.name], channel=ctx.message.channel, check=check)
 
-                embed_target = self.create_target_embed(int(action.content), game_instance, ctx)
+                while True:
+                    try:
+                        action = await self.bot.wait_for_message(author=self.players[game_instance.current_player.name], channel=ctx.message.channel, check=check)
+                        embed_target = self.create_target_embed(int(action.content), game_instance, ctx)
+                    except IndexError:
+                        await self.bot.say('Invalid action you absolute melon, try again')
+                        continue
+                    except InvalidAction:
+                        await self.bot.say('Invalid action you absolute melon, try again')
+                        continue
+                    except:
+                        await self.bot.say('BRUH, you broke something that i havent checked for... fix it yourself\nhttps://github.com/sirmammingtonham/yeeb')
+                        ctx.invoke(reset)
+                        return
+                    break
+
                 if embed_target.fields:
                     await self.bot.say(embed=embed_target)
                     target = await self.bot.wait_for_message(author=self.players[game_instance.current_player.name], channel=ctx.message.channel, check=check)
@@ -87,12 +111,15 @@ class Hearthstone:
                 else:
                     target = 0
 
+                if int(action.content) == -1:
+                    action.content = 19
+
                 _, curPlayer = self.g.getNextState(curPlayer, (int(action.content), target), game_instance)
 
-            if self.g.getGameEnded(current_player, game_instance) == 1:
-                await self.bot.say('gg you\'re both garbage\n' + self.players[game_instance.player_to_start.name] + ' won')
-            if self.g.getGameEnded(current_player, game_instance) == -1:
-                await self.bot.say('gg you\'re both garbage\n' + self.players[game_instance.player_to_start.name] + ' lost')
+            if self.g.getGameEnded(curPlayer, game_instance) == 1:
+                await self.bot.say(f'gg you\'re both garbage\n@{self.players[game_instance.player_to_start.name]} won')
+            if self.g.getGameEnded(curPlayer, game_instance) == -1:
+                await self.bot.say(f'gg you\'re both garbage\n@{self.players[game_instance.player_to_start.name]} lost')
             else:
                 await self.bot.say('gg you\'re both garbage... how the hell do you even tie??')
         else:
@@ -108,34 +135,34 @@ class Hearthstone:
         embed.set_author(name=self.players[game_instance.current_player.name])
         embed.set_footer(text='please type [action index] to input your action (-1 is concede)')
         embed.set_thumbnail(url=Hearthstone.ICONS[str(you.hero)])
-        embed.add_field(name=f'YOUR HERO: {you.hero}', value=f'HEALTH: {you.hero.health}', inline=True)
-        embed.add_field(name=f'OPPONENT\'S HEALTH:', value=you.opponent.hero.health, inline=True)
-        embed.add_field(name='MANA:', value=you.mana, inline=False)
+        embed.add_field(name=f'{you.hero}', value=f'Health: {you.hero.health}', inline=True)
+        embed.add_field(name=f'Opponent', value=f'Health: {you.opponent.hero.health}', inline=True)
+        embed.add_field(name='Mana:', value=you.mana, inline=False)
 
         embed_hand = discord.Embed(colour = color)
         embed_hand.set_author(name='Hand:')
         for idx, card in enumerate(you.hand):
-            embed_hand.add_field(name=f'Name: {card}, Index: {idx}', value=f'Cost: {card.cost}, Is Playable? {card.is_playable()}', inline=True)
+            embed_hand.add_field(name=f'{card}, Index: {idx}', value=f'Cost: {card.cost}, Is Playable? {card.is_playable()}')
             if card.type == 4:
-                embed_hand.set_field_at(-1, name=f'Name: {card}', value=f'Index: {idx}, Cost: {card.cost}, Is Playable? {card.is_playable()}, Attack: {card.atk}, Health: {card.health}', inline=True)
+                embed_hand.set_field_at(-1, name=f'{card}', value=f'Index: {idx}, Cost: {card.cost}, Is Playable? {card.is_playable()}, Attack: {card.atk}, Health: {card.health}', inline=False)
 
         embed_field = discord.Embed(colour = color)
         embed_field.set_author(name='Field:')
         for idx, card in enumerate(you.field):
-            embed_field.add_field(name=f'Name: {card}, Index: {idx+10}', value=f'Can Attack? {card.can_attack()}', inline=True)
+            embed_field.add_field(name=f'{card}, Index: {idx+10}', value=f'Can Attack? {card.can_attack()}')
 
         embed_oppfield = discord.Embed(colour = color)
         embed_oppfield.set_author(name='Opponent\'s field:')
         for idx, card in enumerate(you.opponent.field):
-            embed_oppfield.add_field(name=f'Enemy:', value=f'{card}', inline=True)
+            embed_oppfield.add_field(name=f'{card}:', value=f'Attack: {card.atk}, Health: {card.health}')
 
         embed_other = discord.Embed(colour = color)
         embed_other.set_author(name='Other options:')
         if you.hero.power.is_usable():
-            embed_other.add_field(name='Hero Power Available', value='Index: 17', inline=True)
+            embed_other.add_field(name='Hero Power Available', value='Index: 17')
         if you.hero.can_attack():
-            embed_other.add_field(name='Attack with Weapon', value='Index: 18', inline=True)
-        embed_other.add_field(name='End Turn', value='Index: 19', inline=False)
+            embed_other.add_field(name='Attack with Weapon', value='Index: 18')
+        embed_other.add_field(name='End Turn', value='Index: 19')
 
         return embed, embed_hand, embed_field, embed_oppfield, embed_other
 
@@ -147,26 +174,26 @@ class Hearthstone:
             color = discord.Colour.red()
         embed = discord.Embed(colour = color)
         embed.set_author(name='Choose a target')
-        embed.set_footer(text='please type "[target index]" to input your target')
+        embed.set_footer(text='please type [target index] to input your target')
         embed.set_thumbnail(url='http://www.usdn.ca/humour/Thumb-Hearthstone.png')
         if 0 <= actionid <= 9:
             if you.hand[actionid].requires_target():
                 # embed.add_field(name='Choose a target:', value=' ', inline=False)
                 for idx, target in enumerate(you.hand[actionid].targets):
-                    embed.add_field(name=f'Name: {target}', value=f'Index: {idx}', inline=True)
+                    embed.add_field(name=f'{target}', value=f'Index: {idx}')
 
         elif 10 <= actionid <= 16:
             for idx, target in enumerate(you.field[actionid - 10].attack_targets):
-                embed.add_field(name=f'Name: {target}', value=f'Index: {idx}', inline=True)
+                embed.add_field(name=f'{target}', value=f'Index: {idx}')
 
         elif actionid == 17:
             if you.hero.power.requires_target():
                 for idx, target in enumerate(you.hero.power.targets):
-                    embed.add_field(name=f'Name: {target}', value=f'Index: {idx}', inline=True)
+                    embed.add_field(name=f'{target}', value=f'Index: {idx}')
 
         elif actionid == 18:
-            for idx, target in enumerate(you.hero.power.attack_targets):
-                embed.add_field(name=f'Name: {target}', value=f'Index: {idx}', inline=True)
+            for idx, target in enumerate(you.hero.attack_targets):
+                embed.add_field(name=f'{target}', value=f'Index: {idx}')
 
         elif actionid == -1:
             you.hero.to_be_destroyed = True

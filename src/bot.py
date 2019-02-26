@@ -75,6 +75,5 @@ if __name__ == '__main__':
             bot.load_extension(extension)
         except Exception as e:
             print(f'{extension} cannot be loaded. [{e}]')
-    shuffle(stati)
     bot.loop.create_task(change_status(stati))
     bot.run(TOKEN)
