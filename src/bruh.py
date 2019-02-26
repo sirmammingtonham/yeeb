@@ -126,7 +126,7 @@ class Bruh:
 			check += word
 		if check == '':
 			mediawikiapi = MediaWikiAPI()
-			await self.bot.say(f'this is so {mediawikiapi.random()}, can we hit {random.randomint(0,10000000)} {mediawikiapi.random()}')
+			await self.bot.say(f'this is so {mediawikiapi.random()}, can we hit {random.randint(0,10000000)} {mediawikiapi.random()}')
 		elif check == 'issosad':
 			word_url = "http://svnweb.freebsd.org/csrg/share/dict/words?view=co&content-type=text/plain"
 			response = urllib.request.urlopen(word_url)
