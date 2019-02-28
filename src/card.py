@@ -31,23 +31,23 @@ class Hearthstone:
         if check == 'hearthstone' and not self.game_active:
             self.g = YEET()
             self.game_active = True
-            await self.bot.say('Created a new shitty hearthstone game... Type ```bruh hearthstone join``` to join')
+            await self.bot.say('Created a new shitty hearthstone game... Type ```css\nbruh hearthstone join\n``` to join')
         elif not self.game_active:
-            await self.bot.say('Game not active... Type ```bruh shitty hearthstone``` to start a game')
+            await self.bot.say('Game not active... Type ```css\nbruh shitty hearthstone\n``` to start a game')
         else:
-            await self.bot.say('the command is ```bruh shitty hearthstone``` you nonce')
+            await self.bot.say('the command is ```css\nbruh shitty hearthstone\n``` you nonce')
 
     @commands.group(pass_context=True, invoke_without_command=True)
     async def hearthstone(self, ctx):
         if ctx.invoked_subcommand is None and self.game_active:
-            await self.bot.say('Game active! Type ```bruh hearthstone join``` to join')
+            await self.bot.say('Game active! Type ```css\nbruh hearthstone join\n``` to join')
         elif ctx.invoked_subcommand is None:
-            await self.bot.say('Game not yet created. Type ```bruh shitty hearthstone``` to start one.')
+            await self.bot.say('Game not yet created. Type ```css\nbruh shitty hearthstone\n``` to start one.')
 
     @hearthstone.command(pass_context=True, no_pm=False)
     async def join(self, ctx):
         if not self.game_active:
-            await self.bot.say('Game not yet created. Type ```bruh shitty hearthstone``` to start one.')
+            await self.bot.say('Game not yet created. Type ```css\nbruh shitty hearthstone\n``` to start one.')
             return
         if not self.p1:
             self.p1 = ctx.message.author
@@ -55,7 +55,7 @@ class Hearthstone:
         elif self.p1 and not self.p2:
             self.p2 = ctx.message.author
             await self.bot.say(f'Congrats, you\'ve joined along with {self.p1}')
-            await self.bot.say('To get started, one of you need to type ```bruh hearthstone itstimetoduel```')
+            await self.bot.say('To get started, one of you need to type ```css\nbruh hearthstone itstimetoduel\n```')
         else:
             await self.bot.say('Too late, two ppl already joined')
 
@@ -82,11 +82,12 @@ class Hearthstone:
 
             while not game_instance.ended or game_instance.turn > 180:
                 embed, embed_hand, embed_field, embed_oppfield, embed_other = self.create_action_embed(game_instance, ctx)
-                await self.bot.say(embed=embed)
-                await self.bot.say(embed=embed_hand)
-                await self.bot.say(embed=embed_field)
-                await self.bot.say(embed=embed_oppfield)
-                await self.bot.say(embed=embed_other)
+                async with ctx.typing():
+                    await self.bot.say(embed=embed)
+                    await self.bot.say(embed=embed_hand)
+                    await self.bot.say(embed=embed_field)
+                    await self.bot.say(embed=embed_oppfield)
+                    await self.bot.say(embed=embed_other)
 
                 while True:
                     try:
@@ -113,7 +114,7 @@ class Hearthstone:
                         continue
                     except:
                         await self.bot.say('BRUH, you broke something that i havent checked for... fix it yourself\nhttps://github.com/sirmammingtonham/yeeb')
-                        ctx.invoke(reset)
+                        await self.bot.say('If you want to try again type ```css\nbruh hearthstone reset\n```')
                         return
                     break
 
@@ -150,12 +151,12 @@ class Hearthstone:
         embed_field = discord.Embed(colour = color)
         embed_field.set_author(name='Field:')
         for idx, card in enumerate(you.field):
-            embed_field.add_field(name=f'{card}, Index: {idx+10}', value=f'Can Attack? {card.can_attack()}')
+            embed_field.add_field(name=f'{card}, Index: {idx+10}', value=f'Can Attack? {card.can_attack()}', inline=False)
 
         embed_oppfield = discord.Embed(colour = color)
         embed_oppfield.set_author(name='Opponent\'s field:')
         for idx, card in enumerate(you.opponent.field):
-            embed_oppfield.add_field(name=f'{card}:', value=f'Attack: {card.atk}, Health: {card.health}')
+            embed_oppfield.add_field(name=f'{card}:', value=f'Attack: {card.atk}, Health: {card.health}', inline=False)
 
         embed_other = discord.Embed(colour = color)
         embed_other.set_author(name='Other options:')
@@ -182,6 +183,10 @@ class Hearthstone:
                 # embed.add_field(name='Choose a target:', value=' ', inline=False)
                 for idx, target in enumerate(you.hand[actionid].targets):
                     embed.add_field(name=f'{target}', value=f'Index: {idx}')
+            elif you.hand[actionid].must_choose_one:
+                embed.add_field(name='Choose 1:', value='-', inline=False)
+                for idx, choose in enumerate(you.hand[actionid].choose_cards):
+                    embed.add_field(name=f'{choose}', value=f'Index: {idx}')
 
         elif 10 <= actionid <= 16:
             for idx, target in enumerate(you.field[actionid - 10].attack_targets):

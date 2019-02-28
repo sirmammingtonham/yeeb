@@ -2,10 +2,8 @@ import discord
 from discord.ext import commands
 import asyncio
 import datetime
-import urllib.request
 import random
 from dateutil.relativedelta import relativedelta
-from mediawikiapi import MediaWikiAPI
 from apex_legends import ApexLegends
 
 ADMIN_ROLE = '547174572731006986', '228677568126124034'
@@ -120,26 +118,6 @@ class Bruh:
 		await self.bot.say('perfectly balanced\nhttps://media1.tenor.com/images/d89ba4e965cb9144c82348a1c234d425/tenor.gif?itemid=11793362')
 
 	@commands.command(pass_context=True)
-	async def this(self, ctx, *args):
-		check = ''
-		for word in args:
-			check += word
-		if check == '':
-			mediawikiapi = MediaWikiAPI()
-			await self.bot.say(f'this is so {mediawikiapi.random()}, can we hit {random.randint(0,10000000)} {mediawikiapi.random()}')
-		elif check == 'issosad':
-			word_url = "http://svnweb.freebsd.org/csrg/share/dict/words?view=co&content-type=text/plain"
-			response = urllib.request.urlopen(word_url)
-			long_txt = response.read().decode()
-			words = long_txt.splitlines()
-			number = random.randint(1, len(words)-1)
-			if number % 2 == 0:
-				await self.bot.say(f'can we hit {number} {words[number]}')
-			else:
-				await self.bot.say(f'can we hit {number} {words[number]} {words[random.randint(1,10000)]}')
-
-
-	@commands.command(pass_context=True)
 	async def finnasmash(self, ctx):
 		await self.bot.say('This command has changed, you absolute knob. Try ```py\nbruh finna smash\n``` instead.')
 
@@ -166,7 +144,7 @@ class Bruh:
 	@commands.command(pass_context=True)
 	async def code(self, ctx):
 		await self.bot.say('https://github.com/sirmammingtonham/yeeb')
-	
+
 	@commands.command(pass_context=True)
 	async def die(self, ctx):
 		if user_is_me(ctx):

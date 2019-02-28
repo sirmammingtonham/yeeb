@@ -117,7 +117,7 @@ class Board:
                     if player.hand[a[0]].requires_target():
                         player.hand[a[0]].play(player.hand[a[0]].targets[a[1]])
                     elif player.hand[a[0]].must_choose_one:
-                        player.hand[a[0]].play(choose=player.hand[a[0]].choose_targets[a[1]])
+                        player.hand[a[0]].play(choose=player.hand[a[0]].choose_cards[a[1]])
                     else:
                         player.hand[a[0]].play()
                 elif 10 <= a[0] <= 16:

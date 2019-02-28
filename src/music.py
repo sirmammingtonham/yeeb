@@ -1,7 +1,11 @@
 import asyncio
 import discord
 import random
+import requests
+import json
 from discord.ext import commands
+from mediawikiapi import MediaWikiAPI
+from bs4 import BeautifulSoup
 
 class VoiceEntry:
     def __init__(self, message, player):
@@ -278,7 +282,25 @@ class Music:
          'https://www.youtube.com/watch?v=J69VjA6wUQc',
         ]
         await ctx.invoke(self.stop)
-        await self.playurl(ctx, song=jojos[random.randint(0,len(jojos)-1)])
+        await self.playurl(ctx, song=random.choice(jojos))
+
+    @commands.command(pass_context=True, no_pm=True)
+    async def this(self, ctx, *args):
+        summoned_channel = ctx.message.author.voice_channel
+        if summoned_channel is None:
+            mediawikiapi = MediaWikiAPI()
+            await self.bot.say(f'This is so {mediawikiapi.random()}, can we hit {random.randint(0,10000000)} {mediawikiapi.random()}')
+        else:
+            r=requests.get('https://www.billboard.com/charts/hot-100')
+            soup = BeautifulSoup(r.text, 'html.parser')
+            div = soup.find('div', {'class': 'chart-list chart-details__left-rail'})
+            songs_list = json.loads(div.attrs['data-video-playlist'])
+            songs = [x["title"] for x in songs_list]
+            song = random.choice(songs)
+
+            await self.bot.say(f'This is so sad, Alexa play {song}')
+            await ctx.invoke(self.stop)
+            await self.playurl(ctx, song=song)
 
     @commands.command(pass_context=True, no_pm=True)
     @commands.cooldown(1, 10, commands.BucketType.user)
@@ -295,7 +317,7 @@ class Music:
              'https://www.youtube.com/watch?v=JfB0beI3OOU&list=LL0irG5cbAEYFDzryfNp3Htg&index=7&t=0s',
             ]
             await ctx.invoke(self.stop)
-            await self.playurl(ctx, song=smash[random.randint(0,len(smash)-1)])
+            await self.playurl(ctx, song=random.choice(smash))
 
 def setup(bot):
     bot.add_cog(Music(bot))
