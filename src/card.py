@@ -82,7 +82,7 @@ class Hearthstone:
 
             while not game_instance.ended or game_instance.turn > 180:
                 embed, embed_hand, embed_field, embed_oppfield, embed_other = self.create_action_embed(game_instance, ctx)
-                async with ctx.typing():
+                async with ctx.message.channel.typing():
                     await self.bot.say(embed=embed)
                     await self.bot.say(embed=embed_hand)
                     await self.bot.say(embed=embed_field)

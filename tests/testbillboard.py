@@ -15,4 +15,3 @@ songs = div.attrs['data-video-playlist']
 songs_list = json.loads(songs)
 
 print([x["title"] for x in songs_list])
-

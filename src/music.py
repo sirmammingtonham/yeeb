@@ -297,8 +297,9 @@ class Music:
             songs_list = json.loads(div.attrs['data-video-playlist'])
             songs = [x["title"] for x in songs_list]
             song = random.choice(songs)
+            song_split = song.split(' - ')
 
-            await self.bot.say(f'This is so sad, Alexa play {song}')
+            await self.bot.say(f'This is so sad, Alexa play {song_split[0]} by {song_split[-1]}')
             await ctx.invoke(self.stop)
             await self.playurl(ctx, song=song)
 
