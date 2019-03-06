@@ -16,7 +16,7 @@ class Bruh:
 		self.bot = bot
 
 	@commands.group(pass_context=True, invoke_without_command=True)
-	async def apex(self, ctx, player : str):
+	async def apex(self, ctx, player:str):
 		if ctx.invoked_subcommand is None:
 			apex = ApexLegends("af6873a1-ef18-4ea4-aced-143ba5b6eb5d")
 			try:
@@ -66,7 +66,7 @@ class Bruh:
 		await self.bot.say(embed=embed)
 
 	@apex.command(pass_context=True)
-	async def psn(self, ctx, player : str):
+	async def psn(self, ctx, player:str):
 		apex = ApexLegends("af6873a1-ef18-4ea4-aced-143ba5b6eb5d")
 		try:
 			player = apex.player(player, plat=2)
@@ -144,6 +144,38 @@ class Bruh:
 	@commands.command(pass_context=True)
 	async def code(self, ctx):
 		await self.bot.say('https://github.com/sirmammingtonham/yeeb')
+
+
+	@commands.command(pass_context=True, no_pm=True)
+	async def censor(self, ctx, *args, time:int=1):
+		channel = ctx.message.channel
+		if args is not None:
+			user = ''
+			for word in args:
+				user += word
+		elif args.isdigit():
+			time = int(args)
+
+		if time > 5:
+			await self.bot.say('nah')
+			return
+
+		end = datetime.datetime.now() + datetime.timedelta(minutes=time)
+
+		if user in [str(member) for member in ctx.message.server.members]:
+			def check(message):
+				return str(message.author) == user
+
+			while datetime.datetime.now() < end:
+				message = await self.bot.wait_for_message(channel=channel, check=check)
+				await self.bot.delete_message(message)
+				await self.bot.say(f'||{message.content}||')
+
+		else:
+			while datetime.datetime.now() < end:
+				message = await self.bot.wait_for_message(channel=channel)
+				await self.bot.delete_message(message)
+				await self.bot.say(f'||{message.content}||')
 
 	@commands.command(pass_context=True)
 	async def die(self, ctx):
