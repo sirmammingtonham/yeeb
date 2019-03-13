@@ -3,6 +3,7 @@ import discord
 import random
 import requests
 import json
+import datetime
 from discord.ext import commands
 from mediawikiapi import MediaWikiAPI
 from bs4 import BeautifulSoup
@@ -240,7 +241,7 @@ class Music:
         beforeArgs = "-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5"
 
         try:
-            player = await state.voice.create_ytdl_player(song, ytdl_options=opts, before_options=beforeArgs, after=lambda: asyncio.run_coroutine_threadsafe(ctx.inxove(self.stop)))
+            player = await state.voice.create_ytdl_player(song, ytdl_options=opts, before_options=beforeArgs, after=lambda: ctx.invoke(self.stop))
         except Exception as e:
             fmt = 'oof, you done fucked up: ```py\n{}: {}\n```'
             await self.bot.send_message(ctx.message.channel, fmt.format(type(e).__name__, e))
@@ -285,6 +286,14 @@ class Music:
         await self.playurl(ctx, song=random.choice(jojos))
 
     @commands.command(pass_context=True, no_pm=True)
+    async def giogio(self, ctx):
+        giogios = ['https://www.youtube.com/watch?v=tLyRpGKWXRs', 'https://www.youtube.com/watch?v=tLyRpGKWXRs', 
+         'https://www.youtube.com/watch?v=tLyRpGKWXRs', 'https://www.youtube.com/watch?v=tLyRpGKWXRs',
+         'https://www.youtube.com/watch?v=2MtOpB5LlUA']
+        await ctx.invoke(self.stop)
+        await self.playurl(ctx, song=random.choice(giogios))
+
+    @commands.command(pass_context=True, no_pm=True)
     async def this(self, ctx, *args):
         summoned_channel = ctx.message.author.voice_channel
         if summoned_channel is None:
@@ -319,6 +328,24 @@ class Music:
             ]
             await ctx.invoke(self.stop)
             await self.playurl(ctx, song=random.choice(smash))
+
+    @commands.command(pass_context=True, no_pm=True)
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    async def shid(self, ctx, time:int=10):
+        summoned_channel = ctx.message.author.voice_channel
+        if summoned_channel is None:
+            await self.bot.say('You are not in a voice channel.')
+            return False
+
+        end = datetime.datetime.now() + datetime.timedelta(seconds=time)
+        while datetime.datetime.now() < end:
+            try:
+                await ctx.invoke(self.summon)
+                await ctx.invoke(self.stop)
+            except:
+                await ctx.invoke(self.stop)
+                pass
+
 
 def setup(bot):
     bot.add_cog(Music(bot))

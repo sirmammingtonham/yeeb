@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 from mediawikiapi import MediaWikiAPI
 from random import shuffle
 
-TOKEN = 'NTQ3MTU2NzAyNjI2MTg1MjMw.D0yrZw.C57ut2uYOCcTLc3ijW_DgvNG-1Y'
+TOKEN = ''
 bot = commands.Bot(command_prefix = 'bruh ')
 bot.remove_command('help')
 
