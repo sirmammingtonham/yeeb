@@ -16,7 +16,7 @@ yeeb bot: what is this? why does this exist? rip your discord server if you ever
 | `bruh die` | Stops the bot | Only I have the power |
 |  |  |  |
 | **Hearthstone commands** |  |  |
-| `bruh shitty hearthstone` | Creates a bad game of hearthstone in the discord chat | Uses the fireplace hearthstone simulator |
+| `bruh shitty hearthstone` | Creates a bad game of hearthstone in the discord chat | Uses the [fireplace](https://github.com/jleclanche/fireplace) hearthstone simulator |
 | `bruh hearthstone join` | Allows a player to join the shitty hearthstone game |  |
 | `bruh hearthstone itstimetoduel` | Begins the game |  |
 | `bruh hearthstone reset` | Resets the game |  |
