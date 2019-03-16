@@ -178,6 +178,10 @@ class Bruh:
 				await self.bot.say(f'||{message.content}||')
 
 	@commands.command(pass_context=True)
+	async def invite(self, ctx):
+		await self.bot.say('https://discordapp.com/oauth2/authorize?client_id=547156702626185230&scope=bot&permissions=8')
+
+	@commands.command(pass_context=True)
 	async def die(self, ctx):
 		if user_is_me(ctx):
 			await self.bot.logout()
