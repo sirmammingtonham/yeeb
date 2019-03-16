@@ -14,6 +14,7 @@ yeeb bot: what is this? why does this exist? rip your discord server if you ever
 | `bruh code` | Sends a link to the github project page |  |
 | `bruh censor (user*) (time*)` | Deletes new messages and retypes them using the \|\|censor\|\| format in discord (default 1 minute) | If a user or time is provided it will only censor that user or for that amount of time (in minutes) |
 | `bruh die` | Stops the bot | Only I have the power |
+| `bruh invite` | Sends a link to invite yeeb bot to your discord servers |  |
 |  |  |  |
 | **Hearthstone commands** |  |  |
 | `bruh shitty hearthstone` | Creates a bad game of hearthstone in the discord chat | Uses the [fireplace](https://github.com/jleclanche/fireplace) hearthstone simulator |
