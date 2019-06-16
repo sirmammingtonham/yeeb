@@ -22,7 +22,8 @@ discord.py == 0.16.12
 # hearthstone\Game.py: 2
 # hearthstone\gameUtils.py: 4,5,6,7
 # src\card.py: 7
-fireplace == 0.1.0
+# fireplace == 0.1.0
+# (install from github @ https://github.com/jleclanche/fireplace)
 
 # hearthstone\gameUtils.py: 8
 hearthstone == 5.2.3
