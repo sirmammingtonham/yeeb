@@ -258,7 +258,6 @@ class Music:
         await self.bot.say('https://c7.uihere.com/files/510/792/52/jocelyn-flores-music-sad-club-dread-thumb.jpg')
 
     @commands.command(pass_context=True, no_pm=True)
-    @commands.cooldown(1, 10, commands.BucketType.user)
     async def moment(self, ctx):
         await ctx.invoke(self.stop)
         await self.playurl(ctx, song='https://www.youtube.com/watch?v=2ZIpFytCSVc')
@@ -275,15 +274,19 @@ class Music:
             await self.bot.say('https://media1.giphy.com/media/1oE3Ee4299mmXN8OYb/source.gif')
 
     @commands.command(pass_context=True, no_pm=True)
-    @commands.cooldown(1, 10, commands.BucketType.user)
-    async def jojo(self, ctx):
+    async def jojo(self, ctx, idx:int=None):
         jojos = ['https://www.youtube.com/watch?v=tHAGig0Mq6o', 'https://www.youtube.com/watch?v=P-3GOo_nWoc&t=38s', 
          'https://www.youtube.com/watch?v=ITMjAeWz5hk', 'https://www.youtube.com/watch?v=cPCLFtxpadE',
          'https://www.youtube.com/watch?v=NFjE5A4UAJI', 'https://www.youtube.com/watch?v=So54Khf7bB8',
-         'https://www.youtube.com/watch?v=J69VjA6wUQc',
+         'https://www.youtube.com/watch?v=J69VjA6wUQc', 'https://youtu.be/7bF5nk7oRQk',  
+         'https://www.youtube.com/watch?v=9yGGNohmAT0', 'https://www.youtube.com/watch?v=lWe1nmWeMug&t=3s',
+         'https://www.youtube.com/watch?v=fM6mydIVAGY', 'https://youtu.be/JyvjeDtdq3k',
         ]
         await ctx.invoke(self.stop)
-        await self.playurl(ctx, song=random.choice(jojos))
+        if idx is None:
+            await self.playurl(ctx, song=random.choice(jojos))
+        else:
+            await self.playurl(ctx, song=jojos[idx])
 
     @commands.command(pass_context=True, no_pm=True)
     async def giogio(self, ctx):
@@ -313,7 +316,6 @@ class Music:
             await self.playurl(ctx, song=song)
 
     @commands.command(pass_context=True, no_pm=True)
-    @commands.cooldown(1, 10, commands.BucketType.user)
     async def finna(self, ctx, *args):
         check = ''
         for word in args:
@@ -324,7 +326,7 @@ class Music:
              'https://www.youtube.com/watch?v=eWSU8YOa3jU', 'https://www.youtube.com/watch?v=Damxx4K_Yo8',
              'https://www.youtube.com/watch?v=q6R_cZHZZTo', 'https://www.youtube.com/watch?v=bDQUu9Q4-6Y',
              'https://www.youtube.com/watch?v=bDQUu9Q4-6Y', 'https://www.youtube.com/watch?v=bDQUu9Q4-6Y',
-             'https://www.youtube.com/watch?v=JfB0beI3OOU&list=LL0irG5cbAEYFDzryfNp3Htg&index=7&t=0s',
+             'https://youtu.be/JfB0beI3OOU',
             ]
             await ctx.invoke(self.stop)
             await self.playurl(ctx, song=random.choice(smash))
@@ -345,6 +347,11 @@ class Music:
             except:
                 await ctx.invoke(self.stop)
                 pass
+
+    @commands.command(pass_context=True, no_pm=True)
+    async def musk(self, ctx):
+        await ctx.invoke(self.stop)
+        await self.playurl(ctx, song='https://www.youtube.com/watch?v=Z1U2x63aERw')
 
 
 def setup(bot):
