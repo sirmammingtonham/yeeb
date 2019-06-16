@@ -6,7 +6,8 @@ from bs4 import BeautifulSoup
 from mediawikiapi import MediaWikiAPI
 from random import shuffle
 
-TOKEN = ''
+with open("token.txt", "r") as f:
+    TOKEN = f.read()
 bot = commands.Bot(command_prefix = 'bruh ')
 bot.remove_command('help')
 
@@ -17,7 +18,7 @@ def wikitable(page):
     """
     Exports a Wikipedia table parsed by BeautifulSoup. Deals with spanning: 
     multirow and multicolumn should format as expected. 
-    """ 
+    """
     mediawikiapi = MediaWikiAPI()
     page = mediawikiapi.page(page)
     soup = BeautifulSoup(page.html(), 'html.parser')
