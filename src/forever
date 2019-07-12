@@ -1,0 +1,7 @@
+#!/usr/bin/python3
+from subprocess import Popen
+
+while True:
+    print("\nStarting ")
+    p = Popen("python3 bot.py", shell=True)
+    p.wait()
