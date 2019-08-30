@@ -110,10 +110,14 @@ class Bruh:
 	@commands.command(pass_context=True)
 	async def snap(self, ctx):
 		channel = ctx.message.channel
+		pins = await self.bot.pins_from(channel)
 		messages = []
 		async for message in self.bot.logs_from(channel, limit=int(100)):
 			messages.append(message)
 		random.shuffle(messages)
+		for message in messages:
+			if message in pins:
+				messages.pop(message)
 		await self.bot.delete_messages(messages[:len(messages)//2])
 		await self.bot.say('perfectly balanced\nhttps://media1.tenor.com/images/d89ba4e965cb9144c82348a1c234d425/tenor.gif?itemid=11793362')
 

@@ -82,12 +82,12 @@ class Hearthstone:
 
             while not game_instance.ended or game_instance.turn > 180:
                 embed, embed_hand, embed_field, embed_oppfield, embed_other = self.create_action_embed(game_instance, ctx)
-                async with ctx.message.channel.typing():
-                    await self.bot.say(embed=embed)
-                    await self.bot.say(embed=embed_hand)
-                    await self.bot.say(embed=embed_field)
-                    await self.bot.say(embed=embed_oppfield)
-                    await self.bot.say(embed=embed_other)
+                # async with ctx.message.channel.typing():
+                await self.bot.say(embed=embed)
+                await self.bot.say(embed=embed_hand)
+                await self.bot.say(embed=embed_field)
+                await self.bot.say(embed=embed_oppfield)
+                await self.bot.say(embed=embed_other)
 
                 while True:
                     try:
@@ -125,7 +125,7 @@ class Hearthstone:
             else:
                 await self.bot.say('gg you\'re both garbage... how the hell do you even tie??')
         else:
-            await bot.say('Who do you think you are?? You\'re not even in the game, peasant')
+            await self.bot.say('Who do you think you are?? You\'re not even in the game, peasant')
 
     def create_action_embed(self, game_instance, ctx):
         you = game_instance.current_player
