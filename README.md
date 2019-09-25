@@ -1,6 +1,8 @@
 # yeeb
 yeeb bot: what is this? why does this exist? rip your discord server if you ever add this
 
+[Click here to invite](https://discordapp.com/oauth2/authorize?client_id=547156702626185230&scope=bot&permissions=8) yeeb bot to your server!
+
 | Command | What it do tho? | Details maybe |
 |----------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------|
 | `bruh apex (platform*) (user)` | Check apex legends stats for (user). api is pretty trash rn tho, so it can only track one legend, and whatever trackers you have equipped | Default is pc because pc is better. You can also use xbox or psn |
