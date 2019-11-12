@@ -6,7 +6,7 @@ import discord
 from discord.ext import commands
 from fireplace.exceptions import InvalidAction
 
-class Hearthstone:
+class Hearthstone(commands.Cog):
     ICONS = {'Rexxar': 'https://i.imgur.com/b3MUi1H.png',
              'Malfurion Stormrage': 'https://i.imgur.com/PNWNZG0.png',
              'Jaina Proudmoore': 'https://i.imgur.com/gi4HWzG.png',
@@ -23,80 +23,83 @@ class Hearthstone:
         self.p1, self.p2 = '', ''
         self.players = {}
 
-    @commands.group(pass_context=True, invoke_without_command=True)
+    @commands.group()
     async def shitty(self, ctx, *args):
         check = ''
         for word in args:
             check += word
-        if check == 'hearthstone' and not self.game_active:
+        if (check == 'hearthstone' or check =='hs') and not self.game_active:
             self.g = YEET()
             self.game_active = True
-            await self.bot.say('Created a new shitty hearthstone game... Type ```css\nbruh hearthstone join\n``` to join')
+            await ctx.send(':video_game: Created a new shitty hearthstone game... Type ```css\nbruh hs join\n``` to join')
         elif not self.game_active:
-            await self.bot.say('Game not active... Type ```css\nbruh shitty hearthstone\n``` to start a game')
+            await ctx.send(':video_game: Game not active... Type ```css\nbruh shitty hearthstone\n``` to start a game')
         else:
-            await self.bot.say('the command is ```css\nbruh shitty hearthstone\n``` you nonce')
+            await ctx.send(':video_game: the command is ```css\nbruh shitty hearthstone\n``` you nonce')
 
-    @commands.group(pass_context=True, invoke_without_command=True)
+    @commands.group(name='hearthstone', aliases=['hs', 'h'])
+    @commands.guild_only()
     async def hearthstone(self, ctx):
         if ctx.invoked_subcommand is None and self.game_active:
-            await self.bot.say('Game active! Type ```css\nbruh hearthstone join\n``` to join')
+            await ctx.send(':video_game: Game active! Type ```css\nbruh hs join\n``` to join')
         elif ctx.invoked_subcommand is None:
-            await self.bot.say('Game not yet created. Type ```css\nbruh shitty hearthstone\n``` to start one.')
+            await ctx.send(':video_game: Game not yet created. Type ```css\nbruh shitty hearthstone\n``` to start one.')
 
-    @hearthstone.command(pass_context=True, no_pm=False)
+    @hearthstone.command()
     async def join(self, ctx):
         if not self.game_active:
-            await self.bot.say('Game not yet created. Type ```css\nbruh shitty hearthstone\n``` to start one.')
+            await ctx.send(':video_game: Game not yet created. Type ```css\nbruh shitty hearthstone\n``` to start one.')
             return
         if not self.p1:
-            self.p1 = ctx.message.author
-            await self.bot.say('anyone else?')
+            self.p1 = ctx.author
+            await ctx.send(':video_game: anyone else?')
         elif self.p1 and not self.p2:
-            self.p2 = ctx.message.author
-            await self.bot.say(f'Congrats, you\'ve joined along with {self.p1}')
-            await self.bot.say('To get started, one of you need to type ```css\nbruh hearthstone itstimetoduel\n```')
+            self.p2 = ctx.author
+            await ctx.send(f':video_game: Congrats, you\'ve joined along with {self.p1}')
+            await ctx.send('To get started, one of you need to type ```css\nbruh hs itstimetoduel\n```')
         else:
-            await self.bot.say('Too late, two ppl already joined')
+            await ctx.send(':video_game: Too late, two ppl already joined')
 
-    @hearthstone.command(pass_context=True, no_pm=False)
+    @hearthstone.command()
     async def reset(self, ctx):
         self.p1, self.p2 = '', ''
         self.game_active = False
 
-    @hearthstone.command(pass_context=True, no_pm=False)
+    @hearthstone.command()
     async def itstimetoduel(self, ctx):
-        if ctx.message.author == self.p1 or ctx.message.author == self.p2:
-            await self.bot.say('Game starting... (it might take a while and has a 1/5 chance of breaking)')
+        if ctx.author == self.p1 or ctx.author == self.p2:
+            await ctx.send(':video_game: Game starting... (it might take a while and has a 1/5 chance of breaking)')
             try:
                 game_instance = self.g.getInitGame()
             except KeyError:
-                await self.bot.say('Goddammit your terrible rng broke it. Run ```bruh hearthstone itstimetoduel``` to try again')
+                await ctx.send(':video_game: Goddammit your terrible rng broke it. Run ```css\nbruh hs itstimetoduel\n``` to try again')
                 return
             curPlayer = 0 #useless, just need it because i haven't cleaned up the other functions
             self.players[game_instance.players[0].name] = self.p1
             self.players[game_instance.players[1].name] = self.p2
 
             def check(message):
-                return message.content.isdigit() or message.content == '-1'
+                return message.author == self.players[game_instance.current_player.name] and \
+                message.channel == ctx.message.channel and (message.content.isdigit() or message.content == '-1')
 
             while not game_instance.ended or game_instance.turn > 180:
                 embed, embed_hand, embed_field, embed_oppfield, embed_other = self.create_action_embed(game_instance, ctx)
-                # async with ctx.message.channel.typing():
-                await self.bot.say(embed=embed)
-                await self.bot.say(embed=embed_hand)
-                await self.bot.say(embed=embed_field)
-                await self.bot.say(embed=embed_oppfield)
-                await self.bot.say(embed=embed_other)
+                async with ctx.channel.typing():
+                    await ctx.send(embed=embed)
+                    await ctx.send(embed=embed_hand)
+                    await ctx.send(embed=embed_field)
+                    await ctx.send(embed=embed_oppfield)
+                    await ctx.send(embed=embed_other)
 
                 while True:
                     try:
-                        action = await self.bot.wait_for_message(author=self.players[game_instance.current_player.name], channel=ctx.message.channel, check=check)
+                        action = await self.bot.wait_for('message', check=check)
                         embed_target = self.create_target_embed(int(action.content), game_instance, ctx)
 
                         if embed_target.fields:
-                            await self.bot.say(embed=embed_target)
-                            target = await self.bot.wait_for_message(author=self.players[game_instance.current_player.name], channel=ctx.message.channel, check=check)
+                            await ctx.trigger_typing()
+                            await ctx.send(embed=embed_target)
+                            target = await self.bot.wait_for('message', check=check)
                             target = int(target.content)
                         else:
                             target = 0
@@ -107,25 +110,26 @@ class Hearthstone:
                         _, curPlayer = self.g.getNextState(curPlayer, (int(action.content), target), game_instance)
 
                     except IndexError:
-                        await self.bot.say('Invalid action you absolute melon, try again')
+                        await ctx.send(':video_game: Invalid action you absolute melon, try again')
                         continue
                     except InvalidAction as e:
-                        await self.bot.say(f'Invalid action you absolute melon, try again\n{e}')
+                        await ctx.send(f':video_game: Invalid action you absolute melon, try again\n{e}')
                         continue
-                    except:
-                        await self.bot.say('BRUH, you broke something that i havent checked for... fix it yourself\nhttps://github.com/sirmammingtonham/yeeb')
-                        await self.bot.say('If you want to try again type ```css\nbruh hearthstone reset\n```')
+                    except Exception as e:
+                        print(e)
+                        await ctx.send(':video_game: BRUH, you broke something that i havent checked for... fix it yourself\nhttps://github.com/sirmammingtonham/yeeb')
+                        await ctx.send('If you want to try again type ```css\nbruh hs reset\n```')
                         return
                     break
 
             if self.g.getGameEnded(curPlayer, game_instance) == 1:
-                await self.bot.say(f'gg you\'re both garbage\n@{self.players[game_instance.player_to_start.name]} won')
-            if self.g.getGameEnded(curPlayer, game_instance) == -1:
-                await self.bot.say(f'gg you\'re both garbage\n@{self.players[game_instance.player_to_start.name]} lost')
+                await ctx.send(f':video_game: gg you\'re both garbage\n@{self.players[game_instance.player_to_start.name]} won')
+            elif self.g.getGameEnded(curPlayer, game_instance) == -1:
+                await ctx.send(f':video_game: gg you\'re both garbage\n@{self.players[game_instance.player_to_start.name]} lost')
             else:
-                await self.bot.say('gg you\'re both garbage... how the hell do you even tie??')
+                await ctx.send(':video_game: gg you\'re both garbage... how the hell do you even tie??')
         else:
-            await self.bot.say('Who do you think you are?? You\'re not even in the game, peasant')
+            await ctx.send(':video_game: Who do you think you are?? You\'re not even in the game, peasant')
 
     def create_action_embed(self, game_instance, ctx):
         you = game_instance.current_player
@@ -135,7 +139,7 @@ class Hearthstone:
             color = discord.Colour.red()
         embed = discord.Embed(colour = color)
         embed.set_author(name=self.players[game_instance.current_player.name])
-        embed.set_footer(text='please type [action index] to input your action (-1 is concede)')
+        embed.set_footer(text=':video_game: please type [action index] to input your action (-1 is concede)')
         embed.set_thumbnail(url=Hearthstone.ICONS[str(you.hero)])
         embed.add_field(name=f'{you.hero}', value=f'Health: {you.hero.health}', inline=True)
         embed.add_field(name=f'Opponent', value=f'Health: {you.opponent.hero.health}', inline=True)
@@ -176,7 +180,7 @@ class Hearthstone:
             color = discord.Colour.red()
         embed = discord.Embed(colour = color)
         embed.set_author(name='Choose a target')
-        embed.set_footer(text='please type [target index] to input your target')
+        embed.set_footer(text=':video_game: please type [target index] to input your target')
         embed.set_thumbnail(url='http://www.usdn.ca/humour/Thumb-Hearthstone.png')
         if 0 <= actionid <= 9:
             if you.hand[actionid].requires_target():
@@ -208,3 +212,4 @@ class Hearthstone:
 
 def setup(bot):
     bot.add_cog(Hearthstone(bot))
+    print('Hearthstone module loaded.')
