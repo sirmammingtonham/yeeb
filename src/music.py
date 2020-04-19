@@ -1,7 +1,7 @@
 """
 https://github.com/MASERBOSS/dj-wala-babu
 """
-
+import os
 import discord
 from discord.ext import commands
 
@@ -21,6 +21,8 @@ from mediawikiapi import MediaWikiAPI
 from bs4 import BeautifulSoup
 
 ytdlopts = {
+    'username': os.environ['YOUTUBE_USER'],
+    'password': os.environ['YOUTUBE_PASS'],
     'format': 'bestaudio/best',
     'outtmpl': 'downloads/%(extractor)s-%(id)s-%(title)s.%(ext)s',
     'restrictfilenames': True,
@@ -518,13 +520,18 @@ class Music(commands.Cog):
     @commands.command(name='finna', aliases=['smash', 'finna_smash', 'finna-smash'])
     async def finna_(self, ctx, *args):
         await self.play_.callback(self, ctx, search=random.choice(smash))
+    
+    @commands.command(name='stop', aliases=['disconnect', 'dc', 'gtfo'])
+    async def dc_(self, ctx):
+        await ctx.send('Try pressing the stop button next time bruhheadass.')
+        await ctx.guild.voice_client.disconnect()
 
     @commands.command(name='shid')
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def shid_(self, ctx, time:int=10):
         vc = ctx.voice_client
         if not vc:
-            await ctx.send('You are not in a voice channel. You must subject yourself to this command to use it. A small price to pay for salvation.')
+            await ctx.send('You are not in a voice channel. You must subject yourself to this command to use it.')
             return False
 
         end = datetime.datetime.now() + datetime.timedelta(seconds=time)
