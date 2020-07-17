@@ -192,6 +192,12 @@ class Bruh(commands.Cog):
             await self.bot.logout()
         else:
             await ctx.send('You cannot kill me, peasant.')
+            
+    @commands.command()
+    async def swear(self, ctx):
+        words = open("../swearwords.txt").readlines()
+        word = words[random.randrange(165)][:-2]
+        await ctx.send(word)
 
 def setup(bot):
     bot.add_cog(Bruh(bot))
