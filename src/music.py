@@ -62,7 +62,7 @@ smash = ['https://www.youtube.com/watch?v=EhgDibw7vB4', 'https://www.youtube.com
     'https://youtu.be/JfB0beI3OOU',
 ]
 
-pendi = ['https://www.youtube.com/watch?v=X_hDLdwe7E8', 'https://www.youtube.com/watch?v=SNEBePtkG6U', 
+pendis = ['https://www.youtube.com/watch?v=X_hDLdwe7E8', 'https://www.youtube.com/watch?v=SNEBePtkG6U', 
     'https://www.youtube.com/watch?v=my6icTjqsW8', 'https://www.youtube.com/watch?v=mNGRkOgZo1M'
 ]
 
@@ -502,6 +502,10 @@ class Music(commands.Cog):
     @commands.command(name='giogio', aliases=['muda', 'piano', 'gangstar'])
     async def giogio_(self, ctx):
         await self.play_.callback(self, ctx, search=random.choice(giogios))
+                        
+    @commands.command(name='pendi', aliases=['r u ok', '24/7 lofi hip hop', 'chilledcow'])
+    async def pendi_(self,ctx):
+        await self.play_.callback(self, ctx, search=random.choice(pendis))
 
     @commands.command(name='this')
     async def this_(self, ctx, *args):
