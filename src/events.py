@@ -6,6 +6,7 @@ from itertools import cycle
 from bs4 import BeautifulSoup
 from mediawikiapi import MediaWikiAPI
 from random import shuffle
+from discord.utils import get
 
 ligma = [' balls\nhttps://i.ytimg.com/vi/ylYqTYJ8vbs/maxresdefault.jpg', ' dick\nhttps://i.ytimg.com/vi/ylYqTYJ8vbs/maxresdefault.jpg',
          ' deez nuts\nhttps://i.ytimg.com/vi/ylYqTYJ8vbs/maxresdefault.jpg', ' dick fit in yo mouth son?\nhttps://i.ytimg.com/vi/ylYqTYJ8vbs/maxresdefault.jpg',
@@ -102,6 +103,13 @@ class Events(commands.Cog):
             im = 'i\'m' if 'i\'m' in text else 'im'
             text = text[text.find(im) + len(im)+1:]
             await message.channel.send('Hi ' + text + ', I\'m yeeb bot', delete_after=30)
+                  
+    @commands.Cog.listener()
+    async def on_member_join(self, member):
+        if(member.guild.id = 319277087401705482):
+            role_id = 428410186072588289
+            asheft_role = get(member.guild.roles, id=role_id)
+            await member.edit(nick = 'asheft', roles = [asheft_role])
 
 def setup(bot):
     bot.add_cog(Events(bot))
