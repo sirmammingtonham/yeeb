@@ -200,17 +200,21 @@ class Bruh(commands.Cog):
         await ctx.send(word)
         
     @commands.command()
-    async def swearat(self, ctx, name:string=None):
+    async def swearat(self, ctx, name:str=''):
         words = open("swearwords.txt").readlines()
         word = words[random.randrange(165)][:-1]
-        if(name==None):
-            name = random.choice(message.channel.guild.members)
-        else if(name[0]=='@'):
-            continue
-        else:
-            name = message.channel.guild.get_member_named(name)
-            
+
+        if name == '':
+            name = random.choice(ctx.guild.members).mention
+        elif not name.startswith('<@'):
+            try:
+                name = ctx.guild.get_member_named(name).mention
+            except:
+                await ctx.send(ctx.author.mention + ' is a ' + word)
+                return
+
         await ctx.send(name + ' is a ' + word)
+
 
 def setup(bot):
     bot.add_cog(Bruh(bot))
