@@ -48,7 +48,7 @@ python_dateutil == 2.8.0
 # src/music.py: 18
 # src/music_old.py: 4
 # tests/testbillboard.py: 2
-requests == 2.18.4
+requests == 2.20.0
 
 # src/music.py: 14
 # tests/old_bot.py: 3
