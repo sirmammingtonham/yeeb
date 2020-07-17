@@ -196,7 +196,7 @@ class Bruh(commands.Cog):
     @commands.command()
     async def swear(self, ctx):
         words = open("swearwords.txt").readlines()
-        word = words[random.randrange(165)][:-2]
+        word = words[random.randrange(165)][:-1]
         await ctx.send(word)
 
 def setup(bot):
