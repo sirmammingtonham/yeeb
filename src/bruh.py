@@ -198,6 +198,19 @@ class Bruh(commands.Cog):
         words = open("swearwords.txt").readlines()
         word = words[random.randrange(165)][:-1]
         await ctx.send(word)
+        
+    @commands.command()
+    async def swearat(self, ctx, name:string=None):
+        words = open("swearwords.txt").readlines()
+        word = words[random.randrange(165)][:-1]
+        if(name==None):
+            name = random.choice(message.channel.guild.members)
+        else if(name[0]=='@'):
+            continue
+        else:
+            name = message.channel.guild.get_member_named(name)
+            
+        await ctx.send(name + ' is a ' + word)
 
 def setup(bot):
     bot.add_cog(Bruh(bot))
