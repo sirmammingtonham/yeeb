@@ -86,22 +86,22 @@ class Events(commands.Cog):
             text = text[text.find(what) + len(what)+1:]
 
             if text == 'ligma':
-                await message.channel.send(text + ligma[0])
+                await message.channel.send(text + ligma[0], delete_after=30)
             elif text == 'kisma':
-                await message.channel.send(text + ligma[1])
+                await message.channel.send(text + ligma[1], delete_after=30)
             elif text == 'bofa':
-                await message.channel.send(text + ligma[2])
+                await message.channel.send(text + ligma[2], delete_after=30)
             elif text == 'candice':
-                await message.channel.send(text + ligma[3])
+                await message.channel.send(text + ligma[3], delete_after=30)
             elif text == 'fugma':
-                await message.channel.send(text + ligma[4])
+                await message.channel.send(text + ligma[4], delete_after=30)
             else:
-                await message.channel.send(text + ligma[random.randint(0,4)])
+                await message.channel.send(text + ligma[random.randint(0,4)], delete_after=30)
 
         if text.startswith('i\'m') or text.startswith('im'):
             im = 'i\'m' if 'i\'m' in text else 'im'
             text = text[text.find(im) + len(im)+1:]
-            await message.channel.send('Hi ' + text + ', I\'m yeeb bot')
+            await message.channel.send('Hi ' + text + ', I\'m yeeb bot', delete_after=30)
 
 def setup(bot):
     bot.add_cog(Events(bot))
