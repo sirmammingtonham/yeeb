@@ -62,6 +62,10 @@ smash = ['https://www.youtube.com/watch?v=EhgDibw7vB4', 'https://www.youtube.com
     'https://youtu.be/JfB0beI3OOU',
 ]
 
+pendi = ['https://www.youtube.com/watch?v=X_hDLdwe7E8', 'https://www.youtube.com/watch?v=SNEBePtkG6U', 
+    'https://www.youtube.com/watch?v=my6icTjqsW8', 'https://www.youtube.com/watch?v=mNGRkOgZo1M'
+]
+
 ytdl = YoutubeDL(ytdlopts)
 
 if not discord.opus.is_loaded():
