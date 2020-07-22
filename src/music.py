@@ -504,8 +504,12 @@ class Music(commands.Cog):
         await self.play_.callback(self, ctx, search=random.choice(giogios))
                         
     @commands.command(name='pendi', aliases=['r u ok', '24/7 lofi hip hop', 'chilledcow'])
-    async def pendi_(self,ctx):
+    async def pendi_(self, ctx):
         await self.play_.callback(self, ctx, search=random.choice(pendis))
+                        
+    @commands.command(name='oof', aliases=['roblox', 'big oof'])
+    async def oof_(self, ctx):
+        await self.play_.callback(self, ctx, search='https://www.youtube.com/watch?v=hLjTqH_ZvO4'))
 
     @commands.command(name='this')
     async def this_(self, ctx, *args):
