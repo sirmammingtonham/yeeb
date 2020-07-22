@@ -192,6 +192,29 @@ class Bruh(commands.Cog):
             await self.bot.logout()
         else:
             await ctx.send('You cannot kill me, peasant.')
+            
+    @commands.command()
+    async def swear(self, ctx):
+        words = open("swearwords.txt").readlines()
+        word = words[random.randrange(165)][:-1]
+        await ctx.send(word)
+        
+    @commands.command()
+    async def swearat(self, ctx, name:str=''):
+        words = open("swearwords.txt").readlines()
+        word = words[random.randrange(165)][:-1]
+
+        if name == '':
+            name = random.choice(ctx.guild.members).mention
+        elif not name.startswith('<@'):
+            try:
+                name = ctx.guild.get_member_named(name).mention
+            except:
+                await ctx.send(ctx.author.mention + ' is a ' + word)
+                return
+
+        await ctx.send(name + ' is a ' + word)
+
 
 def setup(bot):
     bot.add_cog(Bruh(bot))
