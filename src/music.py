@@ -509,7 +509,7 @@ class Music(commands.Cog):
                         
     @commands.command(name='oof', aliases=['roblox', 'big oof'])
     async def oof_(self, ctx):
-        await self.play_.callback(self, ctx, search='https://www.youtube.com/watch?v=hLjTqH_ZvO4'))
+        await self.play_.callback(self, ctx, search='https://www.youtube.com/watch?v=hLjTqH_ZvO4')
 
     @commands.command(name='this')
     async def this_(self, ctx, *args):
