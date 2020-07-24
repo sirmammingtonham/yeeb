@@ -538,7 +538,7 @@ class Music(commands.Cog):
     async def finna_(self, ctx, *args):
         await self.play_.callback(self, ctx, search=random.choice(smash))
     
-    @commands.command(name='stop', aliases=['disconnect', 'dc', 'gtfo'])
+    @commands.command(name='stop', aliases=['disconnect', 'dc', 'gtfo', 'cease'])
     async def dc_(self, ctx):
         await ctx.send('Try pressing the stop button next time bruhheadass.')
         await ctx.guild.voice_client.disconnect()
