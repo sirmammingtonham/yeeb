@@ -63,7 +63,8 @@ smash = ['https://www.youtube.com/watch?v=EhgDibw7vB4', 'https://www.youtube.com
 ]
 
 pendis = ['https://www.youtube.com/watch?v=X_hDLdwe7E8', 'https://www.youtube.com/watch?v=SNEBePtkG6U', 
-    'https://www.youtube.com/watch?v=my6icTjqsW8', 'https://www.youtube.com/watch?v=mNGRkOgZo1M'
+    'https://www.youtube.com/watch?v=my6icTjqsW8', 'https://www.youtube.com/watch?v=mNGRkOgZo1M',
+    'https://www.youtube.com/watch?v=P_Lwtl85ADs'
 ]
 
 ytdl = YoutubeDL(ytdlopts)
@@ -510,6 +511,10 @@ class Music(commands.Cog):
     @commands.command(name='oof', aliases=['roblox', 'big oof'])
     async def oof_(self, ctx):
         await self.play_.callback(self, ctx, search='https://www.youtube.com/watch?v=hLjTqH_ZvO4')
+                        
+    @commands.command(name='xgames', aliases=['o mah gahd', 'he on xgames'])
+    async def xgames_(self, ctx):
+        await self.play_.callback(self, ctx, search='https://www.youtube.com/watch?v=OWl_HlyHeVc')
 
     @commands.command(name='this')
     async def this_(self, ctx, *args):
@@ -533,7 +538,7 @@ class Music(commands.Cog):
     async def finna_(self, ctx, *args):
         await self.play_.callback(self, ctx, search=random.choice(smash))
     
-    @commands.command(name='stop', aliases=['disconnect', 'dc', 'gtfo'])
+    @commands.command(name='stop', aliases=['disconnect', 'dc', 'gtfo', 'cease'])
     async def dc_(self, ctx):
         await ctx.send('Try pressing the stop button next time bruhheadass.')
         await ctx.guild.voice_client.disconnect()

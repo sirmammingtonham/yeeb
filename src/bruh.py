@@ -5,6 +5,8 @@ from datetime import datetime, timedelta
 import random
 from dateutil.relativedelta import relativedelta
 from apex_legends import ApexLegends
+from PyDictionary import PyDictionary
+dictionary = PyDictionary()
 
 def user_is_me(ctx):
     return ctx.author.id == 228017779511394304
@@ -203,7 +205,7 @@ class Bruh(commands.Cog):
     async def swearat(self, ctx, name:str='', num_times:str=''):
         all_words = open("swearwords.txt").readlines()
         selected_words = all_words[random.randrange(165)][:-1]
-
+        
         # see if "twice" or "thrice" is written in the command
         if 'twice' in num_times:
             selected_words += ' ' + all_words[random.randrange(165)][:-1]
@@ -213,6 +215,10 @@ class Bruh(commands.Cog):
         elif 'random' in num_times:
             for i in range(random.randint(1, 10)):
                 selected_words += ' ' + all_words[random.randrange(165)][:-1]
+        
+        elif num_times.isdigit():
+            for i in range(int(num_times)):
+                selected_words += ' ' + all_words[random.randrange(165)][:-1]
 
         if name == '':
             name = random.choice(ctx.guild.members).mention
@@ -220,10 +226,39 @@ class Bruh(commands.Cog):
             try:
                 name = ctx.guild.get_member_named(name).mention
             except:
-                await ctx.send(ctx.author.mention + ' is a ' + selected_words)
-                return
+                name = ctx.author.mention
 
-        await ctx.send(name + ' is a ' + selected_words)
+        # check for long messages
+        if len(name + ' is a ' + selected_words) <= 2000:
+            await ctx.send(name + ' is a ' + selected_words, delete_after=30)
+        else:
+            curr_msg = name + ' is a' # build up message up to 2000 characters
+
+            for word in selected_words.split():
+                if len(curr_msg + ' ' + word) <= 2000:
+                    curr_msg += ' ' + word
+                else:  # we've reached the limit
+                    await ctx.send(curr_msg, delete_after=30)
+                    curr_msg = name + ' is a ' + word  # start it over again
+
+            # send anything left over
+            if len('and finally ' + curr_msg) <= 2000: await ctx.send('and finally ' + curr_msg, delete_after=30)
+            else:
+                second_last_msg, last_word = curr_msg.rsplit(' ', 1)
+                await ctx.send(second_last_msg, delete_after=30)
+                await ctx.send('and finally ' + name + ' is a ' + last_word, delete_after=30)
+
+
+            
+    @commands.command()    
+    async def verbosify(self, ctx, *args):
+        message = ''    
+        for word in args:
+            try:
+                message += ' ' + random.choice(dictionary.synonym(word))
+            except:
+                message += ' ' + word
+        await ctx.send(message)
 
 
 def setup(bot):
