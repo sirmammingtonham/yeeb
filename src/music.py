@@ -63,7 +63,8 @@ smash = ['https://www.youtube.com/watch?v=EhgDibw7vB4', 'https://www.youtube.com
 ]
 
 pendis = ['https://www.youtube.com/watch?v=X_hDLdwe7E8', 'https://www.youtube.com/watch?v=SNEBePtkG6U', 
-    'https://www.youtube.com/watch?v=my6icTjqsW8', 'https://www.youtube.com/watch?v=mNGRkOgZo1M'
+    'https://www.youtube.com/watch?v=my6icTjqsW8', 'https://www.youtube.com/watch?v=mNGRkOgZo1M',
+    'https://www.youtube.com/watch?v=P_Lwtl85ADs'
 ]
 
 ytdl = YoutubeDL(ytdlopts)
