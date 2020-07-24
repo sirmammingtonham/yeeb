@@ -230,7 +230,7 @@ class Bruh(commands.Cog):
 
         # check for long messages
         if len(name + ' is a ' + selected_words) <= 2000:
-            print(name + ' is a ' + selected_words)
+            await ctx.send(name + ' is a ' + selected_words, delete_after=30)
         else:
             curr_msg = name + ' is a' # build up message up to 2000 characters
 
@@ -238,15 +238,15 @@ class Bruh(commands.Cog):
                 if len(curr_msg + ' ' + word) <= 2000:
                     curr_msg += ' ' + word
                 else:  # we've reached the limit
-                    print(curr_msg)
+                    await ctx.send(curr_msg, delete_after=30)
                     curr_msg = name + ' is a ' + word  # start it over again
 
             # send anything left over
-            if len('and finally ' + curr_msg) <= 2000: print('and finally ' + curr_msg)
+            if len('and finally ' + curr_msg) <= 2000: await ctx.send('and finally ' + curr_msg, delete_after=30)
             else:
                 second_last_msg, last_word = curr_msg.rsplit(' ', 1)
-                print(second_last_msg)
-                print('and finally ' + name + ' is a ' + last_word)
+                await ctx.send(second_last_msg, delete_after=30)
+                await ctx.send('and finally ' + name + ' is a ' + last_word, delete_after=30)
 
 
             
