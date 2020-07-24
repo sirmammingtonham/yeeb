@@ -226,22 +226,29 @@ class Bruh(commands.Cog):
             try:
                 name = ctx.guild.get_member_named(name).mention
             except:
-                await ctx.send(ctx.author.mention + ' is a ' + selected_words)
-                return
+                name = ctx.author.mention
 
         # check for long messages
         if len(name + ' is a ' + selected_words) <= 2000:
-            await ctx.send(name + ' is a ' + selected_words)
+            print(name + ' is a ' + selected_words)
         else:
-            curr_msg = '' # build up message up to 2000 characters
+            curr_msg = name + ' is a' # build up message up to 2000 characters
+
             for word in selected_words.split():
-                if len(curr_msg + ' ' + word) <= 2000: curr_msg += ' ' + word
-                else: # we've reached the limit
-                    await ctx.send(name + ' is a ' + curr_msg)
-                    curr_msg = word # start it over again
-            
+                if len(curr_msg + ' ' + word) <= 2000:
+                    curr_msg += ' ' + word
+                else:  # we've reached the limit
+                    print(curr_msg)
+                    curr_msg = name + ' is a ' + word  # start it over again
+
             # send anything left over
-            await ctx.send('and finally ' + name + ' is a ' + curr_msg)    
+            if len('and finally ' + curr_msg) <= 2000: print('and finally ' + curr_msg)
+            else:
+                second_last_msg, last_word = curr_msg.rsplit(' ', 1)
+                print(second_last_msg)
+                print('and finally ' + name + ' is a ' + last_word)
+
+
             
     @commands.command()    
     async def verbosify(self, ctx, *args):
