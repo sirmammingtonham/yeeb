@@ -255,9 +255,9 @@ class Bruh(commands.Cog):
         message = ''    
         for word in args:
             try:
-                message += random.choice(dictionary.synonym(word))
+                message += ' ' + random.choice(dictionary.synonym(word))
             except:
-                message += word
+                message += ' ' + word
         await ctx.send(message)
 
 
