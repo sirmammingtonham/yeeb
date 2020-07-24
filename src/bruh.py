@@ -200,9 +200,19 @@ class Bruh(commands.Cog):
         await ctx.send(word)
         
     @commands.command()
-    async def swearat(self, ctx, name:str=''):
-        words = open("swearwords.txt").readlines()
-        word = words[random.randrange(165)][:-1]
+    async def swearat(self, ctx, name:str='', num_times:str=''):
+        all_words = open("swearwords.txt").readlines()
+        selected_words = all_words[random.randrange(165)][:-1]
+
+        # see if "twice" or "thrice" is written in the command
+        if 'twice' in num_times:
+            selected_words += ' ' + all_words[random.randrange(165)][:-1]
+        elif 'thrice' in num_times:
+            selected_words += ' ' + all_words[random.randrange(165)][:-1] \
+                            + ' ' + all_words[random.randrange(165)][:-1]
+        elif 'random' in num_times:
+            for i in range(random.randint(1, 10)):
+                selected_words += ' ' + all_words[random.randrange(165)][:-1]
 
         if name == '':
             name = random.choice(ctx.guild.members).mention
@@ -210,10 +220,10 @@ class Bruh(commands.Cog):
             try:
                 name = ctx.guild.get_member_named(name).mention
             except:
-                await ctx.send(ctx.author.mention + ' is a ' + word)
+                await ctx.send(ctx.author.mention + ' is a ' + selected_words)
                 return
 
-        await ctx.send(name + ' is a ' + word)
+        await ctx.send(name + ' is a ' + selected_words)
 
 
 def setup(bot):
