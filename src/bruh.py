@@ -5,6 +5,8 @@ from datetime import datetime, timedelta
 import random
 from dateutil.relativedelta import relativedelta
 from apex_legends import ApexLegends
+from PyDictionary import PyDictionary
+dictionary = PyDictionary()
 
 def user_is_me(ctx):
     return ctx.author.id == 228017779511394304
@@ -239,7 +241,13 @@ class Bruh(commands.Cog):
                     curr_msg = word # start it over again
             
             # send anything left over
-            await ctx.send('and finally ' + name + ' is a ' + curr_msg)        
+            await ctx.send('and finally ' + name + ' is a ' + curr_msg)    
+            
+    @commands.command()    
+    async def verbosify(self, ctx, *args):
+      for word in args:
+        word = random.choice(dictionary.synonym(word))
+      await ctx.send(args)
 
 
 def setup(bot):
