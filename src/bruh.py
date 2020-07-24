@@ -253,7 +253,8 @@ class Bruh(commands.Cog):
     @commands.command()    
     async def verbosify(self, ctx, *args):
       for word in args:
-        word = random.choice(dictionary.synonym(word))
+        if(len(dictionary.synonym(word)) > 0):
+            word = random.choice(dictionary.synonym(word))
       await ctx.send(args)
 
 
