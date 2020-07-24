@@ -3,8 +3,10 @@ from discord.ext import commands
 import asyncio
 from datetime import datetime, timedelta
 import random
+import requests
 from dateutil.relativedelta import relativedelta
 from apex_legends import ApexLegends
+
 from PyDictionary import PyDictionary
 dictionary = PyDictionary()
 
@@ -144,7 +146,7 @@ class Bruh(commands.Cog):
         else:
             await ctx.send('https://pbs.twimg.com/media/EBOgkoXXUAEf7hx.jpg')
 
-    @commands.command(name='howlong', aliases=['schmurda'])
+    @commands.command(name='howlong', aliases=['schmurda', 'how long'])
     async def howlong(self, ctx):
         td = relativedelta(datetime(2020, 12, 11), datetime.now())
         await ctx.send(f'Bobby Shmurda will be released in {td.years} years, {td.months} months, {td.days} days, {td.hours} hours, {td.minutes} minutes, and {td.seconds} seconds.')
@@ -259,6 +261,11 @@ class Bruh(commands.Cog):
             except:
                 message += ' ' + word
         await ctx.send(message)
+    
+    @commands.command(name='cumber', aliases=['girl cumber', 'girlcum'])
+    async def cumber(self, ctx):
+        r = requests.get("https://source.unsplash.com/featured/?cucumber")
+        await ctx.send(r.url)
 
 
 def setup(bot):
