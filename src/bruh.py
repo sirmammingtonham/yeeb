@@ -227,7 +227,19 @@ class Bruh(commands.Cog):
                 await ctx.send(ctx.author.mention + ' is a ' + selected_words)
                 return
 
-        await ctx.send(name + ' is a ' + selected_words)
+        # check for long messages
+        if len(name + ' is a ' + selected_words) <= 2000:
+            await ctx.send(name + ' is a ' + selected_words)
+        else:
+            curr_msg = '' # build up message up to 2000 characters
+            for word in selected_words.split():
+                if len(curr_msg + ' ' + word) <= 2000: curr_msg += ' ' + word
+                else: # we've reached the limit
+                    await ctx.send(name + ' is a ' + curr_msg)
+                    curr_msg = word # start it over again
+            
+            # send anything left over
+            await ctx.send('and finally ' + name + ' is a ' + curr_msg)        
 
 
 def setup(bot):
