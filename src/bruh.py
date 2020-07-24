@@ -200,10 +200,14 @@ class Bruh(commands.Cog):
         await ctx.send(word)
         
     @commands.command()
-    async def swearat(self, ctx, name:str='', num_times:str=''):
+    async def swearat(self, ctx, name:str='', num_times:str='', num:int=1):
         all_words = open("swearwords.txt").readlines()
         selected_words = all_words[random.randrange(165)][:-1]
 
+        if num != 1:
+            for i in range(num):
+                selected_words += ' ' + all_words[random.randrange(165)][:-1]
+        
         # see if "twice" or "thrice" is written in the command
         if 'twice' in num_times:
             selected_words += ' ' + all_words[random.randrange(165)][:-1]
