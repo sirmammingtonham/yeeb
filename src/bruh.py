@@ -265,8 +265,11 @@ class Bruh(commands.Cog):
             except:
                 message += ' ' + word
         await ctx.send(message)
+         
+    @commands.command(name='cumber', aliases=['girl cumber'])
+    async def cumber(self, ctx):
 
-    def _cumberify(self, f):
+        def _cumberify(f):
             img = cv2.imdecode(np.fromstring(f.read(), np.uint8), 1)
             hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV) # convert to hsv colorspace because we get better accuracy?
             lower_green = np.array([25,50,50])
@@ -287,25 +290,20 @@ class Bruh(commands.Cog):
 
             _, buffer = cv2.imencode(".jpg", img)
             return buffer
-
-
-                
-    @commands.command(name='cumber', aliases=['girl cumber', 'girlcum'])
-    async def cumber(self, ctx):
-
+        
         r = requests.get("https://source.unsplash.com/featured/?cucumber")
         if r.status_code == 200:
             f = BytesIO(r.content)
-            try:
-                modified_cumber = _cumberify(f)
-                await ctx.send(file=discord.File(BytesIO(modified_cumber), 'cumber.jpg'))
-            except:
-                await ctx.send("bruh moment occured, try again?")
+            # try:
+            modified_cumber = _cumberify(f)
+            await ctx.send(file=discord.File(BytesIO(modified_cumber), 'cumber.jpg'))
+            # except:
+            #     await ctx.send("bruh moment occured, try again?")
 
         else:
             await ctx.send("bruh moment occured, try again?")
     
-    @commands.command(name='girlcumber')
+    @commands.command(name='girlcumber', aliases=['cumber legacy'])
     async def girlcumber(self, ctx):
         r = requests.get("https://source.unsplash.com/featured/?cucumber")
         await ctx.send(r.url)
