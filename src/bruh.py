@@ -7,6 +7,10 @@ import requests
 from dateutil.relativedelta import relativedelta
 from apex_legends import ApexLegends
 
+import cv2
+import numpy as np
+from io import BytesIO
+
 from PyDictionary import PyDictionary
 dictionary = PyDictionary()
 
@@ -261,9 +265,48 @@ class Bruh(commands.Cog):
             except:
                 message += ' ' + word
         await ctx.send(message)
-    
+
+    def _cumberify(self, f):
+            img = cv2.imdecode(np.fromstring(f.read(), np.uint8), 1)
+            hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV) # convert to hsv colorspace because we get better accuracy?
+            lower_green = np.array([25,50,50])
+            upper_green = np.array([80,255,255]) # took too damn long to find these values
+            mask = cv2.inRange(hsv, lower_green, upper_green) # create mask for all greens and yellows
+            mask = mask/255
+            mask = mask.astype(np.bool)
+            cumbered = np.argwhere(mask) # get idxs of green pixels
+
+            # draw a rectangle around part of the cucumber (20% looks too small in most cases)
+            cv2.rectangle(
+                img, 
+                (cumbered[0][1], cumbered[0][0]), 
+                (cumbered[round(len(cumbered)*0.5)][1], cumbered[round(len(cumbered)*0.5)][0]), 
+                (0,0,0), 
+                -1
+            )
+
+            _, buffer = cv2.imencode(".jpg", img)
+            return buffer
+
+
+                
     @commands.command(name='cumber', aliases=['girl cumber', 'girlcum'])
     async def cumber(self, ctx):
+
+        r = requests.get("https://source.unsplash.com/featured/?cucumber")
+        if r.status_code == 200:
+            f = BytesIO(r.content)
+            try:
+                modified_cumber = _cumberify(f)
+                await ctx.send(file=discord.File(BytesIO(modified_cumber), 'cumber.jpg'))
+            except:
+                await ctx.send("bruh moment occured, try again?")
+
+        else:
+            await ctx.send("bruh moment occured, try again?")
+    
+    @commands.command(name='girlcumber')
+    async def girlcumber(self, ctx):
         r = requests.get("https://source.unsplash.com/featured/?cucumber")
         await ctx.send(r.url)
 
