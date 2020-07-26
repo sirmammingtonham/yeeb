@@ -7,6 +7,7 @@ import requests
 from dateutil.relativedelta import relativedelta
 from apex_legends import ApexLegends
 
+from nltk.corpus import wordnet
 import cv2
 import numpy as np
 from io import BytesIO
@@ -257,13 +258,51 @@ class Bruh(commands.Cog):
 
             
     @commands.command()    
-    async def verbosify(self, ctx, *args):
+    async def jacobify(self, ctx, *args):
         message = ''    
         for word in args:
             try:
                 message += ' ' + random.choice(dictionary.synonym(word))
             except:
                 message += ' ' + word
+        await ctx.send(message)
+
+    @commands.command()    
+    async def verbosify(self, ctx, *args):
+        def _elongate(word):
+            if len(word) == 1:
+                return word
+            longest = word
+            for syn in wordnet.synsets(word):
+                for lm in syn.lemmas():
+                    if len(lm.name()) > len(longest) and lm.name().count('_') == 0:
+                        longest = lm.name()
+            return longest
+
+        def _randomize(word):
+            if len(word) == 1:
+                return word
+            lemmas = []
+            for syn in wordnet.synsets(word):
+                lemmas.extend(syn.lemmas())
+            if len(lemmas):
+                word = random.choice(lemmas).name().replace('_', ' ')
+            return word
+
+        message = ''
+        if args[0] == "*long":
+            for word in args[1:]:
+                message += ' ' + _elongate(word)
+        elif args[0] == "*random":
+            for word in args[1:]:
+                message += ' ' + _randomize(word)
+        else:
+            for word in args:
+                if random.random() >= 0.5:
+                    message += ' ' + _elongate(word)
+                else:
+                    message += ' ' + _randomize(word)
+        
         await ctx.send(message)
          
     @commands.command(name='cumber', aliases=['girl cumber'])

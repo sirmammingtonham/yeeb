@@ -39,6 +39,9 @@ hearthstone == 5.2.3
 # tests/testwiki.py: 3
 mediawikiapi == 1.1.3
 
+# src/bruh.py: 10
+nltk == 3.5
+
 # hearthstone/gameUtils.py: 2
 # src/bruh.py: 11
 numpy == 1.15.4
