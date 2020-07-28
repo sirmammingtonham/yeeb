@@ -365,7 +365,7 @@ class Bruh(commands.Cog):
         word_list = []
 
         # go through every word    
-        for word, pos in nltk.pos_tag(re.findall(r"\w+|[^\w\s]", input_sentence)):
+        for word, pos in pos_tag(re.findall(r"\w+|[^\w\s]", input_sentence)):
             # punctuation, whitelist, or normal word
             if re.match(r"[^\w\s]", word): word_list.append(word)
             elif word+'/'+pos in WHITELIST: word_list.append(get_whitelist_synonym(word, pos))
