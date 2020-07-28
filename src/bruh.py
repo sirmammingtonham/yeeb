@@ -372,7 +372,7 @@ class Bruh(commands.Cog):
             else: word_list.append(get_synonym(word, get_wordnet_pos(pos)))
 
         # and finally, output!
-        ctx.send(join_sentence(word_list))
+        await ctx.send(join_sentence(word_list))
 
 
          
