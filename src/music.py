@@ -180,7 +180,7 @@ class MusicPlayer:
         self.next = asyncio.Event()
 
         self.np = None
-        self.volume = .5
+        self.volume = 0.5
         self.current = None
         self.music_controller = None
 
@@ -232,12 +232,12 @@ class MusicPlayer:
                     pass
 
             if control == 'vol_up':
-                player = self._cog.get_player(context)
-                vctwo.source.volume += 5
+                self.volume += 1
+                vctwo.source.volume += 1
                         
             if control == 'vol_down':
-                player = self._cog.get_player(context)
-                vctwo.source.volume -= 5
+                self.volume -= 1
+                vctwo.source.volume -= 1
 
             if control == 'thumbnail':
                 await channel.send(embed=discord.Embed(color=self.bot.user.color).set_image(url=source.thumbnail).set_footer(text=f"Requested by {source.requester} | Video: {source.title}", icon_url=source.requester.avatar_url), delete_after=10)
@@ -334,17 +334,6 @@ class Music(commands.Cog):
         if not ctx.guild:
             raise commands.NoPrivateMessage
         return True
-
-    async def cleanup(self, guild):
-        try:
-            await guild.voice_client.disconnect()
-        except AttributeError:
-            pass
-
-        try:
-            del self.players[guild.id]
-        except KeyError:
-            pass
 
     async def __error(self, ctx, error):
         """A local error handler for all errors arising from commands in this cog."""

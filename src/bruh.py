@@ -271,7 +271,7 @@ class Bruh(commands.Cog):
         await ctx.send(message)
 
     @commands.command()    
-    async def verbosify(self, ctx, *args):
+    async def prolixify(self, ctx, *args):
         def _elongate(word):
             if len(word) == 1:
                 return word
@@ -309,7 +309,7 @@ class Bruh(commands.Cog):
         await ctx.send(message)
     
     @commands.command()
-    async def verbosify2(self, ctx, *args):
+    async def verbosify(self, ctx, *, input_sentence):
         WHITELIST = {'a/DT': ['an', 'the'],
                      'an/DT': ['a', 'the'],
                      'the/DT': ['a', 'an'],
@@ -361,7 +361,7 @@ class Bruh(commands.Cog):
 
 
         # -- Main process -- #
-        input_sentence = ' '.join(args)
+        # input_sentence = ' '.join(args)
         word_list = []
 
         # go through every word    
