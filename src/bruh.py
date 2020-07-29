@@ -384,11 +384,11 @@ class Bruh(commands.Cog):
 
             input_sentence = ' '.join(input_sentence.split()[1:])
 
-        # Run verbosify num_times number of times
+        # Run verbosify num_times number of times (or until message gets too long)
         verbosified = input_sentence
         for _ in range(num_times):
             new_verbosified = _verbosify(verbosified)
-            if len(new_verbosified) > 2000: await ctx.send(verbosified)
+            if len(new_verbosified) > 2000: break
             else: verbosified = new_verbosified
         
         await ctx.send(verbosified)
