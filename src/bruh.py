@@ -379,15 +379,17 @@ class Bruh(commands.Cog):
         # Detect num_times argument
         num_times = 1
         if input_sentence.split()[0].isdigit():
-            num_times = input_sentence.split()[0].isdigit()
-            if num_times < 0: await ctx.send('bruh this')
+            num_times = int(input_sentence.split()[0])
+            if num_times < 0 or num_times > 100: await ctx.send('bruh this')
 
             input_sentence = ' '.join(input_sentence.split()[1:])
 
         # Run verbosify num_times number of times
         verbosified = input_sentence
         for _ in range(num_times):
-            verbosified = _verbosify(verbosified)
+            new_verbosified = _verbosify(verbosified)
+            if len(new_verbosified) > 2000: await ctx.send(verbosified)
+            else: verbosified = new_verbosified
         
         await ctx.send(verbosified)
 
