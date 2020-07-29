@@ -319,7 +319,7 @@ class Bruh(commands.Cog):
                      'will/MD': ['shall', 'shalt']}
 
         # -- Helper functions -- #
-        def get_synonym(word, pos):
+        def _get_synonym(word, pos):
             synsets = wordnet.synsets(word)
             synonyms = []
 
@@ -338,12 +338,12 @@ class Bruh(commands.Cog):
             # otherwise, choose random synonym
             return random.choice(synonyms)
 
-        def get_whitelist_synonym(word, pos):
+        def _get_whitelist_synonym(word, pos):
             synonyms = WHITELIST[word+'/'+pos]
             if isinstance(synonyms, list): return random.choice(synonyms + [word])
             else: return random.choice(WHITELIST[synonyms] + [word]) # reference to another entry
             
-        def join_sentence(word_list):
+        def _join_sentence(word_list):
             new_sentence = ''
             
             for word in word_list:
@@ -352,27 +352,46 @@ class Bruh(commands.Cog):
                     
             return new_sentence[1:]
         
-        def get_wordnet_pos(treebank_tag):
+        def _get_wordnet_pos(treebank_tag):
             if treebank_tag.startswith('J'): return 'as'
             elif treebank_tag.startswith('V'): return 'v'
             elif treebank_tag.startswith('N'): return 'n'
             elif treebank_tag.startswith('R'): return 'r'
             else: return ''
+        
+
+        # -- the meaty function that puts it all together -- #
+        def _verbosify(input_sentence):
+            word_list = []
+
+            # go through every word    
+            for word, pos in pos_tag(re.findall(r"\w+|[^\w\s]", input_sentence)):
+                # punctuation, whitelist, or normal word
+                if re.match(r"[^\w\s]", word): word_list.append(word)
+                elif word+'/'+pos in WHITELIST: word_list.append(_get_whitelist_synonym(word, pos))
+                else: word_list.append(_get_synonym(word, _get_wordnet_pos(pos)))
+
+            # return the sentence
+            return _join_sentence(word_list)
 
 
         # -- Main process -- #
-        # input_sentence = ' '.join(args)
-        word_list = []
+        # Detect num_times argument
+        num_times = 1
+        if input_sentence.split()[0].isdigit():
+            num_times = input_sentence.split()[0].isdigit()
+            if num_times < 0: await ctx.send('bruh this')
 
-        # go through every word    
-        for word, pos in pos_tag(re.findall(r"\w+|[^\w\s]", input_sentence)):
-            # punctuation, whitelist, or normal word
-            if re.match(r"[^\w\s]", word): word_list.append(word)
-            elif word+'/'+pos in WHITELIST: word_list.append(get_whitelist_synonym(word, pos))
-            else: word_list.append(get_synonym(word, get_wordnet_pos(pos)))
+            input_sentence = ' '.join(input_sentence.split()[1:])
 
-        # and finally, output!
-        await ctx.send(join_sentence(word_list))
+        # Run verbosify num_times number of times
+        verbosified = input_sentence
+        for _ in range(num_times):
+            verbosified = _verbosify(verbosified)
+        
+        await ctx.send(verbosified)
+
+        
 
 
          
