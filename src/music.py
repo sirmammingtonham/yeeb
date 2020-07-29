@@ -527,13 +527,15 @@ class Music(commands.Cog):
     async def that_(self, ctx, *args):
         mediawikiapi = MediaWikiAPI()
         articles = []
-        
+
         for _ in range(2):
             article = mediawikiapi.random()
             articles.append('[{}]({})'.format(
                 article, 'https://en.wikipedia.org/wiki/'+article.replace(' ', '_')))
 
-        await ctx.send('That is so {1}, can we hit {0} {2}'.format(random.randint(0, 10000000), *articles))
+        embed = discord.Embed(description='That is so {1}, can we hit {0} {2}'.format(
+            random.randint(0, 10000000), *articles))
+        await ctx.send(embed=embed)
 
     @commands.command(name='finna', aliases=['smash', 'finna_smash', 'finna-smash'])
     async def finna_(self, ctx, *args):
