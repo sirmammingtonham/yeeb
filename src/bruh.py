@@ -13,6 +13,7 @@ import numpy as np
 from io import BytesIO
 
 import verbosify
+from mediawikiapi import MediaWikiAPI
 
 from PyDictionary import PyDictionary
 dictionary = PyDictionary()
