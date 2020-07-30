@@ -12,8 +12,7 @@ import cv2
 import numpy as np
 from io import BytesIO
 
-from nltk import pos_tag
-import re
+import verbosify
 
 from PyDictionary import PyDictionary
 dictionary = PyDictionary()
@@ -310,72 +309,6 @@ class Bruh(commands.Cog):
     
     @commands.command()
     async def verbosify(self, ctx, *, input_sentence):
-        WHITELIST = {'a/DT': ['an', 'the'],
-                     'an/DT': ['a', 'the'],
-                     'the/DT': ['a', 'an'],
-                     'I/PRP': ['ur boy', 'me, myself and I', 'yours truly'],
-                     'me/PRP': 'I/PRP',
-                     'you/PRP': ['thou', 'thoust'],
-                     'will/MD': ['shall', 'shalt']}
-
-        # -- Helper functions -- #
-        def _get_synonym(word, pos):
-            synsets = wordnet.synsets(word)
-            synonyms = []
-
-            # loop through all synsets
-            for synset in synsets:
-                # don't check synset if wrong part of speech
-                if synset.name().split('.')[1] not in pos: continue
-
-                # loop through each synonym
-                for synonym in synset.lemmas():
-                    synonym = synonym.name()
-                    if synonym != word and synonym not in synonyms: synonyms.append(synonym)
-            
-            # no unique synonyms?
-            if not synsets or not synonyms: return word
-            # otherwise, choose random synonym
-            return random.choice(synonyms)
-
-        def _get_whitelist_synonym(word, pos):
-            synonyms = WHITELIST[word+'/'+pos]
-            if isinstance(synonyms, list): return random.choice(synonyms + [word])
-            else: return random.choice(WHITELIST[synonyms] + [word]) # reference to another entry
-            
-        def _join_sentence(word_list):
-            new_sentence = ''
-            
-            for word in word_list:
-                if re.match(r"[^\w\s]", word): new_sentence += word
-                else: new_sentence += ' ' + word.replace('_', ' ')
-                    
-            return new_sentence[1:]
-        
-        def _get_wordnet_pos(treebank_tag):
-            if treebank_tag.startswith('J'): return 'as'
-            elif treebank_tag.startswith('V'): return 'v'
-            elif treebank_tag.startswith('N'): return 'n'
-            elif treebank_tag.startswith('R'): return 'r'
-            else: return ''
-        
-
-        # -- the meaty function that puts it all together -- #
-        def _verbosify(input_sentence):
-            word_list = []
-
-            # go through every word    
-            for word, pos in pos_tag(re.findall(r"\w+|[^\w\s]", input_sentence)):
-                # punctuation, whitelist, or normal word
-                if re.match(r"[^\w\s]", word): word_list.append(word)
-                elif word+'/'+pos in WHITELIST: word_list.append(_get_whitelist_synonym(word, pos))
-                else: word_list.append(_get_synonym(word, _get_wordnet_pos(pos)))
-
-            # return the sentence
-            return _join_sentence(word_list)
-
-
-        # -- Main process -- #
         # Detect num_times argument
         num_times = 1
         if input_sentence.split()[0].isdigit():
@@ -387,7 +320,7 @@ class Bruh(commands.Cog):
         # Run verbosify num_times number of times (or until message gets too long)
         verbosified = input_sentence
         for _ in range(num_times):
-            new_verbosified = _verbosify(verbosified)
+            new_verbosified = verbosify._verbosify(verbosified)
             if len(new_verbosified) > 2000: break
             else: verbosified = new_verbosified
         
@@ -438,6 +371,32 @@ class Bruh(commands.Cog):
     async def girlcumber(self, ctx):
         r = requests.get("https://source.unsplash.com/featured/?cucumber")
         await ctx.send(r.url)
+    
+
+
+
+    @commands.command(name='that')
+    async def that_(self, ctx, *args):
+        mediawikiapi = MediaWikiAPI()
+
+        # get random articles and number
+        rand_articles, rand_num = mediawikiapi.random(2), random.randint(0, 16777215)
+        article_md = ['[{}]({})'.format(article, 'https://en.wikipedia.org/wiki/'+article.replace(' ', '_')) for article in rand_articles]
+
+        # create embed
+        if not args or args[0] not in ['verbose', 'verbosify']: # zero or wrong arguments
+            embed = discord.Embed(color=discord.Color(rand_num), description='That is so {1}, can we hit {0} {2}'.format(rand_num, *article_md))
+        else: # either verbose or verbosify
+            embed = discord.Embed(color=discord.Color(rand_num), description='**That is so {1}, can we hit {0} {2}**'.format(rand_num, *article_md))
+            article_descriptions = [mediawikiapi.summary(article, chars=150, auto_suggest=False) for article in rand_articles]
+
+            if args[0] == 'verbose':
+                [embed.add_field(name="** **", value=desc, inline=True) for desc in article_descriptions]
+            elif args[0] == 'verbosify':
+                [embed.add_field(name="** **", value=verbosify._verbosify(desc), inline=True) for desc in article_descriptions]
+            
+
+        await ctx.send(embed=embed)
 
 
 def setup(bot):

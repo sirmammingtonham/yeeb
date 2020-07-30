@@ -523,22 +523,6 @@ class Music(commands.Cog):
         #     await ctx.send(f'This is so sad, Alexa play {song_split[0]} by {song_split[-1]}')
         #     await self.play_.callback(self, ctx, search=song)
 
-    @commands.command(name='that')
-    async def that_(self, ctx, *args):
-        mediawikiapi = MediaWikiAPI()
-
-        # get random articles and number
-        rand_articles, rand_num = mediawikiapi.random(2), random.randint(0, 16777215)
-        article_md = ['[{}]({})'.format(article, 'https://en.wikipedia.org/wiki/'+article.replace(' ', '_')) for article in rand_articles]
-        article_descriptions = [mediawikiapi.summary(article, chars=150, auto_suggest=False) for article in rand_articles]
-
-        # create embed
-        embed = discord.Embed(color=discord.Color(rand_num), description='**That is so {1}, can we hit {0} {2}**'.format(rand_num, *article_md))
-        [embed.add_field(name="** **", value=desc, inline=True) for desc in article_descriptions]
-
-        await ctx.send(embed=embed)
-    
-
 
     @commands.command(name='finna', aliases=['smash', 'finna_smash', 'finna-smash'])
     async def finna_(self, ctx, *args):
