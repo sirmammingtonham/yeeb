@@ -20,6 +20,8 @@ import json
 from mediawikiapi import MediaWikiAPI
 from bs4 import BeautifulSoup
 
+import verbosify
+
 ytdlopts = {
     'username': os.environ['YOUTUBE_USER'],
     'password': os.environ['YOUTUBE_PASS'],
@@ -523,6 +525,29 @@ class Music(commands.Cog):
         #     await ctx.send(f'This is so sad, Alexa play {song_split[0]} by {song_split[-1]}')
         #     await self.play_.callback(self, ctx, search=song)
 
+    @commands.command(name='that')
+    async def that_(self, ctx, *args):
+        mediawikiapi = MediaWikiAPI()
+
+        # get random articles and number
+        rand_articles, rand_num = mediawikiapi.random(2), random.randint(0, 16777215)
+        article_md = ['[{}]({})'.format(article, 'https://en.wikipedia.org/wiki/'+article.replace(' ', '_')) for article in rand_articles]
+
+        # create embed
+        if not args or args[0] not in ['verbose', 'verbosify']: # zero or wrong arguments
+            embed = discord.Embed(color=discord.Color(rand_num), description='That is so {1}, can we hit {0} {2}'.format(rand_num, *article_md))
+        else: # either verbose or verbosify
+            embed = discord.Embed(color=discord.Color(rand_num), description='**That is so {1}, can we hit {0} {2}**'.format(rand_num, *article_md))
+            article_descriptions = [mediawikiapi.summary(article, chars=150, auto_suggest=False) for article in rand_articles]
+
+            if args[0] == 'verbose':
+                [embed.add_field(name="** **", value=desc, inline=True) for desc in article_descriptions]
+            elif args[0] == 'verbosify':
+                [embed.add_field(name="** **", value=verbosify._verbosify(desc), inline=True) for desc in article_descriptions]
+            
+
+        await ctx.send(embed=embed)
+    
 
     @commands.command(name='finna', aliases=['smash', 'finna_smash', 'finna-smash'])
     async def finna_(self, ctx, *args):
