@@ -310,25 +310,36 @@ class Bruh(commands.Cog):
     
     @commands.command()
     async def verbosify(self, ctx, *, input_sentence):
-        # Detect num_times argument
+        # -- Detect num_times argument -- #
         num_times = 1
-        if input_sentence.split()[0].isdigit():
+
+        # gotta check for positive and negative numbers
+        if input_sentence.split()[0].isdigit() or input_sentence.split()[0][1:].isdigit():
             num_times = int(input_sentence.split()[0])
-            if num_times < 0 or num_times > 100: await ctx.send('bruh this')
+            
+            # bruh don't try to break it bruh
+            if num_times < 0 or num_times > 100:
+                await ctx.send('bruh')
+                return
 
             input_sentence = ' '.join(input_sentence.split()[1:])
 
-        # Run verbosify num_times number of times (or until message gets too long)
+        # get and save (to variable) the initial verbosified message
         verbosified = verbosify._verbosify(input_sentence)
+        if len(verbosified) > 2000:
+            await ctx.send('try a shorter msg')
+            return
+        
         msg = await ctx.send(verbosified)
 
-        for _ in range(num_times):
-            time.sleep(1)
+        # Run verbosify num_times number of times (or until message gets too long)
+        for _ in range(num_times-1):
+            time.sleep(5/num_times)
             new_verbosified = verbosify._verbosify(verbosified)
             if len(new_verbosified) > 2000: break
             else:
                 verbosified = new_verbosified
-                await msg.edit(content=verbosified)        
+                await msg.edit(content=verbosified)
         
         # await ctx.send(verbosified)
 
