@@ -13,6 +13,7 @@ import numpy as np
 from io import BytesIO
 
 import verbosify
+import time
 
 from PyDictionary import PyDictionary
 dictionary = PyDictionary()
@@ -318,13 +319,18 @@ class Bruh(commands.Cog):
             input_sentence = ' '.join(input_sentence.split()[1:])
 
         # Run verbosify num_times number of times (or until message gets too long)
-        verbosified = input_sentence
+        verbosified = verbosify._verbosify(input_sentence)
+        msg = await ctx.send(verbosified)
+
         for _ in range(num_times):
+            time.sleep(1)
             new_verbosified = verbosify._verbosify(verbosified)
             if len(new_verbosified) > 2000: break
-            else: verbosified = new_verbosified
+            else:
+                verbosified = new_verbosified
+                await msg.edit(content=verbosified)        
         
-        await ctx.send(verbosified)
+        # await ctx.send(verbosified)
 
         
 
