@@ -561,8 +561,9 @@ class Music(commands.Cog):
     @commands.command(name='shid')
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def shid_(self, ctx, time:int=10):
-        vc = ctx.voice_client
-        if not vc:
+        try:
+            channel = ctx.author.voice.channel
+        except AttributeError:
             await ctx.send('You are not in a voice channel. You must subject yourself to this command to use it.')
             return False
 
@@ -570,9 +571,9 @@ class Music(commands.Cog):
         while datetime.datetime.now() < end:
             try:
                 await ctx.invoke(self.connect_)
-                await ctx.guild.voice_client.disconnect()
+                await ctx.voice_client.disconnect()
             except:
-                await ctx.guild.voice_client.disconnect()
+                await ctx.voice_client.disconnect()
                 pass
 
 
