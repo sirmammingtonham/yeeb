@@ -406,7 +406,8 @@ class Bruh(commands.Cog):
             'https://cdn.discordapp.com/attachments/661185720211341312/737203345894408232/unknown.png',
             'https://cdn.discordapp.com/attachments/661185720211341312/736516684663226398/unknown.png',
             'https://cdn.discordapp.com/attachments/661185720211341312/736511129538265128/unknown.png',
-            'https://cdn.discordapp.com/attachments/661185720211341312/733258810713571378/Screenshot_20200716-0248022.png'
+            'https://cdn.discordapp.com/attachments/661185720211341312/733258810713571378/Screenshot_20200716-0248022.png',
+            'https://media.discordapp.net/attachments/661185720211341312/739759077302861875/image0.jpg'
         ]
         await ctx.send(random.choice(links))
 
