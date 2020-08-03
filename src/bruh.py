@@ -392,7 +392,7 @@ class Bruh(commands.Cog):
         await ctx.send(r.url)
     
     @commands.command(name='cum', aliases=['nut'])
-    async def cum(self, ctx)
+    async def cum(self, ctx):
         await ctx.send("https://i.pinimg.com/736x/38/e9/57/38e957bb23e73d3759dda419cece5bc0.jpg")
 
 
