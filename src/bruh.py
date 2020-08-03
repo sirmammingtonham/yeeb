@@ -395,6 +395,21 @@ class Bruh(commands.Cog):
     async def cum(self, ctx):
         await ctx.send("https://i.pinimg.com/736x/38/e9/57/38e957bb23e73d3759dda419cece5bc0.jpg")
 
+    @commands.command()
+    async def korra(self, ctx):
+        links = [
+            'https://cdn.discordapp.com/attachments/661185720211341312/739748973597818880/unknown.png',
+            'https://cdn.discordapp.com/attachments/661185720211341312/738668566793945098/unknown.png',
+            'https://cdn.discordapp.com/attachments/661185720211341312/737209307900149811/unknown.png',
+            'https://cdn.discordapp.com/attachments/661185720211341312/737203525330665502/unknown.png',
+            'https://cdn.discordapp.com/attachments/661185720211341312/737203457781530744/unknown.png',
+            'https://cdn.discordapp.com/attachments/661185720211341312/737203345894408232/unknown.png',
+            'https://cdn.discordapp.com/attachments/661185720211341312/736516684663226398/unknown.png',
+            'https://cdn.discordapp.com/attachments/661185720211341312/736511129538265128/unknown.png',
+            'https://cdn.discordapp.com/attachments/661185720211341312/733258810713571378/Screenshot_20200716-0248022.png'
+        ]
+        await ctx.send(random.choice(links))
+
 
 def setup(bot):
     bot.add_cog(Bruh(bot))
