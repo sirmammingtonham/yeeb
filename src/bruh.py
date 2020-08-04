@@ -366,15 +366,17 @@ class Bruh(commands.Cog):
         
         if len(verbosified) <= 2000: await msg.edit(content=verbosified)
         else:
-            # do the first one
-            bp = get_breakpoint(verbosified)
-            await msg.edit(content=verbosified[:bp])
-            long_output(verbosified[bp+1:])
+            first_output = True
 
             # keep looping until message is under 2000
             while len(verbosified) > 2000:
                 bp = get_breakpoint(verbosified)
-                await ctx.send(verbosified[:bp])
+
+                if first_output:
+                    await msg.edit(content=verbosified[:bp])
+                    first_output = False
+                else: await ctx.send(verbosified[:bp])
+                
                 verbosified = verbosified[bp+1:]
 
             # send last message
