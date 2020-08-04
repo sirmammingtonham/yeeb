@@ -346,10 +346,10 @@ class Bruh(commands.Cog):
         msg = await ctx.send('`[1]` ' + verbosified)
         
         for i in range(2, num_times):
+            if len(verbosified) > 10000: break  # would go past 10 messages...
             new_verbosified = verbosify.verbosify(verbosified)
             
-            if len(new_verbosified) > 20000: break # would go past 10 messages...
-            elif len(new_verbosified) > 1990 and not max_char_count:
+            if len(new_verbosified) > 1990 and not max_char_count:
                 time.sleep(1)
                 await msg.edit(content='`[...]` ' + verbosified)
                 max_char_count = True
@@ -375,12 +375,12 @@ class Bruh(commands.Cog):
                 if first_output:
                     await msg.edit(content=verbosified[:bp])
                     first_output = False
-                else: await ctx.send(verbosified[:bp])
+                else: await ctx.send(verbosified[:bp], delete_after=30)
                 
                 verbosified = verbosified[bp+1:]
 
             # send last message
-            await ctx.send(verbosified)
+            await ctx.send(verbosified, delete_after=30)
 
         
 
