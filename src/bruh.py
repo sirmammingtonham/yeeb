@@ -317,15 +317,17 @@ class Bruh(commands.Cog):
             
             return 2000 if i is 0 else i
             
-        async def long_output(msg, verbosified):
-            if len(verbosified) <= 2000:
-                await ctx.send(verbosified)
-                return
+        async def long_output(verbosified):
+            # keep looping until message is under 2000
+            while len(verbosified) > 2000:
+                bp = get_breakpoint(verbosified)
+                await ctx.send(verbosified[:bp])
+                verbosified = verbosified[bp+1:]
+
+            # send last message
+            await ctx.send(verbosified)
             
-            # keep looping until message is finished printing
-            bp = get_breakpoint(verbosified)
-            await ctx.send(verbosified[:bp])
-            long_output(msg, verbosified[bp+1:])
+            
         
         num_times = 1
         # Detect num_times argument. gotta check for positive and negative numbers
@@ -377,7 +379,7 @@ class Bruh(commands.Cog):
         else:
             bp = get_breakpoint(verbosified)
             await msg.edit(content=verbosified[:bp]) # do the first one
-            long_output(msg, verbosified[bp+1:])
+            long_output(verbosified[bp+1:])
 
         
 
