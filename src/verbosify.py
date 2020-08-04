@@ -12,7 +12,7 @@ WHITELIST = {'a/DT': ['an', 'the'],
                 'you/PRP': ['thou', 'thoust'],
                 'will/MD': ['shall', 'shalt']}
 
-def _get_synonym(word, pos):
+def get_synonym(word, pos):
     synsets = wordnet.synsets(word)
     synonyms = []
 
@@ -29,39 +29,32 @@ def _get_synonym(word, pos):
     # no unique synonyms?
     if not synsets or not synonyms: return word
     # otherwise, choose random synonym
-    return random.choice(synonyms)
+    return random.choice(synonyms).replace('_', ' ')
 
-def _get_whitelist_synonym(word, pos):
+def get_whitelist_synonym(word, pos):
     synonyms = WHITELIST[word+'/'+pos]
     if isinstance(synonyms, list): return random.choice(synonyms + [word])
     else: return random.choice(WHITELIST[synonyms] + [word]) # reference to another entry
-    
-def _join_sentence(word_list):
-    new_sentence = ''
-    
-    for word in word_list:
-        if re.match(r"[^\w\s]", word): new_sentence += word
-        else: new_sentence += ' ' + word.replace('_', ' ')
-            
-    return new_sentence[1:]
 
-def _get_wordnet_pos(treebank_tag):
+def get_wordnet_pos(treebank_tag):
     if treebank_tag.startswith('J'): return 'as'
     elif treebank_tag.startswith('V'): return 'v'
     elif treebank_tag.startswith('N'): return 'n'
     elif treebank_tag.startswith('R'): return 'r'
     else: return ''
 
+
 # -- main verbosify function -- #
-def _verbosify(input_sentence):
-    word_list = []
+def verbosify(input_sentence):
+    new_sentence = ''
 
     # go through every word    
-    for word, pos in pos_tag(re.findall(r"\w+|[^\w\s]", input_sentence)):
-        # punctuation, whitelist, or normal word
-        if re.match(r"[^\w\s]", word): word_list.append(word)
-        elif word+'/'+pos in WHITELIST: word_list.append(_get_whitelist_synonym(word, pos))
-        else: word_list.append(_get_synonym(word, _get_wordnet_pos(pos)))
+    for word, pos in pos_tag([v for v in re.split('(\W)', input_sentence) if v != '']):
+        # punctuation/whitespace, the word 'I', whitelist, or normal word
+        if re.match(r'[^\w]', word): new_sentence += word
+        elif word.upper() == 'I': new_sentence += get_whitelist_synonym('I', 'PRP')
+        elif word+'/'+pos in WHITELIST: new_sentence += get_whitelist_synonym(word, pos)
+        else: new_sentence += get_synonym(word, get_wordnet_pos(pos))
 
     # return the sentence
-    return _join_sentence(word_list)
+    return new_sentence

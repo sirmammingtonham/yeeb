@@ -323,7 +323,7 @@ class Bruh(commands.Cog):
             input_sentence = ' '.join(input_sentence.split()[1:])
 
         # get and save (to variable) the initial verbosified message
-        verbosified = verbosify._verbosify(input_sentence)
+        verbosified = verbosify.verbosify(input_sentence)
         if len(verbosified) > 1990:
             await ctx.send('try a shorter msg')
             return
@@ -332,7 +332,7 @@ class Bruh(commands.Cog):
 
         # Run verbosify num_times number of times (or until message gets too long)
         for i in range(1, num_times):
-            new_verbosified = verbosify._verbosify(verbosified)
+            new_verbosified = verbosify.verbosify(verbosified)
             if len(new_verbosified) > 1990: break
             else:
                 verbosified = new_verbosified
@@ -398,6 +398,7 @@ class Bruh(commands.Cog):
     @commands.command()
     async def korra(self, ctx):
         links = [
+            'https://media.discordapp.net/attachments/661185720211341312/739759077302861875/image0.jpg',
             'https://cdn.discordapp.com/attachments/661185720211341312/739748973597818880/unknown.png',
             'https://cdn.discordapp.com/attachments/661185720211341312/738668566793945098/unknown.png',
             'https://cdn.discordapp.com/attachments/661185720211341312/737209307900149811/unknown.png',
@@ -407,9 +408,11 @@ class Bruh(commands.Cog):
             'https://cdn.discordapp.com/attachments/661185720211341312/736516684663226398/unknown.png',
             'https://cdn.discordapp.com/attachments/661185720211341312/736511129538265128/unknown.png',
             'https://cdn.discordapp.com/attachments/661185720211341312/733258810713571378/Screenshot_20200716-0248022.png',
-            'https://media.discordapp.net/attachments/661185720211341312/739759077302861875/image0.jpg'
         ]
-        await ctx.send(random.choice(links))
+
+        i = random.randrange(len(links))
+        if i == 0: await ctx.send(links[0])
+        else: await ctx.send(links[i], delete_after=30)
 
 
 def setup(bot):
