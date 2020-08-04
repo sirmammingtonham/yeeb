@@ -317,7 +317,7 @@ class Bruh(commands.Cog):
             
             return 2000 if i is 0 else i
             
-        def long_output(msg, verbosified):
+        async def long_output(msg, verbosified):
             if len(verbosified) <= 2000:
                 await ctx.send(verbosified)
                 return
