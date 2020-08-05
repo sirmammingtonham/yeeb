@@ -20,7 +20,7 @@ def get_word_list(input_sentence):
     
     i = 0
     while i < len(temp):
-        if temp[i] == "'" and i > 0 and i < len(temp)-1:
+        if temp[i] in ["'", '’'] and i > 0 and i < len(temp)-1:
             # check possessive
             if temp[i+1] == 's': l.append("'s")
             # check contraction
