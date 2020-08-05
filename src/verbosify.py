@@ -4,13 +4,34 @@ from nltk.corpus import wordnet
 from nltk import pos_tag
 
 # -- Helper functions for verbosify -- #
-WHITELIST = {'a/DT': ['an', 'the'],
-                'an/DT': ['a', 'the'],
-                'the/DT': ['a', 'an'],
-                'I/PRP': ['ur boy', 'me, myself and I', 'yours truly'],
-                'me/PRP': 'I/PRP',
-                'you/PRP': ['thou', 'thoust'],
-                'will/MD': ['shall', 'shalt']}
+WHITELIST = [['a', 'an', 'the'],
+             ['I', 'me', 'ur boy', 'me, myself and I', 'yours truly'],
+             ['you', 'thou', 'thoust'],
+             ['will', 'shall', 'shalt'],
+             ["I'm", 'I am', 'ur boy is'],
+             ["can't", 'cannot', 'unable', 'shant'],
+             ["shouldn't", 'shant', "shalln't"],
+             ["you're", 'you are']]
+
+def get_word_list(input_sentence):
+    l = []
+    temp = [v for v in re.split('(\W)', input_sentence) if v != '']
+    
+    i = 0
+    while i < len(temp):
+        if temp[i] == "'" and i > 0 and i < len(temp)-1:
+            # check possessive
+            if temp[i+1] == 's': l.append("'s")
+            # check contraction
+            elif temp[i-1] != ' ' and temp[i+1] != ' ': l[-1] += "'" + temp[i+1]
+            
+            i += 2
+        else:
+            l.append(temp[i])
+            i += 1
+    
+    return l
+            
 
 def get_synonym(word, pos):
     synsets = wordnet.synsets(word)
@@ -31,10 +52,12 @@ def get_synonym(word, pos):
     # otherwise, choose random synonym
     return random.choice(synonyms).replace('_', ' ')
 
-def get_whitelist_synonym(word, pos):
-    synonyms = WHITELIST[word+'/'+pos]
-    if isinstance(synonyms, list): return random.choice(synonyms + [word])
-    else: return random.choice(WHITELIST[synonyms] + [word]) # reference to another entry
+def get_whitelist_synonym(word):
+    # get the correct set
+    for synonyms in WHITELIST:
+        if word in synonyms: break
+
+    return random.choice(synonyms) # return random synonym
 
 def get_wordnet_pos(treebank_tag):
     if treebank_tag.startswith('J'): return 'as'
@@ -48,12 +71,12 @@ def get_wordnet_pos(treebank_tag):
 def verbosify(input_sentence):
     new_sentence = ''
 
-    # go through every word    
-    for word, pos in pos_tag([v for v in re.split('(\W)', input_sentence) if v != '']):
-        # punctuation/whitespace, the word 'I', whitelist, or normal word
-        if re.match(r'[^\w]', word): new_sentence += word
-        elif word.upper() == 'I': new_sentence += get_whitelist_synonym('I', 'PRP')
-        elif word+'/'+pos in WHITELIST: new_sentence += get_whitelist_synonym(word, pos)
+    # go through every word
+    for word, pos in pos_tag(get_word_list(input_sentence)):
+        # punctuation/whitespace/possessive, 'I', whitelist, normal word
+        if re.match(r'[^\w]', word) or word == "'s": new_sentence += word
+        elif word.upper() == 'I': new_sentence += get_whitelist_synonym('I')
+        elif any([word in s for s in WHITELIST]): new_sentence += get_whitelist_synonym(word)
         else: new_sentence += get_synonym(word, get_wordnet_pos(pos))
 
     # return the sentence

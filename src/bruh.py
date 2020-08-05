@@ -449,7 +449,7 @@ class Bruh(commands.Cog):
 
         i = random.randrange(len(links))
         if i == 0: await ctx.send(links[0])
-        else: await ctx.send(links[i], delete_after=30)
+        else: await ctx.send(links[i])
 
 
 def setup(bot):
