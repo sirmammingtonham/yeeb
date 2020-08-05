@@ -21,6 +21,9 @@ dictionary = PyDictionary()
 def user_is_me(ctx):
     return ctx.author.id == 228017779511394304
 
+def user_is_bot_contributor(ctx):
+    return ctx.author.id == 228017779511394304 or ctx.author.id == 150093212034269184 or ctx.author.id == 188179573484158976
+
 class Bruh(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -469,7 +472,13 @@ class Bruh(commands.Cog):
         ]
         
         await ctx.send(verbosify.verbosify(random.choice(agents)))
-
+        
+    @commands.command()
+    async def shityourpants(self, ctx):
+        if user_is_bot_contributor(ctx):
+            await self.bot.logout()
+        else:
+            await ctx.send('No. I have eaten my fiber.')
 
 def setup(bot):
     bot.add_cog(Bruh(bot))
