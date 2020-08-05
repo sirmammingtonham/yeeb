@@ -4,6 +4,7 @@ from nltk.corpus import wordnet
 from nltk import pos_tag
 
 # -- Helper functions for verbosify -- #
+MISSPELLINGS = {'im': "I'm", "i'm": "I'm", 'Im': "I'm", 'i': 'I'}
 WHITELIST = [['a', 'an', 'the'],
              ['I', 'me', 'ur boy', 'me, myself and I', 'yours truly'],
              ['you', 'thou', 'thoust'],
@@ -73,10 +74,10 @@ def verbosify(input_sentence):
 
     # go through every word
     for word, pos in pos_tag(get_word_list(input_sentence)):
-        # punctuation/whitespace/possessive, 'I', whitelist, normal word
+        # punctuation/whitespace/possessive, whitelist, whitelist misspellings, normal word
         if re.match(r'[^\w]', word) or word == "'s": new_sentence += word
-        elif word.upper() == 'I': new_sentence += get_whitelist_synonym('I')
         elif any([word in s for s in WHITELIST]): new_sentence += get_whitelist_synonym(word)
+        elif word in MISSPELLINGS: new_sentence += get_whitelist_synonym(MISSPELLINGS[word])
         else: new_sentence += get_synonym(word, get_wordnet_pos(pos))
 
     # return the sentence
