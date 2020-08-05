@@ -468,7 +468,7 @@ class Bruh(commands.Cog):
             'The genius of Germany, Killjoy secures and defends key battlefield positions with a collection of traps, turrets, and mines. Each invention is primed to punish any assailant too dumb to back down.'
         ]
         
-        await ctx.send(verbosify.verbosify(random.choice(agents)), delete_after=60)
+        await ctx.send(verbosify.verbosify(random.choice(agents)))
 
 
 def setup(bot):
