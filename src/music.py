@@ -575,7 +575,18 @@ class Music(commands.Cog):
             except:
                 await ctx.voice_client.disconnect()
                 pass
-
+                        
+    @commands.command(name='gone)
+    async def gone_(self, ctx, name:str='')
+        if name == '':
+            pass
+        elif not name.startswith('<@'):
+            try:
+                name = ctx.guild.get_member_named(name).mention
+            except:
+                name = ctx.author.mention
+        await self.play_.callback(self, ctx, search='https://www.youtube.com/watch?v=LDU_Txk06tM')
+        await ctx.send(name + ' is gone https://tenor.com/view/crab-safe-dance-gif-13211112')
 
 def setup(bot):
     bot.add_cog(Music(bot))
