@@ -465,9 +465,9 @@ class Music(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(name='onjah', aliases=['on jah', 'on_jah', 'on-jah', 'x'])
-    #@commands.cooldown(1, 10, commands.BucketType.user)
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def onjah_(self, ctx):
-        await self.play_.callback(self, ctx, search='https://www.youtube.com/watch?v=fGZb5SpRCi0')
+        await self.play_.callback(self, ctx, search='https://www.youtube.com/watch?v=EiUjYQgsmwA')
         await ctx.send('https://c7.uihere.com/files/510/792/52/jocelyn-flores-music-sad-club-dread-thumb.jpg')
 
     @commands.command(name='moment')
