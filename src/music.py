@@ -589,7 +589,7 @@ class Music(commands.Cog):
                 name = ctx.guild.get_member_named(name).mention
             except:
                 name = ctx.author.mention
-        await self.play_.callback(self, ctx, search='https://www.youtube.com/watch?v=LDU_Txk06tM')
+        await self.play_.callback(self, ctx, search='https://youtu.be/LDU_Txk06tM?t=75')
         await ctx.send(name + ' is gone https://tenor.com/view/crab-safe-dance-gif-13211112')
 
     @commands.command(name='hello', aliases=['howdy', 'hola', 'harro eburynyan'])
