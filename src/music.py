@@ -547,7 +547,7 @@ class Music(commands.Cog):
             if args[0] == 'verbose':
                 [embed.add_field(name="** **", value=desc, inline=True) for desc in article_descriptions]
             elif args[0] == 'verbosify':
-                [embed.add_field(name="** **", value=verbosify._verbosify(desc), inline=True) for desc in article_descriptions]
+                [embed.add_field(name="** **", value=verbosify.verbosify(desc), inline=True) for desc in article_descriptions]
             
 
         await ctx.send(embed=embed)
