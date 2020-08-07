@@ -67,6 +67,10 @@ pendis = ['https://www.youtube.com/watch?v=X_hDLdwe7E8', 'https://www.youtube.co
     'https://www.youtube.com/watch?v=P_Lwtl85ADs'
 ]
 
+hellos = ['https://www.youtube.com/watch?v=7ZtyJK6mgLQ', 'https://www.youtube.com/watch?v=nlLhw1mtCFA',
+    'https://www.youtube.com/watch?v=3Njvr6-OVao', 'https://www.youtube.com/watch?v=z6-FWJteNLI'
+]
+
 ytdl = YoutubeDL(ytdlopts)
 
 if not discord.opus.is_loaded():
@@ -560,6 +564,9 @@ class Music(commands.Cog):
                 await ctx.guild.voice_client.disconnect()
                 pass
 
+    @commands.command(name='hello', aliases=['howdy', 'hola', 'harro eburynyan'])
+    async def hello_(self, ctx):
+        await self.play_.callback(self, ctx, search=random.choice(hellos))
 
 def setup(bot):
     bot.add_cog(Music(bot))
