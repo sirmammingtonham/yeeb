@@ -581,7 +581,7 @@ class Music(commands.Cog):
                 pass
                         
     @commands.command(name='gone')
-    async def gone_(self, ctx, name:str='')
+    async def gone_(self, ctx, name:str=''):
         if name == '':
             pass
         elif not name.startswith('<@'):
