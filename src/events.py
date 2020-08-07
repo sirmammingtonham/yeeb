@@ -102,7 +102,7 @@ class Events(commands.Cog):
         if text.startswith('i\'m') or text.startswith('im'):
             im = 'i\'m' if 'i\'m' in text else 'im'
             text = text[text.find(im) + len(im)+1:]
-            await message.channel.send('Hi ' + text + ', I\'m yeeb bot', delete_after=30)
+            await message.channel.send('Hi ' + text + ', I\'m yeeb bot')
                   
     @commands.Cog.listener()
     async def on_member_join(self, member):

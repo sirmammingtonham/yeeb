@@ -20,6 +20,8 @@ import json
 from mediawikiapi import MediaWikiAPI
 from bs4 import BeautifulSoup
 
+import verbosify
+
 ytdlopts = {
     'username': os.environ['YOUTUBE_USER'],
     'password': os.environ['YOUTUBE_PASS'],
@@ -184,7 +186,7 @@ class MusicPlayer:
         self.next = asyncio.Event()
 
         self.np = None
-        self.volume = .5
+        self.volume = 0.5
         self.current = None
         self.music_controller = None
 
@@ -236,12 +238,12 @@ class MusicPlayer:
                     pass
 
             if control == 'vol_up':
-                player = self._cog.get_player(context)
-                vctwo.source.volume += 5
+                self.volume += 1
+                vctwo.source.volume += 1
                         
             if control == 'vol_down':
-                player = self._cog.get_player(context)
-                vctwo.source.volume -= 5
+                self.volume -= 1
+                vctwo.source.volume -= 1
 
             if control == 'thumbnail':
                 await channel.send(embed=discord.Embed(color=self.bot.user.color).set_image(url=source.thumbnail).set_footer(text=f"Requested by {source.requester} | Video: {source.title}", icon_url=source.requester.avatar_url), delete_after=10)
@@ -338,17 +340,6 @@ class Music(commands.Cog):
         if not ctx.guild:
             raise commands.NoPrivateMessage
         return True
-
-    async def cleanup(self, guild):
-        try:
-            await guild.voice_client.disconnect()
-        except AttributeError:
-            pass
-
-        try:
-            del self.players[guild.id]
-        except KeyError:
-            pass
 
     async def __error(self, ctx, error):
         """A local error handler for all errors arising from commands in this cog."""
@@ -480,7 +471,7 @@ class Music(commands.Cog):
     @commands.command(name='onjah', aliases=['on jah', 'on_jah', 'on-jah', 'x'])
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def onjah_(self, ctx):
-        await self.play_.callback(self, ctx, search='https://www.youtube.com/watch?v=fGZb5SpRCi0')
+        await self.play_.callback(self, ctx, search='https://www.youtube.com/watch?v=EiUjYQgsmwA')
         await ctx.send('https://c7.uihere.com/files/510/792/52/jocelyn-flores-music-sad-club-dread-thumb.jpg')
 
     @commands.command(name='moment')
@@ -538,6 +529,30 @@ class Music(commands.Cog):
         #     await ctx.send(f'This is so sad, Alexa play {song_split[0]} by {song_split[-1]}')
         #     await self.play_.callback(self, ctx, search=song)
 
+    @commands.command(name='that')
+    async def that_(self, ctx, *args):
+        mediawikiapi = MediaWikiAPI()
+
+        # get random articles and number
+        rand_articles, rand_num = mediawikiapi.random(2), random.randint(0, 16777215)
+        article_md = ['[{}]({})'.format(article, 'https://en.wikipedia.org/wiki/'+article.replace(' ', '_')) for article in rand_articles]
+
+        # create embed
+        if not args or args[0] not in ['verbose', 'verbosify']: # zero or wrong arguments
+            embed = discord.Embed(color=discord.Color(rand_num), description='That is so {1}, can we hit {0} {2}'.format(rand_num, *article_md))
+        else: # either verbose or verbosify
+            embed = discord.Embed(color=discord.Color(rand_num), description='**That is so {1}, can we hit {0} {2}**'.format(rand_num, *article_md))
+            article_descriptions = [mediawikiapi.summary(article, chars=150, auto_suggest=False) for article in rand_articles]
+
+            if args[0] == 'verbose':
+                [embed.add_field(name="** **", value=desc, inline=True) for desc in article_descriptions]
+            elif args[0] == 'verbosify':
+                [embed.add_field(name="** **", value=verbosify._verbosify(desc), inline=True) for desc in article_descriptions]
+            
+
+        await ctx.send(embed=embed)
+    
+
     @commands.command(name='finna', aliases=['smash', 'finna_smash', 'finna-smash'])
     async def finna_(self, ctx, *args):
         await self.play_.callback(self, ctx, search=random.choice(smash))
@@ -550,8 +565,9 @@ class Music(commands.Cog):
     @commands.command(name='shid')
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def shid_(self, ctx, time:int=10):
-        vc = ctx.voice_client
-        if not vc:
+        try:
+            channel = ctx.author.voice.channel
+        except AttributeError:
             await ctx.send('You are not in a voice channel. You must subject yourself to this command to use it.')
             return False
 
@@ -559,10 +575,22 @@ class Music(commands.Cog):
         while datetime.datetime.now() < end:
             try:
                 await ctx.invoke(self.connect_)
-                await ctx.guild.voice_client.disconnect()
+                await ctx.voice_client.disconnect()
             except:
-                await ctx.guild.voice_client.disconnect()
+                await ctx.voice_client.disconnect()
                 pass
+                        
+    @commands.command(name='gone)
+    async def gone_(self, ctx, name:str='')
+        if name == '':
+            pass
+        elif not name.startswith('<@'):
+            try:
+                name = ctx.guild.get_member_named(name).mention
+            except:
+                name = ctx.author.mention
+        await self.play_.callback(self, ctx, search='https://www.youtube.com/watch?v=LDU_Txk06tM')
+        await ctx.send(name + ' is gone https://tenor.com/view/crab-safe-dance-gif-13211112')
 
     @commands.command(name='hello', aliases=['howdy', 'hola', 'harro eburynyan'])
     async def hello_(self, ctx):
