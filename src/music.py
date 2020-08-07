@@ -580,7 +580,7 @@ class Music(commands.Cog):
                 await ctx.voice_client.disconnect()
                 pass
                         
-    @commands.command(name='gone)
+    @commands.command(name='gone')
     async def gone_(self, ctx, name:str='')
         if name == '':
             pass
