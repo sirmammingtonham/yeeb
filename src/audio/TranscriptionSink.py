@@ -34,13 +34,15 @@ class TranscriptionSink(AudioSink):
         # print(self.wav_writer.getsampwidth())
         # print(self.wav_writer.getsampwidth())
         # print(self.wav_writer.getsampwidth())
-        print('we got to here: 37')
         stream = DiscordPCMStream(self.wav_file, self.wav_writer)
+        
+        with stream as source:
+            audio = self.recognizer.record(source)
+            with open("bruh5.wav", "wb+") as f:
+                f.write(audio.get_wav_data())
+            print(self.recognizer.recognize_google(audio))
+        # self.stop = self.recognizer.listen_in_background(stream, self.callback)
 
-        # with stream as source:
-        print('we got to here: 41')
-        self.stop = self.recognizer.listen_in_background(stream, self.callback, phrase_time_limit=10)
-        print('we got to here: 43')
             # audio = self.recognizer.listen_in_background(source, self.callback)
             # print(self.recognizer.recognize_google(audio))
         # wav_data = self.wav_file.getvalue()

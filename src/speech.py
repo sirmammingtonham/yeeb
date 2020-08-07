@@ -25,15 +25,19 @@ class Speech(commands.Cog):
     @commands.command(name='listen', aliases=['hear me out'])
     async def listen(self, ctx):
         if self.sink is None:
-            sink = TranscriptionSink(self.r, Speech.recognizerCallback)
+            self.sink = TranscriptionSink(self.r, Speech.recognizerCallback)
         try:
             vc = await ctx.author.voice.channel.connect()
         except Exception as e:
             print("shid happen: {e}")
         
-        vc.listen(sink)
+        vc.listen(self.sink)
 
-        sink.processAudio()
+        # sink.processAudio()
+    
+    @commands.command(name='process')
+    async def process(self, ctx):
+        self.sink.processAudio()
 
 def setup(bot):
     bot.add_cog(Speech(bot))

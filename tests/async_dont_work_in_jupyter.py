@@ -52,6 +52,8 @@ class DiscordPCMStream(sr.AudioSource):
         self.CHUNK = None
         self.FRAME_COUNT = None
 
+        self.bytesPosition = 0
+
     def __enter__(self):
         assert self.stream is None, "This audio source is already inside a context manager"
 
@@ -65,10 +67,10 @@ class DiscordPCMStream(sr.AudioSource):
         samples_24_bit_pretending_to_be_32_bit = False
 
         self.SAMPLE_RATE = self.wav_object.getframerate()
-        self.CHUNK = 4096
+        self.CHUNK = 4096 # 50 frames per second, 81.92 seconds per chunk?
         self.FRAME_COUNT = self.wav_object.getnframes()
         self.DURATION = self.FRAME_COUNT / float(self.SAMPLE_RATE)
-        self.stream = DiscordPCMStream.AudioFileStream(self.audio, self.wav_object, self.little_endian, samples_24_bit_pretending_to_be_32_bit)
+        self.stream = DiscordPCMStream.AudioFileStream(self.audio, self.wav_object, self.little_endian, samples_24_bit_pretending_to_be_32_bit, self.CHUNK)
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
@@ -77,14 +79,19 @@ class DiscordPCMStream(sr.AudioSource):
         self.DURATION = None
 
     class AudioFileStream(object):
-        def __init__(self, audio, wav_object, little_endian, samples_24_bit_pretending_to_be_32_bit):
+        def __init__(self, audio, wav_object, little_endian, samples_24_bit_pretending_to_be_32_bit, chunk):
             self.audio = audio  # an audio file object (e.g., a `wave.Wave_read` instance)
             self.wav_object = wav_object
             self.little_endian = little_endian  # whether the audio data is little-endian (when working with big-endian things, we'll have to convert it to little-endian before we process it)
             self.samples_24_bit_pretending_to_be_32_bit = samples_24_bit_pretending_to_be_32_bit  # this is true if the audio is 24-bit audio, but 24-bit audio isn't supported, so we have to pretend that this is 32-bit audio and convert it on the fly
+            self.CHUNK = chunk
 
         def read(self, size=-1):
+            # print(self.audio.tell())
+            # self.audio.seek(self.audio.tell() - 0 if size == -1 else size)
+            # print(f"read: {self.audio.tell()}")
             buffer = self.audio.read(self.audio.getnframes() if size == -1 else size)
+            # buffer = self.audio.getvalue()[:self.audio.tell()]
             if not isinstance(buffer, bytes): buffer = b""  # workaround for https://bugs.python.org/issue24608
 
             sample_width = self.wav_object.getsampwidth()
@@ -100,25 +107,98 @@ class DiscordPCMStream(sr.AudioSource):
                 sample_width = 4  # make sure we thread the buffer as 32-bit audio now, after converting it from 24-bit audio
             if self.wav_object.getnchannels() != 1:  # stereo audio
                 buffer = audioop.tomono(buffer, sample_width, 1, 1)  # convert stereo audio data to mono
+
+            # print(buffer)
             return buffer
 
+def callback(recognizer_instance, audio_data):
+        # with open("pain.wav", "wb+") as f:
+        #     f.write(audio_data.get_wav_data())
+        # # try:
+        # print(recognizer_instance.recognize_google(audio_data, show_all=True))
+        # # except Exception as e:
+        #     print(e)
+        # print(audio_data.get_raw_data())
+        # pass
+        print("callback called!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+
+class BytesLoop(io.IOBase):
+    def __init__(self, buf=b''):
+        self.buf = buf
+    def read(self, n=-1):
+        inp = io.BytesIO(self.buf)
+        b = inp.read(n)
+        self.buf = self.buf[len(b):]
+        return b
+    def readinto(self, b):
+        inp = io.BytesIO(self.buf)
+        l = inp.readinto(b)
+        self.buf = self.buf[l:]
+        return l
+    def write(self, b):
+        outp = io.BytesIO()
+        l = outp.write(b)
+        self.buf += outp.getvalue()
+        return l
+    def getvalue(self):
+        return self.buf
+
+class WavStream:
+    def __init__(self):
+        e
+3840
 
 class TestSink(AudioSink):
     sampwidth = Decoder.SAMPLE_SIZE//Decoder.CHANNELS
-    framerate = Decoder.SAMPLING_RATE
+    framerate = Decoder.SAMPLING_RATE*2
     num_frames = Decoder.SAMPLES_PER_FRAME
 
     def __init__(self):
         self.data = []
         self.needs_processing = True
         self.recognizer = sr.Recognizer()
-        self.wav_file = io.BytesIO()
+        self.wav_file = io.BytesIO()#"pain.wav" #io.BytesIO()  # "test.wav"  # BytesLoop()
         self.wav_writer = wave.open(self.wav_file, "wb")
         self.wav_writer.setnchannels(Decoder.CHANNELS)
         self.wav_writer.setsampwidth(Decoder.SAMPLE_SIZE//Decoder.CHANNELS)
         self.wav_writer.setframerate(Decoder.SAMPLING_RATE)
+        
+        self.processing = False
+
+    def test(self):
+        # with open("bruh2.data", "rb") as f:
+        #     data = f.read()
+        
+        audio = sr.AudioData(data, Decoder.SAMPLING_RATE*2, Decoder.SAMPLE_SIZE//Decoder.CHANNELS)
+
+        # print(self.recognizer.recognize_sphinx(audio))
+        # with open("pain2.wav", "wb+") as f:
+        #     f.write(audio.get_wav_data())
+
+
+        self.recognizer.listen(audio, snowboy_configuration=("../src/audio/snowboy", ["../src/audio/snowboy/bruh.pmdl"]))
+        # pass
+
+        # print('in test')
+        # r = sr.Recognizer()
+        # harvard = sr.AudioFile('OSR_us_000_0010_8k.wav')
+        # with harvard as source:
+        #     audio = r.record(source)
+        # print('shit recorded')
+        # print(r.recognize_google(audio))
+        # print('huh')
 
     def processAudio(self):
+        # test = wave.open(self.wav_file, "rb")
+
+        # stream = sr.AudioFile(self.wav_file)
+        # stream = sr.AudioFile.AudioFileStream(test, True, False)
+        # self.recognizer.listen_in_background(stream, callback)
+
+
+
+        # with stream as source:
+        #     print(source.stream.read(4096))
         # print(self.data)
         # print("processing")
         # raw = b''.join(self.data)
@@ -127,30 +207,54 @@ class TestSink(AudioSink):
         # print(self.wav_writer.getsampwidth())
         # print(self.wav_writer.getsampwidth())
         # print(self.wav_writer.getsampwidth())
+        # self.processing = True
+
         stream = DiscordPCMStream(self.wav_file, self.wav_writer)
-
         with stream as source:
-            audio = self.recognizer.record(source)
-            print(self.recognizer.recognize_google(audio))
-        # wav_data = self.wav_file.getvalue()
-        # print([i for i in xrange(len(wav_data)) if s1[i] != s2[i]])
-        # assert(wav_data == raw)
+        # #     data = self.recognizer.record(source)
+            test = self.recognizer.listen(source, snowboy_configuration=("../src/audio/snowboy", ["../src/audio/snowboy/bruh.pmdl"]))
+            print(test.get_raw_data())
+        # self.recognizer.listen_in_background(stream, callback)
 
-        # print(wav_data)
-        # print(raw)
-        # try:
-        # audio = sr.AudioData(wav_data, Decoder.SAMPLING_RATE,
-        # Decoder.SAMPLE_SIZE//Decoder.CHANNELS)
+        # # with stream as source:
+        # #     pass
+        #     # data = source.stream.read(4096)
+        # #     with open("bruh333.wav", "wb+") as f:
+        # #         f.write(data)
+        # #     print(source.stream.read(4096))
 
-        with open("bruh5.wav", "wb+") as f:
-            f.write(audio.get_wav_data())
-        # print(self.recognizer.recognize_google(audio, show_all=True))
-        # except:
-        #     print("bruh")
-        self.needs_processing = False
+        # # assert(self.data == self.wav_file.getvalue())
+
+        # # print(self.wav_writer.getsampwidth())
+
+        # self.wav_file.seek(0)
+
+        # frames = io.BytesIO()
+        # while True:
+        #     buffer = self.wav_file.read(Decoder.FRAME_SIZE)
+        #     if len(buffer) == 0: break
+
+        #     frames.write(buffer)
+        
+
+
+        # data = sr.AudioData(b''.join(self.data), Decoder.SAMPLING_RATE*2, Decoder.SAMPLE_SIZE//Decoder.CHANNELS)
+        # frames.close()
+        # with open("pain.wav", "wb+") as f:
+        #     f.write(data.get_wav_data())
+
+        # # self.needs_processing = False
+        # self.processing = False
+        # with open("bruh2.data", "wb+") as f:
+        #     f.write(b"".join(self.data))
 
     def write(self, data):
-        self.wav_writer.writeframes(data.data)
+        # BytesLoop.write(data.data)
+        if not self.processing:
+            self.data.append(data.data)
+            self.wav_writer.writeframes(data.data)
+        # print(f"write: {self.wav_file.tell()}")
+        # self.processAudio()
         # self.data.append(data.data)
         # if isinstance(data.packet, RTPPacket):
         #     print('got data')
@@ -179,6 +283,7 @@ async def test(ctx):
     # r.listen(source)
     vc = await ctx.author.voice.channel.connect()
     vc.listen(sink)
+    # sink.test()
 
 
 @bot.command()
@@ -201,4 +306,7 @@ async def check_frame_size(ctx):
 async def coom(ctx):
     await bot.logout()
 
-bot.run("NTQ3MTU2NzAyNjI2MTg1MjMw.XxDEmQ.rchZQYc66BSPeLaeJEk0ifq-Q5Y")
+with open('../src/token.txt', 'r') as f:
+    TOKEN = f.readline()
+
+bot.run(TOKEN)
