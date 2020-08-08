@@ -328,6 +328,40 @@ class Bruh(commands.Cog):
         # run verbosify numerous times
         await verbosify.verbosify_ception(ctx, input_sentence, num_times)
 
+    @commands.command()
+    async def valortne(self, ctx, *args):
+        agents = {
+            'SAGE': 'The bastion of China, Sage creates safety for herself and her team wherever she goes. Able to revive fallen friends and stave off forceful assaults, she provides a calm center to a hellish battlefield.',
+            'SOVA': 'Born from the eternal winter of Russia’s tundra, Sova tracks, finds, and eliminates enemies with ruthless efficiency and precision. His custom bow and incredible scouting abilities ensure that even if you run, you cannot hide.',
+            'BREACH': 'The bionic Swede Breach fires powerful, targeted kinetic blasts to aggressively clear a path through enemy ground. The damage and disruption he inflicts ensures no fight is ever fair.',
+            'VIPER': 'The American Chemist, Viper deploys an array of poisonous chemical devices to control the battlefield and cripple the enemy’s vision. If the toxins don’t kill her prey, her mind games surely will.',
+            'BRIMSTONE': 'Joining from the USA, Brimstone’s orbital arsenal ensures his squad always has the advantage. His ability to deliver utility precisely and safely make him the unmatched boots-on-the-ground commander.',
+            'CYPHER': 'The Moroccan information broker, Cypher is a one-man surveillance network who keeps tabs on the enemy’s every move. No secret is safe. No maneuver goes unseen. Cypher is always watching.',
+            'JETT': 'Representing her home country of South Korea, Jett’s agile and evasive fighting style lets her take risks no one else can. She runs circles around every skirmish, cutting enemies up before they even know what hit them.',
+            'OMEN': 'A phantom of a memory, Omen hunts in the shadows. He renders enemies blind, teleports across the field, then lets paranoia take hold as his foe scrambles to uncover where he might strike next.',
+            'PHOENIX': 'Hailing from the UK, Phoenix\'s star power shines through in his fighting style, igniting the battlefield with flash and flare. Whether he\'s got backup or not, he\'s rushing in to fight on his own terms.',
+            'RAZE': 'Raze explodes out of Brazil with her big personality and big guns. With her blunt-force-trauma playstyle, she excels at flushing entrenched enemies and clearing tight spaces with a generous dose of "boom".',
+            'REYNA': 'Forged in the heart of Mexico, Reyna dominates single combat, popping off with each kill she scores. Her capability is only limited by her raw skill, making her sharply dependent on performance.',
+            'KILLJOY': 'The genius of Germany, Killjoy secures and defends key battlefield positions with a collection of traps, turrets, and mines. Each invention is primed to punish any assailant too dumb to back down.'
+        }
+        
+        # default values
+        num_times = 1
+        agent_text = random.choice(list(agents.values()))
+
+        if len(args) == 1:
+            # 1 word arg = arg agent, 1 time
+            if args[0].upper() in agents: agent_text = agents[args[0].upper()]
+            # 1 numerical arg = random agent, arg times
+            elif verbosify.isdigit(args[0]): num_times = int(args[0])
+        
+        elif len(args) == 2:
+            # check first arg as agent
+            if args[0].upper() in agents: agent_text = agents[args[0].upper()]
+            # check second arg as number
+            if verbosify.isdigit(args[1]): num_times = int(args[1])
+
+        await verbosify.verbosify_ception(ctx, agent_text, num_times)
         
 
 
@@ -396,41 +430,6 @@ class Bruh(commands.Cog):
         i = random.randrange(len(links))
         if i == 0: await ctx.send(links[0])
         else: await ctx.send(links[i], delete_after=30)
-    
-    @commands.command()
-    async def valortne(self, ctx, *args):
-        agents = {
-            'SAGE': 'The bastion of China, Sage creates safety for herself and her team wherever she goes. Able to revive fallen friends and stave off forceful assaults, she provides a calm center to a hellish battlefield.',
-            'SOVA': 'Born from the eternal winter of Russia’s tundra, Sova tracks, finds, and eliminates enemies with ruthless efficiency and precision. His custom bow and incredible scouting abilities ensure that even if you run, you cannot hide.',
-            'BREACH': 'The bionic Swede Breach fires powerful, targeted kinetic blasts to aggressively clear a path through enemy ground. The damage and disruption he inflicts ensures no fight is ever fair.',
-            'VIPER': 'The American Chemist, Viper deploys an array of poisonous chemical devices to control the battlefield and cripple the enemy’s vision. If the toxins don’t kill her prey, her mind games surely will.',
-            'BRIMSTONE': 'Joining from the USA, Brimstone’s orbital arsenal ensures his squad always has the advantage. His ability to deliver utility precisely and safely make him the unmatched boots-on-the-ground commander.',
-            'CYPHER': 'The Moroccan information broker, Cypher is a one-man surveillance network who keeps tabs on the enemy’s every move. No secret is safe. No maneuver goes unseen. Cypher is always watching.',
-            'JETT': 'Representing her home country of South Korea, Jett’s agile and evasive fighting style lets her take risks no one else can. She runs circles around every skirmish, cutting enemies up before they even know what hit them.',
-            'OMEN': 'A phantom of a memory, Omen hunts in the shadows. He renders enemies blind, teleports across the field, then lets paranoia take hold as his foe scrambles to uncover where he might strike next.',
-            'PHOENIX': 'Hailing from the UK, Phoenix\'s star power shines through in his fighting style, igniting the battlefield with flash and flare. Whether he\'s got backup or not, he\'s rushing in to fight on his own terms.',
-            'RAZE': 'Raze explodes out of Brazil with her big personality and big guns. With her blunt-force-trauma playstyle, she excels at flushing entrenched enemies and clearing tight spaces with a generous dose of "boom".',
-            'REYNA': 'Forged in the heart of Mexico, Reyna dominates single combat, popping off with each kill she scores. Her capability is only limited by her raw skill, making her sharply dependent on performance.',
-            'KILLJOY': 'The genius of Germany, Killjoy secures and defends key battlefield positions with a collection of traps, turrets, and mines. Each invention is primed to punish any assailant too dumb to back down.'
-        }
-        
-        # default values
-        num_times = 1
-        agent_text = random.choice(list(agents.values()))
-
-        if len(args) == 1:
-            # 1 word arg = arg agent, 1 time
-            if args[0].upper() in agents: agent_text = agents[args[0].upper()]
-            # 1 numerical arg = random agent, arg times
-            elif verbosify.isdigit(args[0]): num_times = int(args[0])
-        
-        elif len(args) == 2:
-            # check first arg as agent
-            if args[0].upper() in agents: agent_text = agents[args[0].upper()]
-            # check second arg as number
-            if verbosify.isdigit(args[1]): num_times = int(args[1])
-
-        await ctx.send(verbosify.verbosify_ception(ctx, agent_text, num_times))
         
     @commands.command()
     async def shityourpants(self, ctx):
