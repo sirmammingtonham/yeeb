@@ -313,14 +313,6 @@ class Bruh(commands.Cog):
     
     @commands.command()
     async def verbosify(self, ctx, *, input_sentence):
-        # get spot to break up message
-        def get_breakpoint(msg):
-            i = 2000
-            while i > 0 and msg[i] != ' ': i -= 1
-            
-            return 2000 if i is 0 else i
-            
-        
         num_times = 1
         # Detect num_times argument. gotta check for positive and negative numbers
         if input_sentence.split()[0].isdigit() or input_sentence.split()[0][1:].isdigit():
@@ -333,57 +325,8 @@ class Bruh(commands.Cog):
 
             input_sentence = ' '.join(input_sentence.split()[1:])
 
-        # edge cases
-        if num_times is 0:
-            await ctx.send(input_sentence)
-            return
-        elif num_times is 1:
-            await ctx.send(verbosify.verbosify(input_sentence))
-            return
-
-        # Run verbosify num_times number of times
-        to_print = [round(num_times*(i/5)) for i in range(1,5)] # when to print progress
-        max_char_count = False
-
-        verbosified = verbosify.verbosify(input_sentence)
-        msg = await ctx.send('`[1]` ' + verbosified)
-        
-        for i in range(2, num_times):
-            if len(verbosified) > 10000: break  # would go past 10 messages...
-            new_verbosified = verbosify.verbosify(verbosified)
-            
-            if len(new_verbosified) > 1990 and not max_char_count:
-                time.sleep(1)
-                await msg.edit(content='`[...]` ' + verbosified)
-                max_char_count = True
-            else:
-                verbosified = new_verbosified
-
-                if i in to_print and len(verbosified) < 1990:
-                    time.sleep(1)
-                    await msg.edit(content='`[{}]` {}'.format(i, verbosified))
-
-        # Final output
-        time.sleep(1)
-        verbosified = verbosify.verbosify(verbosified) # one last time
-        
-        if len(verbosified) <= 2000: await msg.edit(content=verbosified)
-        else:
-            first_output = True
-
-            # keep looping until message is under 2000
-            while len(verbosified) > 2000:
-                bp = get_breakpoint(verbosified)
-
-                if first_output:
-                    await msg.edit(content=verbosified[:bp])
-                    first_output = False
-                else: await ctx.send(verbosified[:bp], delete_after=30)
-                
-                verbosified = verbosified[bp+1:]
-
-            # send last message
-            await ctx.send(verbosified, delete_after=30)
+        # run verbosify numerous times
+        await verbosify.verbosify_ception(ctx, input_sentence, num_times)
 
         
 
