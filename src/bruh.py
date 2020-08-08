@@ -315,7 +315,7 @@ class Bruh(commands.Cog):
     async def verbosify(self, ctx, *, input_sentence):
         num_times = 1
         # Detect num_times argument. gotta check for positive and negative numbers
-        if input_sentence.split()[0].isdigit() or input_sentence.split()[0][1:].isdigit():
+        if verbosify.isdigit(input_sentence.split()[0]):
             num_times = int(input_sentence.split()[0])
 
             # bruh don't try to break it bruh
@@ -414,9 +414,23 @@ class Bruh(commands.Cog):
             'KILLJOY': 'The genius of Germany, Killjoy secures and defends key battlefield positions with a collection of traps, turrets, and mines. Each invention is primed to punish any assailant too dumb to back down.'
         }
         
-        if not args or args[0].upper() not in agents: agent = random.choice(list(agents.values()))
-        else: agent = agents[args[0].upper()]
-        await ctx.send(verbosify.verbosify(agent))
+        # default values
+        num_times = 1
+        agent_text = random.choice(list(agents.values()))
+
+        if len(args) == 1:
+            # 1 word arg = arg agent, 1 time
+            if args[0].upper() in agents: agent_text = agents[args[0].upper()]
+            # 1 numerical arg = random agent, arg times
+            elif verbosify.isdigit(args[0]): num_times = int(args[0])
+        
+        elif len(args) == 2:
+            # check first arg as agent
+            if args[0].upper() in agents: agent_text = agents[args[0].upper()]
+            # check second arg as number
+            if verbosify.isdigit(args[1]): num_times = int(args[1])
+
+        await ctx.send(verbosify.verbosify_ception(ctx, agent_text, num_times))
         
     @commands.command()
     async def shityourpants(self, ctx):

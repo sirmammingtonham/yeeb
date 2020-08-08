@@ -75,6 +75,11 @@ def get_breakpoint(msg):
     
     return 2000 if i is 0 else i
 
+# util function for better isdigit
+def isdigit(s):
+    return s.isdigit() or s[1:].isdigit()
+
+
 
 # -- verbosify core function -- #
 def verbosify(input_sentence):
