@@ -346,6 +346,41 @@ class Bruh(commands.Cog):
             'REYNA': 'Forged in the heart of Mexico, Reyna dominates single combat, popping off with each kill she scores. Her capability is only limited by her raw skill, making her sharply dependent on performance.',
             'KILLJOY': 'The genius of Germany, Killjoy secures and defends key battlefield positions with a collection of traps, turrets, and mines. Each invention is primed to punish any assailant too dumb to back down.'
         }
+
+        types = {
+            'DUELIST': 'Duelists are self-sufficient fraggers who their team expects, through abilities and skills, to get high frags and seek out engagements first.',
+            'INITIATOR': 'Initiators challenge angles by setting up their team to enter contested ground and push defenders away.',
+            'CONTROLLER': 'Controllers are experts in slicing up dangerous territory to set their team up for success.',
+            'SENTINEL': 'Sentinels are defensive experts who can lock down areas and watch flanks, both on attacker and defender rounds.'
+        }
+
+        abilities = {
+            'SAGE': ['BARRIER ORB', 'SLOW ORB', 'HEALING ORB', 'RESURRECTION'],
+            'SOVA': ['OWL DRONE', 'SHOCK BOLT', 'RECON BOLT', 'HUNTER\'S FURY'],
+            'BREACH': ['AFTER SHOCK', 'FLASH POINT', 'FAULT LINE', 'ROLLING THUNDER'],
+            'VIPER': ['SNAKE BITE', 'POISON CLOUD', 'TOXIC SCREEN', 'POISON PIT'],
+            'BRIMSTONE': ['STIM BEACON', 'INCENDIARY', 'SKY SMOKE', 'ORBITAL STRIKE'],
+            'CYPHER': ['TRIP WIRE', 'CYBER CAGE', 'SPYCAM', 'NEUTRAL THEFT'],
+            'JETT': ['CLOUD BURST', 'UP DRAFT', 'TAILWIND', 'BLADE STORM'],
+            'OMEN': ['SHROUDED STEP', 'PARANOIA', 'DARK COVER', 'FROM THE SHADOWS'],
+            'PHOENIX': ['BLAZE', 'CURVEBALL', 'HOT HANDS', 'RUN IT BACK'],
+            'RAZE': ['BOOM BOT', 'BLAST PACK', 'PAINT SHELLS', 'SHOW STOPPER'],
+            'REYNA': ['LEER', 'DEVOUR', 'DISMISS', 'EMPRESS'],
+            'KILLJOY': ['ALARM BOT', 'NANO SWARM', 'TURRET', 'LOCKDOWN']
+            
+        }
+
+        # abilities = {
+        #     'BARRIER ORB': 'EQUIP a barrier orb. FIRE places a solid wall. ALT FIRE rotates the targeter.',
+        #     'SLOW ORB': 'EQUIP a slowing orb. FIRE to throw a slowing orb forward that detonates upon landing, creating a lingering fielld that slows players caught inside of it.',
+        #     'HEALING ORB': 'EQUIP a healing orb. FIRE with your crosshairs over a damaged ally to activate a heal-over-time on them. ALT FIRE while Sage is damaged to activate a self heal-over-time.'
+        #     'RESURRECTION': 'EQUIP a resurrection ability. FIRE with your crosshairs placed over a dead ally to begin resurrecting them. After a brief channel, the ally will be brought back to life with full health.',
+
+        #     'OWL DRONE': 'EQUIP an owl drone. FIRE to deploy and take control of movement of the drone. While in control of the drone, FIRE to shoot a marking dart. This dart will reveal the location of any player struck by the dart.',
+        #     'SHOCK BOLT': 'EQUIP a bow with a shock bolt. FIRE to send the explosive bolt forward, detonating upon collision and damaging players nearby. HOLD FIRE to extend the range of the projectile. ALTERNATE FIRE to add up to two bounces to this arrow.',
+
+        #     'AFTERSHOCK': 'EQUIP a fusion charge. FIRE the charge to set a slow-acting burst through the wall. The burst does heavy damage to anyone caught in its area.'
+        # }
         
         # default values
         num_times = 1
@@ -363,7 +398,16 @@ class Bruh(commands.Cog):
             # check second arg as number
             if verbosify.isdigit(args[1]): num_times = int(args[1])
 
-        await verbosify.verbosify_ception(ctx, agent_text, num_times)
+        # get 4 random abilities
+        rand_abilities = []
+        for _ in range(4):
+            rand_agent = random.choice(list(agents.values()))
+            rand_ability = random.choice(abilities[rand_agent])
+            rand_abilities.append(verbosify.verbosify(rand_ability).upper())
+
+        rand_abilities = ', '.join(rand_abilities)
+        output = agent_text + '(' + rand_abilities + ')'
+        await verbosify.verbosify_ception(ctx, output, num_times)
         
 
 
