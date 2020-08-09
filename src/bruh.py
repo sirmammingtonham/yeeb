@@ -414,8 +414,8 @@ class Bruh(commands.Cog):
 
     @commands.command()
     async def korra(self, ctx):
+        will_cookie = 'https://media.discordapp.net/attachments/661185720211341312/739759077302861875/image0.jpg'
         links = [
-            'https://media.discordapp.net/attachments/661185720211341312/739759077302861875/image0.jpg',
             'https://cdn.discordapp.com/attachments/661185720211341312/733258810713571378/Screenshot_20200716-0248022.png',
             'https://cdn.discordapp.com/attachments/661185720211341312/739748973597818880/unknown.png',
             'https://cdn.discordapp.com/attachments/661185720211341312/738668566793945098/unknown.png',
@@ -425,12 +425,16 @@ class Bruh(commands.Cog):
             'https://cdn.discordapp.com/attachments/661185720211341312/737203345894408232/unknown.png',
             'https://cdn.discordapp.com/attachments/661185720211341312/736516684663226398/unknown.png',
             'https://cdn.discordapp.com/attachments/661185720211341312/736511129538265128/unknown.png',
-            'https://media.discordapp.net/attachments/661185720211341312/741580668592586783/unknown.png'
+            'https://media.discordapp.net/attachments/661185720211341312/741580668592586783/unknown.png',
+            'https://media.discordapp.net/attachments/661185720211341312/741950835348471909/unknown.png',
+            'https://media.discordapp.net/attachments/661185720211341312/741950996279984138/unknown.png',
+            'https://media.discordapp.net/attachments/661185720211341312/741951109631049748/unknown.png',
+            'https://media.discordapp.net/attachments/661185720211341312/741952947122077696/unknown.png',
+            'https://media.discordapp.net/attachments/661185720211341312/741956214157475860/unknown.png',
         ]
 
-        i = random.randrange(len(links))
-        if i == 0: await ctx.send(links[0])
-        else: await ctx.send(links[i], delete_after=30)
+        if random.randrange(10) == 0: await ctx.send(will_cookie)
+        else: await ctx.send(random.choice(links), delete_after=30)
         
     @commands.command()
     async def shityourpants(self, ctx):
