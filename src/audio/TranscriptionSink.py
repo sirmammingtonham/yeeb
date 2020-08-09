@@ -1,83 +1,246 @@
-from discord.rtp import SilencePacket, RTPPacket
 from discord.opus import Decoder
-from discord.reader import AudioSink, WaveSink
+from discord.reader import AudioSink
 
 from .DiscordPCMStream import DiscordPCMStream
+from .AudioClasses import WaitTimeoutError, RequestError, UnknownValueError, AudioData
 
-import io
-import wave
-# import speech_recognition as sr
+import os, sys
+import math
+import audioop
+import tempfile
+import threading, collections, queue
+import json
+# from pocketsphinx import pocketsphinx, Jsgf, FsgModel
+
+from urllib.parse import urlencode
+from urllib.request import Request, urlopen
+from urllib.error import URLError, HTTPError
+
+snowboy_location = "audio/snowboy"
+snowboy_hot_word_files = ["audio/snowboy/bruh.pmdl"]
+
+sys.path.append(snowboy_location)
+import snowboydetect
+sys.path.pop()
 
 class TranscriptionSink(AudioSink):
-    sampwidth = Decoder.SAMPLE_SIZE//Decoder.CHANNELS
-    framerate = Decoder.SAMPLING_RATE
-    num_frames = Decoder.SAMPLES_PER_FRAME
+    def __init__(self, callback):
+        # recognizer variables
+        self.energy_threshold = 300  # minimum audio energy to consider for recording
+        self.dynamic_energy_threshold = True
+        self.dynamic_energy_adjustment_damping = 0.15
+        self.dynamic_energy_ratio = 1.5
+        self.pause_threshold = 0.8  # seconds of non-speaking audio before a phrase is considered complete
+        self.operation_timeout = None  # seconds after an internal operation (e.g., an API request) starts before it times out, or ``None`` for no timeout
+        self.phrase_threshold = 0.3  # minimum seconds of speaking audio before we consider the speaking audio a phrase - values below this are ignored (for filtering out clicks and pops)
+        self.non_speaking_duration = 0.5  # seconds of non-speaking audio to keep on both sides of the recording
 
-    def __init__(self, recognizer, processAudioCallback):
-        self.callback = processAudioCallback
-        self.needs_processing = True
-        self.recognizer = recognizer
-        self.wav_file = io.BytesIO()
-        self.wav_writer = wave.open(self.wav_file, "wb")
-        self.wav_writer.setnchannels(Decoder.CHANNELS)
-        self.wav_writer.setsampwidth(Decoder.SAMPLE_SIZE//Decoder.CHANNELS)
-        self.wav_writer.setframerate(Decoder.SAMPLING_RATE)
+        # sink variables
+        self.buffer = queue.Queue()
+        self.callback = callback
 
-        self.stop = None
+        self.stream = DiscordPCMStream(self.buffer)
 
-    def processAudio(self):
-        # print(self.data)
-        # print("processing")
-        # raw = b''.join(self.data)
-        # self.wav_writer.writeframes(raw)
+        self.stop = False
 
-        # print(self.wav_writer.getsampwidth())
-        # print(self.wav_writer.getsampwidth())
-        # print(self.wav_writer.getsampwidth())
-        stream = DiscordPCMStream(self.wav_file, self.wav_writer)
-        
-        with stream as source:
-            audio = self.recognizer.record(source)
-            with open("bruh5.wav", "wb+") as f:
-                f.write(audio.get_wav_data())
-            print(self.recognizer.recognize_google(audio))
-        # self.stop = self.recognizer.listen_in_background(stream, self.callback)
+    async def snowboy_wait_for_hot_word(self, source, timeout=None):
+        """ modified from SpeechRecognition python """
+        detector = snowboydetect.SnowboyDetect(
+            resource_filename=os.path.join(snowboy_location, "resources", "common.res").encode(),
+            model_str=",".join(snowboy_hot_word_files).encode()
+        )
+        detector.SetAudioGain(1.0)
+        detector.SetSensitivity(",".join(["0.4"] * len(snowboy_hot_word_files)).encode())
+        snowboy_sample_rate = detector.SampleRate()
 
-            # audio = self.recognizer.listen_in_background(source, self.callback)
-            # print(self.recognizer.recognize_google(audio))
-        # wav_data = self.wav_file.getvalue()
-        # print([i for i in xrange(len(wav_data)) if s1[i] != s2[i]])
-        # assert(wav_data == raw)
+        elapsed_time = 0
+        seconds_per_buffer = float(source.CHUNK) / source.SAMPLE_RATE
+        resampling_state = None
 
-        # print(wav_data)
-        # print(raw)
-        # try:
-        # audio = sr.AudioData(wav_data, Decoder.SAMPLING_RATE,
-        # Decoder.SAMPLE_SIZE//Decoder.CHANNELS)
+        # buffers capable of holding 5 seconds of original and resampled audio
+        five_seconds_buffer_count = int(math.ceil(5 / seconds_per_buffer))
+        frames = collections.deque(maxlen=five_seconds_buffer_count)
+        resampled_frames = collections.deque(maxlen=five_seconds_buffer_count)
+        while True:
+            elapsed_time += seconds_per_buffer
+            if timeout and elapsed_time > timeout:
+                raise WaitTimeoutError("listening timed out while waiting for hotword to be said")
 
-        # with open("bruh5.wav", "wb+") as f:
-        #     f.write(audio.get_wav_data())
-        # print(self.recognizer.recognize_google(audio, show_all=True))
-        # except:
-        #     print("bruh")
-        # self.needs_processing = False
+            buffer = await source.stream.read(source.CHUNK)
+            if len(buffer) == 0: break  # reached end of the stream
+            frames.append(buffer)
+
+            # resample audio to the required sample rate
+            resampled_buffer, resampling_state = audioop.ratecv(buffer, source.SAMPLE_WIDTH, 1, source.SAMPLE_RATE, snowboy_sample_rate, resampling_state)
+            resampled_frames.append(resampled_buffer)
+
+            # run Snowboy on the resampled audio
+            snowboy_result = detector.RunDetection(b"".join(resampled_frames))
+            assert snowboy_result != -1, "Error initializing streams or reading audio data"
+            if snowboy_result > 0: 
+                print("bruh has been uttered")
+                break  # wake word found
+        return b"".join(frames), elapsed_time
+
+    async def listen(self, source, timeout=None, phrase_time_limit=None, snowboy_configuration=None):
+        """ modified from SpeechRecognition python """
+        seconds_per_buffer = float(source.CHUNK) / source.SAMPLE_RATE
+        pause_buffer_count = int(math.ceil(self.pause_threshold / seconds_per_buffer))  # number of buffers of non-speaking audio during a phrase, before the phrase should be considered complete
+        phrase_buffer_count = int(math.ceil(self.phrase_threshold / seconds_per_buffer))  # minimum number of buffers of speaking audio before we consider the speaking audio a phrase
+        non_speaking_buffer_count = int(math.ceil(self.non_speaking_duration / seconds_per_buffer))  # maximum number of buffers of non-speaking audio to retain before and after a phrase
+
+        # read audio input for phrases until there is a phrase that is long enough
+        elapsed_time = 0  # number of seconds of audio read
+        buffer = b""  # an empty buffer means that the stream has ended and there is no data left to read
+        while True:
+            frames = collections.deque()
+
+            # read audio input until the hotword is said
+            # snowboy_location, snowboy_hot_word_files = snowboy_configuration
+            buffer, delta_time = await self.snowboy_wait_for_hot_word(source, timeout)
+            elapsed_time += delta_time
+            if len(buffer) == 0: break  # reached end of the stream
+
+            # read audio input until the phrase ends
+            pause_count, phrase_count = 0, 0
+            phrase_start_time = elapsed_time
+            while True:
+                # handle phrase being too long by cutting off the audio
+                elapsed_time += seconds_per_buffer
+                if phrase_time_limit and elapsed_time - phrase_start_time > phrase_time_limit:
+                    break
+
+                buffer = await source.stream.read(source.CHUNK)
+                if len(buffer) == 0: break  # reached end of the stream
+                frames.append(buffer)
+                phrase_count += 1
+
+                # check if speaking has stopped for longer than the pause threshold on the audio input
+                energy = audioop.rms(buffer, source.SAMPLE_WIDTH)  # unit energy of the audio signal within the buffer
+                if energy > self.energy_threshold:
+                    pause_count = 0
+                else:
+                    pause_count += 1
+                if pause_count > pause_buffer_count:  # end of the phrase
+                    break
+
+            # check how long the detected phrase is, and retry listening if the phrase is too short
+            phrase_count -= pause_count  # exclude the buffers for the pause before the phrase
+            if phrase_count >= phrase_buffer_count or len(buffer) == 0: break  # phrase is long enough or we've reached the end of the stream, so stop listening
+
+        # obtain frame data
+        for i in range(pause_count - non_speaking_buffer_count): frames.pop()  # remove extra non-speaking frames at the end
+        frame_data = b"".join(frames)
+        frame_data = frame_data[source.CHUNK:] # remove the first chunk so we don't hear any part of the bruh
+        return AudioData(frame_data, source.SAMPLE_RATE, source.SAMPLE_WIDTH)
+
+
+    async def recognize_sphinx(self, audio_data, keyword_entries=None, show_all=False):
+        """ modified from SpeechRecognition python """
+        assert isinstance(audio_data, AudioData), "``audio_data`` must be audio data"
+        assert keyword_entries is None or all(isinstance(keyword, (type(""), type(u""))) and 0 <= sensitivity <= 1 for keyword, sensitivity in keyword_entries), "``keyword_entries`` must be ``None`` or a list of pairs of strings and numbers between 0 and 1"
+        print("starting recognition")
+        language_directory = "audio/sphinx_en-US"
+            
+        acoustic_parameters_directory = os.path.join(language_directory, "acoustic-model")
+        language_model_file = os.path.join(language_directory, "language-model.lm.bin")
+        phoneme_dictionary_file = os.path.join(language_directory, "pronounciation-dictionary.dict")
+
+
+        # create decoder object
+        config = pocketsphinx.Decoder.default_config()
+        config.set_string("-hmm", acoustic_parameters_directory)  # set the path of the hidden Markov model (HMM) parameter files
+        config.set_string("-lm", language_model_file)
+        config.set_string("-dict", phoneme_dictionary_file)
+        config.set_string("-logfn", os.devnull)  # disable logging (logging causes unwanted output in terminal)
+        decoder = pocketsphinx.Decoder(config)
+
+        # obtain audio data
+        raw_data = audio_data.get_raw_data(convert_rate=16000, convert_width=2)  # the included language models require audio to be 16-bit mono 16 kHz in little-endian format
+        # obtain recognition results
+        if keyword_entries is not None:  # explicitly specified set of keywords
+            with tempfile.NamedTemporaryFile("w") as f:
+                # generate a keywords file - Sphinx documentation recommendeds sensitivities between 1e-50 and 1e-5
+                f.writelines("{} /1e{}/\n".format(keyword, 100 * sensitivity - 110) for keyword, sensitivity in keyword_entries)
+                f.flush()
+
+                # perform the speech recognition with the keywords file (this is inside the context manager so the file isn;t deleted until we're done)
+                decoder.set_kws("keywords", f.name)
+                decoder.set_search("keywords")
+                decoder.start_utt()  # begin utterance processing
+                decoder.process_raw(raw_data, False, True)  # process audio data with recognition enabled (no_search = False), as a full utterance (full_utt = True)
+                decoder.end_utt()  # stop utterance processing
+
+        else:  # no keywords, perform freeform recognition
+            decoder.start_utt()  # begin utterance processing
+            decoder.process_raw(raw_data, False, True)  # process audio data with recognition enabled (no_search = False), as a full utterance (full_utt = True)
+            decoder.end_utt()  # stop utterance processing
+
+        if show_all: return decoder
+        # return results
+        hypothesis = decoder.hyp()
+        if hypothesis is not None: 
+            return hypothesis.hypstr
+        raise UnknownValueError()  # no transcriptions available
+
+    async def recognize_google(self, audio_data, key=None, show_all=False):
+        """ modified from SpeechRecognition python """
+
+        flac_data = audio_data.get_flac_data(
+            convert_rate=None if audio_data.sample_rate >= 8000 else 8000,  # audio samples must be at least 8 kHz
+            convert_width=2  # audio samples must be 16-bit
+        )
+        if key is None: key = "AIzaSyBOti4mM-6x9WDnZIjIeyEU21OpBXqWBgw"
+        url = "http://www.google.com/speech-api/v2/recognize?{}".format(urlencode({
+            "client": "chromium",
+            "lang": "en-US",
+            "key": key,
+        }))
+        request = Request(url, data=flac_data, headers={"Content-Type": "audio/x-flac; rate={}".format(audio_data.sample_rate)})
+
+        # obtain audio transcription results
+        try:
+            response = urlopen(request, timeout=self.operation_timeout)
+        except HTTPError as e:
+            raise RequestError("recognition request failed: {}".format(e.reason))
+        except URLError as e:
+            raise RequestError("recognition connection failed: {}".format(e.reason))
+        response_text = response.read().decode("utf-8")
+
+        # ignore any blank blocks
+        actual_result = []
+        for line in response_text.split("\n"):
+            if not line: continue
+            result = json.loads(line)["result"]
+            if len(result) != 0:
+                actual_result = result[0]
+                break
+
+        # return results
+        if show_all: return actual_result
+        if not isinstance(actual_result, dict) or len(actual_result.get("alternative", [])) == 0: raise UnknownValueError()
+
+        if "confidence" in actual_result["alternative"]:
+            # return alternative with highest confidence score
+            best_hypothesis = max(actual_result["alternative"], key=lambda alternative: alternative["confidence"])
+        else:
+            # when there is no confidence available, we arbitrarily choose the first hypothesis.
+            best_hypothesis = actual_result["alternative"][0]
+        if "transcript" not in best_hypothesis: raise UnknownValueError()
+        return best_hypothesis["transcript"]
+
+    async def initListenerLoop(self):
+        while not self.stop:
+            with self.stream as source:
+                audio = await self.listen(source, snowboy_configuration=(
+                    "../src/audio/snowboy", ["../src/audio/snowboy/bruh.pmdl"]
+                ))
+                await self.callback(audio)
+
 
     def write(self, data):
-        self.wav_writer.writeframes(data.data)
-        # self.data.append(data.data)
-        # if isinstance(data.packet, RTPPacket):
-        #     print('got data')
-        #     self.wav_writer.writeframes(data.data)
-        # #     self.data.append(data.data)
-        #     self.needs_processing = True
+        self.buffer.put(data.data)
 
-        # elif self.needs_processing:
-        #     self.processAudio()
-        #     # self.data.clear()
-        # print(len(data.data), data.user, data.packet)
-
-    def read(self):
-        pass
 
     def cleanup(self):
-        self.stop()
+        self.stop = True

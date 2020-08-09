@@ -47,7 +47,7 @@ nltk == 3.5
 numpy == 1.15.4
 
 # src/bruh.py: 10
-opencv-python == 4.3.0.36
+# opencv-python == 4.3.0.36
 
 # src/bruh.py: 14
 PyDictionary == 2.0.1

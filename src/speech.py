@@ -1,44 +1,127 @@
+import asyncio
 import discord
 from discord.ext import commands
 
-from audio import DiscordPCMStream, TranscriptionSink
-import speech_recognition as sr
+from audio import DiscordPCMStream, TranscriptionSink, AudioClasses
+
+if not discord.opus.is_loaded():
+    discord.opus.load_opus('libopus.so')
 
 class Speech(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.ctx = None
         self.sink = None
-        self.r = sr.Recognizer()
+        self.command_mapping = None
+        self.task = None
 
-        if not discord.opus.is_loaded():
-            discord.opus.load_opus('libopus.so')
-
-    @staticmethod
-    def recognizerCallback(recognizer_instance, audio_data):
+    async def recognizer_callback(self, audio_data):
+        print("callback called")
+        # await self.ctx.invoke(self.command_mapping['test'][0])
         with open("pain.wav", "wb+") as f:
             f.write(audio_data.get_wav_data())
-        # try:
-        print(recognizer_instance.recognize_google(audio_data, show_all=True))
-        # except Exception as e:
-        #     print(e)
-
-    @commands.command(name='listen', aliases=['hear me out'])
-    async def listen(self, ctx):
-        if self.sink is None:
-            self.sink = TranscriptionSink(self.r, Speech.recognizerCallback)
         try:
+            pred = await self.sink.recognize_google(audio_data, 
+                # keyword_entries=[(x, 1) for x in self.command_mapping.keys()],  # doesn't work unfortunately
+                show_all=False
+            )
+            print(f'detected {pred}')
+            if pred in self.command_mapping:
+                print("in here")
+                await self.ctx.invoke(self.command_mapping[pred][0])
+            else:
+                await self.ctx.send("no understando", delete_after=10)
+
+            
+        except AudioClasses.UnknownValueError as e:
+            print(e)
+
+    @commands.command(name='listen', aliases=['alexa', 'hear me out'])
+    async def listen(self, ctx):
+        print("listening")
+        await ctx.invoke(self.command_mapping['test'][0])
+        if self.sink is None:
+            self.sink = TranscriptionSink(self.recognizer_callback)
+        try:
+            self.ctx = ctx
             vc = await ctx.author.voice.channel.connect()
-        except Exception as e:
+            vc.listen(self.sink)
+            await asyncio.sleep(3)  # record some data before trying to listen
+            self.task = asyncio.create_task(self.sink.initListenerLoop())
+        except discord.DiscordException as e:
             print("shid happen: {e}")
         
-        vc.listen(self.sink)
-
+        # self.sink.initListener()
         # sink.processAudio()
     
-    @commands.command(name='process')
-    async def process(self, ctx):
-        self.sink.processAudio()
+    @commands.command(name='cancel', aliases=['unlisten'])
+    async def cancel(self, ctx):
+        if self.task is not None and not self.task.cancelled():
+            self.task.cancel()
+
+    @commands.command()
+    async def test(self, ctx):
+        await ctx.send("shit working")
 
 def setup(bot):
-    bot.add_cog(Speech(bot))
+    speech = Speech(bot)
+    bot.add_cog(speech)
+
+    command_mapping = {
+        # true if has args, false otherwise
+        # bruh.py
+        "help": (bot.get_command('help'), False),
+        "clear": (bot.get_command('clear'), False),
+        "snap": (bot.get_command('snap'), False),
+        "spam": (bot.get_command('spam'), True),
+        "cringe": (bot.get_command('thatsprettycringe'), False),
+        "how long": (bot.get_command('howlong'), False),
+        "code": (bot.get_command('code'), False),
+        "censor": (bot.get_command('censor'), True),
+        "invite": (bot.get_command('invite'), False),
+        "die": (bot.get_command('die'), False),
+        "swear": (bot.get_command('swear'), False),
+        "swearat": (bot.get_command('swearat'), True),
+
+        "jacobify": (bot.get_command('jacobify'), True),
+        "prolixify": (bot.get_command('prolixify'), True),
+        "verbosify": (bot.get_command('verbosify'), True),
+
+        "cumber": (bot.get_command('cumber'), False),
+        "girl cumber": (bot.get_command('girlcumber'), False),
+        "cum": (bot.get_command('cum'), False),
+        "korra": (bot.get_command('korra'), False),
+        "valortne": (bot.get_command('valortne'), False),
+
+        # card.py?
+        "shitty hearthstone": (bot.get_command('shitty hearthstone'), False),
+        "hearthstone join": (bot.get_command('hearthstone join'), False),
+        "hearthstone reset": (bot.get_command('hearthstone reset'), False),
+        "time to duel": (bot.get_command('hearthstone itstimetoduel'), False),
+
+        # music.py
+        "connect": (bot.get_command('connect'), True),
+        "play": (bot.get_command('play'), True),
+        "now playing": (bot.get_command('now playing'), False),
+        "on jah": (bot.get_command('onjah'), False),
+        "moment": (bot.get_command('moment'), False),
+        "sicko mode": (bot.get_command('go'), False),
+        "jo jo": (bot.get_command('jojo'), False),
+        "gio gio": (bot.get_command('giogio'), False),
+        "pendi": (bot.get_command('pendi'), False),
+        "oof": (bot.get_command('oof'), False),
+        "x games": (bot.get_command('xgames'), False),
+        "this": (bot.get_command('this'), False),
+        "that": (bot.get_command('that'), False),
+        "finna": (bot.get_command('finna'), False),
+        "stop": (bot.get_command('stop'), False),
+        "shid": (bot.get_command('shid'), False),
+
+        # speech.py
+        # "listen": (bot.get_command('listen'), False),
+        "cancel": (bot.get_command('cancel'), False),
+        "test": (bot.get_command('test'), False),
+    }
+    speech.command_mapping = command_mapping
+
     print('Speech module loaded.')

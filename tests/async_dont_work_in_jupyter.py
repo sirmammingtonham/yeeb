@@ -8,6 +8,8 @@ import speech_recognition as sr
 import io
 import audioop
 import wave
+import threading
+import asyncio
 
 bot = commands.Bot(command_prefix='bruh ')
 bot.remove_command('help')
@@ -141,6 +143,9 @@ class DiscordPCMStream(sr.AudioSource):
     def __exit__(self, exc_type, exc_value, traceback):
         self.stream = None
         self.DURATION = None
+    
+    # def updateStream(self):
+    #     self.stream = DiscordPCMStream.PCMStream(self.stream_data, self.SAMPLE_WIDTH)
 
     class PCMStream(object):
         def __init__(self, stream_data, sample_width):
@@ -199,13 +204,13 @@ class TestSink(AudioSink):
     def __init__(self):
         self.data = []
         self.needs_processing = True
-        self.recognizer = sr.Recognizer()
-        self.wav_file = io.BytesIO()#"pain.wav" #io.BytesIO()  # "test.wav"  # BytesLoop()
-        self.wav_writer = wave.open(self.wav_file, "wb")
-        self.wav_writer.setnchannels(Decoder.CHANNELS)
-        self.wav_writer.setsampwidth(Decoder.SAMPLE_SIZE//Decoder.CHANNELS)
-        self.wav_writer.setframerate(Decoder.SAMPLING_RATE)
-        
+        self.r = sr.Recognizer()
+        # self.wav_file = io.BytesIO()#"pain.wav" #io.BytesIO()  # "test.wav"  # BytesLoop()
+        # self.wav_writer = wave.open(self.wav_file, "wb")
+        # self.wav_writer.setnchannels(Decoder.CHANNELS)
+        # self.wav_writer.setsampwidth(Decoder.SAMPLE_SIZE//Decoder.CHANNELS)
+        # self.wav_writer.setframerate(Decoder.SAMPLING_RATE)
+        self.stream = DiscordPCMStream(self.data)
         self.processing = False
 
     def test(self):
@@ -217,8 +222,8 @@ class TestSink(AudioSink):
         # data = audioop.tomono(data, Decoder.SAMPLE_SIZE//Decoder.CHANNELS, 1, 1)
         # audio = sr.AudioData(data, Decoder.SAMPLING_RATE, Decoder.SAMPLE_SIZE//Decoder.CHANNELS)
 
-        stream = DiscordPCMStream(data)
-        with stream as source:
+        # stream = DiscordPCMStream(data)
+        with self.stream as source:
             # frames = io.BytesIO()
             # while True:  # loop for the total number of chunks needed
 
@@ -238,12 +243,40 @@ class TestSink(AudioSink):
             f.write(audio.get_wav_data())
 
 
-    def processAudio(self):
-        stream = DiscordPCMStream(self.data)
-        with stream as source:
-            audio = self.recognizer.listen(source, snowboy_configuration=("../src/audio/snowboy", ["../src/audio/snowboy/bruh.pmdl"]))
-        with open("pain3.wav", "wb+") as f:
-            f.write(audio.get_wav_data())
+    def processAudio(self, callback):
+        assert isinstance(self.stream, sr.AudioSource), "Source must be an audio source"
+        running = [True]
+
+        def threaded_listen():
+            with self.stream as s:
+                while running[0]:
+                    try:  # listen for 3 seconds, then check again if the stop function has been called
+                        audio = self.r.listen(s, timeout=3, phrase_time_limit=5, snowboy_configuration=(
+                            "../src/audio/snowboy", ["../src/audio/snowboy/bruh.pmdl"]
+                        ))
+                    except sr.WaitTimeoutError:  # listening timed out, just try again
+                        print("timeoutted")
+                    else:
+                        print("success?")
+                        if running[0]: callback(self, audio)
+
+        def stopper(wait_for_stop=True):
+            running[0] = False
+            if wait_for_stop:
+                listener_thread.join()  # block until the background thread is done, which can take around 1 second
+
+        listener_thread = threading.Thread(target=threaded_listen)
+        listener_thread.daemon = True
+        listener_thread.start()
+
+        self.stop = stopper
+        return self.stop
+
+        # stream = DiscordPCMStream(self.data)
+        # with self.stream as source:
+        #     audio = self.recognizer.listen(source, snowboy_configuration=("../src/audio/snowboy", ["../src/audio/snowboy/bruh.pmdl"]))
+        # with open("pain3.wav", "wb+") as f:
+        #     f.write(audio.get_wav_data())
 
         # test = wave.open(self.wav_file, "rb")
 
@@ -307,20 +340,14 @@ class TestSink(AudioSink):
     def write(self, data):
         # BytesLoop.write(data.data)
         # if not self.processing:
-        self.data.append(data.data)
-            # self.wav_writer.writeframes(data.data)
-        # print(f"write: {self.wav_file.tell()}")
-        # self.processAudio()
-        # self.data.append(data.data)
-        # if isinstance(data.packet, RTPPacket):
-        #     print('got data')
-        #     self.data.append(data.data)
-        #     self.needs_processing = True
-
-        # elif self.needs_processing:
-        #     self.processAudio()
+        # if len(self.data) >= 500:
         #     self.data.clear()
-        # print(len(data.data), data.user, data.packet)
+        #     self.stream.updateStream()
+        # if data.packet == SilencePacket:
+        #     self.data.clear()
+        # else:
+        self.data.append(data.data)
+
 
     def read(self):
         pass
@@ -331,6 +358,9 @@ class TestSink(AudioSink):
 
 sink = TestSink()
 
+def callback(r_instance, audio):
+    print("callback called")
+    print(audio.get_raw_data())
 
 @bot.command()
 async def test(ctx):
@@ -339,6 +369,8 @@ async def test(ctx):
     # r.listen(source)
     vc = await ctx.author.voice.channel.connect()
     vc.listen(sink)
+    await asyncio.sleep(3)
+    sink.processAudio(callback)
     # sink.processAudio()
     # sink.test()
 
