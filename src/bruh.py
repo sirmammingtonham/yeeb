@@ -230,6 +230,8 @@ class Bruh(commands.Cog):
                 selected_words += ' ' + all_words[random.randrange(165)][:-1]
         
         elif num_times.isdigit():
+            if int(num_times) > 1000: num_times = 1000
+
             for i in range(int(num_times)):
                 selected_words += ' ' + all_words[random.randrange(165)][:-1]
 
