@@ -89,14 +89,14 @@ nltk == 3.5
 # discord/hearthstone/gameUtils.py: 2
 # discord/src/bruh.py: 12
 # discord/tests/cumber_tests.ipynb: 2,34
-numpy == 1.15.4
+numpy >= 1.15.4
 
 # discord/src/audio/TranscriptionSink.py: 17
 oauth2client == 4.1.3
 
 # discord/src/bruh.py: 11
 # discord/tests/cumber_tests.ipynb: 1,24,33
-opencv-python == 4.3.0.38
+opencv-python >= 4.3.0.38
 
 # discord/src/bruh.py: 7
 # discord/tests/old_bot.py: 7
