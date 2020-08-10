@@ -19,8 +19,6 @@ class Speech(commands.Cog):
         self.task = None
 
     async def recognizer_callback(self, audio_data):
-        with open("pain.flac", "wb+") as f:
-            f.write(audio_data.get_flac_data())
         try:
             r = sr.Recognizer()
             pred = await self.sink.recognize_google_cloud(audio_data, 
