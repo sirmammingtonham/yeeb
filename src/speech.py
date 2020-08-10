@@ -7,8 +7,6 @@ from audio import DiscordPCMStream, TranscriptionSink, AudioClasses
 if not discord.opus.is_loaded():
     discord.opus.load_opus('libopus.so')
 
-import speech_recognition as sr
-
 class Speech(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
