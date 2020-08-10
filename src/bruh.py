@@ -401,7 +401,7 @@ class Bruh(commands.Cog):
         # get 4 random abilities
         rand_abilities = []
         for _ in range(4):
-            rand_agent = random.choice(list(agents.values()))
+            rand_agent = random.choice(list(agents.keys()))
             rand_ability = random.choice(abilities[rand_agent])
             rand_abilities.append(verbosify.verbosify(rand_ability).upper())
 
