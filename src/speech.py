@@ -18,7 +18,6 @@ class Speech(commands.Cog):
 
     async def recognizer_callback(self, audio_data):
         try:
-            r = sr.Recognizer()
             pred = await self.sink.recognize_google_cloud(audio_data, 
                 list(self.command_mapping.keys()),
                 credentials_json="audio/yeeb-cloud.json",

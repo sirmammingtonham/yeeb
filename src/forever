@@ -4,4 +4,7 @@ from subprocess import Popen
 while True:
     print("\nStarting ")
     p = Popen("python3 bot.py", shell=True)
-    p.wait()
+    return_code = p.wait()
+    print(return_code)
+    if return_code == 0:
+        break
