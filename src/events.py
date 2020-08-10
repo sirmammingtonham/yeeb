@@ -106,7 +106,7 @@ class Events(commands.Cog):
                   
         if 'is gone' in text:
             #await self.play_.callback(self, ctx, search='https://www.youtube.com/watch?v=qmnCnnlFEC0')
-            await ctx.send('https://tenor.com/view/crab-safe-dance-gif-13211112')
+            await message.channel.send('https://tenor.com/view/crab-safe-dance-gif-13211112')
                   
     @commands.Cog.listener()
     async def on_member_join(self, member):
