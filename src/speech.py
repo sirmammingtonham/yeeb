@@ -7,28 +7,32 @@ from audio import DiscordPCMStream, TranscriptionSink, AudioClasses
 if not discord.opus.is_loaded():
     discord.opus.load_opus('libopus.so')
 
+import speech_recognition as sr
+
 class Speech(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.ctx = None
         self.sink = None
+        self.vc = None
         self.command_mapping = None
         self.task = None
 
     async def recognizer_callback(self, audio_data):
         print("callback called")
-        # await self.ctx.invoke(self.command_mapping['test'][0])
-        with open("pain.wav", "wb+") as f:
-            f.write(audio_data.get_wav_data())
+        with open("pain.flac", "wb+") as f:
+            f.write(audio_data.get_flac_data())
         try:
-            pred = await self.sink.recognize_google(audio_data, 
-                # keyword_entries=[(x, 1) for x in self.command_mapping.keys()],  # doesn't work unfortunately
+            r = sr.Recognizer()
+            pred = await self.sink.recognize_google_cloud(audio_data, 
+                list(self.command_mapping.keys()),
+                credentials_json="audio/yeeb-cloud.json",
                 show_all=False
             )
             print(f'detected {pred}')
-            if pred in self.command_mapping:
+            if pred.strip() in self.command_mapping:
                 print("in here")
-                await self.ctx.invoke(self.command_mapping[pred][0])
+                await self.ctx.invoke(self.command_mapping[pred.strip()][0])
             else:
                 await self.ctx.send("no understando", delete_after=10)
 
@@ -38,30 +42,32 @@ class Speech(commands.Cog):
 
     @commands.command(name='listen', aliases=['alexa', 'hear me out'])
     async def listen(self, ctx):
-        print("listening")
-        await ctx.invoke(self.command_mapping['test'][0])
+        await ctx.send("👁👄👁")
         if self.sink is None:
-            self.sink = TranscriptionSink(self.recognizer_callback)
+            self.sink = TranscriptionSink(self.recognizer_callback, asyncio.get_event_loop())
         try:
             self.ctx = ctx
-            vc = await ctx.author.voice.channel.connect()
-            vc.listen(self.sink)
-            await asyncio.sleep(3)  # record some data before trying to listen
+            self.vc = await ctx.author.voice.channel.connect()
+            self.vc.listen(self.sink)
+            await asyncio.sleep(1)  # record some data before trying to listen
             self.task = asyncio.create_task(self.sink.initListenerLoop())
         except discord.DiscordException as e:
             print("shid happen: {e}")
-        
-        # self.sink.initListener()
-        # sink.processAudio()
+
     
     @commands.command(name='cancel', aliases=['unlisten'])
     async def cancel(self, ctx):
         if self.task is not None and not self.task.cancelled():
             self.task.cancel()
+        self.vc.stop_listening()
 
-    @commands.command()
-    async def test(self, ctx):
-        await ctx.send("shit working")
+    # @commands.command()
+    # async def print(self, ctx):
+    #     await ctx.send("shit working")
+
+    # @commands.command()
+    # async def test(self, ctx):
+    #     await ctx.send("bruuhh finalyl")
 
 def setup(bot):
     speech = Speech(bot)

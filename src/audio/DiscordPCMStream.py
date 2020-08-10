@@ -41,6 +41,6 @@ class DiscordPCMStream:
             self.bytesPosition = 0
 
         async def read(self, sample_offset=0):
-            buffer = self.stream_data.get()
+            buffer = await self.stream_data.get()
             buffer = audioop.tomono(buffer, self.SAMPLE_WIDTH, 1, 1)  # convert stereo audio data to mono (this is the part that fucked me up bruh)
             return buffer

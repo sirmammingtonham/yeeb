@@ -4,17 +4,28 @@ from discord.reader import AudioSink
 from .DiscordPCMStream import DiscordPCMStream
 from .AudioClasses import WaitTimeoutError, RequestError, UnknownValueError, AudioData
 
+import asyncio
 import os, sys
 import math
 import audioop
 import tempfile
 import threading, collections, queue
 import json
+import base64
 # from pocketsphinx import pocketsphinx, Jsgf, FsgModel
 
-from urllib.parse import urlencode
-from urllib.request import Request, urlopen
-from urllib.error import URLError, HTTPError
+# from urllib.parse import urlencode
+# from urllib.request import Request, urlopen
+# from urllib.error import URLError, HTTPError
+
+from oauth2client.client import GoogleCredentials
+from googleapiclient.discovery import build
+import googleapiclient.errors
+
+# cannot simply use 'http = httplib2.Http(timeout=self.operation_timeout)'
+# because discovery.build() says 'Arguments http and credentials are mutually exclusive'
+import socket
+import googleapiclient.http
 
 snowboy_location = "audio/snowboy"
 snowboy_hot_word_files = ["audio/snowboy/bruh.pmdl"]
@@ -24,7 +35,7 @@ import snowboydetect
 sys.path.pop()
 
 class TranscriptionSink(AudioSink):
-    def __init__(self, callback):
+    def __init__(self, callback, loop):
         # recognizer variables
         self.energy_threshold = 300  # minimum audio energy to consider for recording
         self.dynamic_energy_threshold = True
@@ -36,12 +47,13 @@ class TranscriptionSink(AudioSink):
         self.non_speaking_duration = 0.5  # seconds of non-speaking audio to keep on both sides of the recording
 
         # sink variables
-        self.buffer = queue.Queue()
+        self.buffer = asyncio.Queue()
         self.callback = callback
-
         self.stream = DiscordPCMStream(self.buffer)
 
+        self.loop = loop
         self.stop = False
+
 
     async def snowboy_wait_for_hot_word(self, source, timeout=None):
         """ modified from SpeechRecognition python """
@@ -92,6 +104,7 @@ class TranscriptionSink(AudioSink):
         # read audio input for phrases until there is a phrase that is long enough
         elapsed_time = 0  # number of seconds of audio read
         buffer = b""  # an empty buffer means that the stream has ended and there is no data left to read
+        snowboy_configuration = None
         while True:
             frames = collections.deque()
 
@@ -129,7 +142,7 @@ class TranscriptionSink(AudioSink):
             if phrase_count >= phrase_buffer_count or len(buffer) == 0: break  # phrase is long enough or we've reached the end of the stream, so stop listening
 
         # obtain frame data
-        for i in range(pause_count - non_speaking_buffer_count): frames.pop()  # remove extra non-speaking frames at the end
+        for i in range(pause_count - non_speaking_buffer_count - 5): frames.pop()  # remove extra non-speaking frames at the end, but leave a bit for detection purposes
         frame_data = b"".join(frames)
         frame_data = frame_data[source.CHUNK:] # remove the first chunk so we don't hear any part of the bruh
         return AudioData(frame_data, source.SAMPLE_RATE, source.SAMPLE_WIDTH)
@@ -183,51 +196,45 @@ class TranscriptionSink(AudioSink):
             return hypothesis.hypstr
         raise UnknownValueError()  # no transcriptions available
 
-    async def recognize_google(self, audio_data, key=None, show_all=False):
+    async def recognize_google_cloud(self, audio_data, preferred_phrases, credentials_json=None, show_all=False):
         """ modified from SpeechRecognition python """
 
+        # See https://cloud.google.com/speech/reference/rest/v1/RecognitionConfig
         flac_data = audio_data.get_flac_data(
-            convert_rate=None if audio_data.sample_rate >= 8000 else 8000,  # audio samples must be at least 8 kHz
+            convert_rate=None if 8000 <= audio_data.sample_rate <= 48000 else max(8000, min(audio_data.sample_rate, 48000)),  # audio sample rate must be between 8 kHz and 48 kHz inclusive - clamp sample rate into this range
             convert_width=2  # audio samples must be 16-bit
         )
-        if key is None: key = "AIzaSyBOti4mM-6x9WDnZIjIeyEU21OpBXqWBgw"
-        url = "http://www.google.com/speech-api/v2/recognize?{}".format(urlencode({
-            "client": "chromium",
-            "lang": "en-US",
-            "key": key,
-        }))
-        request = Request(url, data=flac_data, headers={"Content-Type": "audio/x-flac; rate={}".format(audio_data.sample_rate)})
 
-        # obtain audio transcription results
+        if self.operation_timeout and socket.getdefaulttimeout() is None:
+            # override constant (used by googleapiclient.http.build_http())
+            googleapiclient.http.DEFAULT_HTTP_TIMEOUT_SEC = self.operation_timeout
+
+        api_credentials = GoogleCredentials.from_stream(credentials_json)
+
+        speech_service = build("speech", "v1", credentials=api_credentials, cache_discovery=False)
+        speech_config = {"encoding": "FLAC", 
+            "sampleRateHertz": audio_data.sample_rate, 
+            "languageCode": "en-US", 
+            "speechContexts": [{"phrases": preferred_phrases}]
+        }
+        if show_all:
+            speech_config["enableWordTimeOffsets"] = True  # some useful extra options for when we want all the output
+        request = speech_service.speech().recognize(body={"audio": {"content": base64.b64encode(flac_data).decode("utf8")}, "config": speech_config})
+
         try:
-            response = urlopen(request, timeout=self.operation_timeout)
-        except HTTPError as e:
-            raise RequestError("recognition request failed: {}".format(e.reason))
+            response = request.execute()
+        except googleapiclient.errors.HttpError as e:
+            raise RequestError(e)
         except URLError as e:
-            raise RequestError("recognition connection failed: {}".format(e.reason))
-        response_text = response.read().decode("utf-8")
+            raise RequestError("recognition connection failed: {0}".format(e.reason))
+        
+        if show_all: return response
+        if "results" not in response or len(response["results"]) == 0: raise UnknownValueError()
+        transcript = ""
+        for result in response["results"]:
+            transcript += result["alternatives"][0]["transcript"].strip() + " "
 
-        # ignore any blank blocks
-        actual_result = []
-        for line in response_text.split("\n"):
-            if not line: continue
-            result = json.loads(line)["result"]
-            if len(result) != 0:
-                actual_result = result[0]
-                break
-
-        # return results
-        if show_all: return actual_result
-        if not isinstance(actual_result, dict) or len(actual_result.get("alternative", [])) == 0: raise UnknownValueError()
-
-        if "confidence" in actual_result["alternative"]:
-            # return alternative with highest confidence score
-            best_hypothesis = max(actual_result["alternative"], key=lambda alternative: alternative["confidence"])
-        else:
-            # when there is no confidence available, we arbitrarily choose the first hypothesis.
-            best_hypothesis = actual_result["alternative"][0]
-        if "transcript" not in best_hypothesis: raise UnknownValueError()
-        return best_hypothesis["transcript"]
+        return transcript
 
     async def initListenerLoop(self):
         while not self.stop:
@@ -237,10 +244,9 @@ class TranscriptionSink(AudioSink):
                 ))
                 await self.callback(audio)
 
-
     def write(self, data):
-        self.buffer.put(data.data)
-
+        asyncio.run_coroutine_threadsafe(self.buffer.put(data.data), loop=self.loop)
+        
 
     def cleanup(self):
         self.stop = True
