@@ -59,14 +59,6 @@ class Speech(commands.Cog):
             self.task.cancel()
         self.vc.stop_listening()
 
-    # @commands.command()
-    # async def print(self, ctx):
-    #     await ctx.send("shit working")
-
-    # @commands.command()
-    # async def test(self, ctx):
-    #     await ctx.send("bruuhh finalyl")
-
 def setup(bot):
     speech = Speech(bot)
     bot.add_cog(speech)

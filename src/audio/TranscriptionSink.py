@@ -13,11 +13,10 @@ import threading, collections, queue
 import json
 import base64
 
+import socket
 from oauth2client.client import GoogleCredentials
 from googleapiclient.discovery import build
 import googleapiclient.errors
-
-import socket
 import googleapiclient.http
 
 snowboy_location = "audio/snowboy"
