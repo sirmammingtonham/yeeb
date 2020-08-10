@@ -3,7 +3,7 @@ from subprocess import Popen
 
 while True:
     print("\nStarting ")
-    p = Popen("python3 bot.py", shell=True)
+    p = Popen("python3.8 -m pipenv run python3 bot.py", shell=True)
     return_code = p.wait()
     print(return_code)
     if return_code == 0:
