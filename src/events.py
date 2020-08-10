@@ -105,7 +105,7 @@ class Events(commands.Cog):
             await message.channel.send('Hi ' + text + ', I\'m yeeb bot')
                   
         if 'is gone' in text:
-            await self.play_.callback(self, ctx, search='https://www.youtube.com/watch?v=qmnCnnlFEC0')
+            #await self.play_.callback(self, ctx, search='https://www.youtube.com/watch?v=qmnCnnlFEC0')
             await ctx.send('https://tenor.com/view/crab-safe-dance-gif-13211112')
                   
     @commands.Cog.listener()
