@@ -104,6 +104,10 @@ class Events(commands.Cog):
             text = text[text.find(im) + len(im)+1:]
             await message.channel.send('Hi ' + text + ', I\'m yeeb bot')
                   
+        if 'is gone' in text:
+            await self.play_.callback(self, ctx, search='https://www.youtube.com/watch?v=qmnCnnlFEC0')
+            await ctx.send('https://tenor.com/view/crab-safe-dance-gif-13211112')
+                  
     @commands.Cog.listener()
     async def on_member_join(self, member):
         if(member.guild.id == 319277087401705482):
