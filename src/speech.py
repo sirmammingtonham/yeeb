@@ -19,7 +19,6 @@ class Speech(commands.Cog):
         self.task = None
 
     async def recognizer_callback(self, audio_data):
-        print("callback called")
         with open("pain.flac", "wb+") as f:
             f.write(audio_data.get_flac_data())
         try:
@@ -31,7 +30,6 @@ class Speech(commands.Cog):
             )
             print(f'detected {pred}')
             if pred.strip() in self.command_mapping:
-                print("in here")
                 await self.ctx.invoke(self.command_mapping[pred.strip()][0])
             else:
                 await self.ctx.send("no understando", delete_after=10)

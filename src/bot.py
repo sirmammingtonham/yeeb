@@ -11,7 +11,6 @@ bot.remove_command('help')
 
 # status = ['Minecraft', 'Roblox', 'Fortnite', 'on split screen']
 extensions = ['bruh', 'music', 'events', 'card', 'speech']
-# extensions = ['speech']
 
 if __name__ == '__main__':
     for extension in extensions:

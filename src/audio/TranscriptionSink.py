@@ -12,18 +12,11 @@ import tempfile
 import threading, collections, queue
 import json
 import base64
-# from pocketsphinx import pocketsphinx, Jsgf, FsgModel
-
-# from urllib.parse import urlencode
-# from urllib.request import Request, urlopen
-# from urllib.error import URLError, HTTPError
 
 from oauth2client.client import GoogleCredentials
 from googleapiclient.discovery import build
 import googleapiclient.errors
 
-# cannot simply use 'http = httplib2.Http(timeout=self.operation_timeout)'
-# because discovery.build() says 'Arguments http and credentials are mutually exclusive'
 import socket
 import googleapiclient.http
 
