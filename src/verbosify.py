@@ -73,7 +73,7 @@ def get_breakpoint(msg):
     i = 2000
     while i > 0 and msg[i] != ' ': i -= 1
     
-    return 2000 if i is 0 else i
+    return 2000 if i == 0 else i
 
 # util function for better isdigit
 def isdigit(s):
@@ -100,10 +100,10 @@ def verbosify(input_sentence):
 # -- verbosify repetition -- #
 async def verbosify_ception(ctx, input_sentence, num_times):
     # edge cases
-    if num_times is 0:
+    if num_times == 0:
         await ctx.send(input_sentence)
         return
-    elif num_times is 1:
+    elif num_times == 1:
         await ctx.send(verbosify(input_sentence))
         return
 

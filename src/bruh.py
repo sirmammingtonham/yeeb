@@ -406,7 +406,7 @@ class Bruh(commands.Cog):
             rand_abilities.append(verbosify.verbosify(rand_ability).upper())
 
         rand_abilities = ', '.join(rand_abilities)
-        output = agent_text + '(' + rand_abilities + ')'
+        output = agent_text + '\nABILITIES: ' + rand_abilities
         await verbosify.verbosify_ception(ctx, output, num_times)
         
 
