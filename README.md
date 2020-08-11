@@ -54,3 +54,4 @@ yeeb bot: what is this? why does this exist? rip your discord server if you ever
 | `bruh oof` | Plays Roblox death sound |  |
 | `bruh xgames` | Playes the xgames mode vine |  |
 | `bruh hello` | Plays random video that says hello |  |
+| `bruh obama` | Plays clip from Mr. Flag |  |
