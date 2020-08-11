@@ -329,6 +329,7 @@ class Bruh(commands.Cog):
 
         # run verbosify numerous times
         await verbosify.verbosify_ception(ctx, input_sentence, num_times)
+        
 
     @commands.command()
     async def valortne(self, ctx, *args):
