@@ -24,6 +24,9 @@ yeeb bot: what is this? why does this exist? rip your discord server if you ever
 | `bruh swearat (user) (num)` | Swears at specified user given number of times. `twice` and `thrice` are valid num arguments | |
 | `bruh valortne (agent)` | Sends random Valorant agent description, verbosified. Or specify `agent` | |
 | `bruh korra` | Sends a random still from The Legend of Korra (or, 1/10 chance of Captain Cake licking a special cookie) | |
+| `bruh jacobify` | Verbosify command but slightly shittier |  |
+| `bruh cum` | Sends funny photo |  |
+| `bruh shityourpants` | Stops bot | This time it's only for bot contributors |
 |  |  |  |
 | **Hearthstone commands** |  |  |
 | `bruh shitty hearthstone` | Creates a bad game of hearthstone in the discord chat | Uses the [fireplace](https://github.com/jleclanche/fireplace) hearthstone simulator |
@@ -47,3 +50,7 @@ yeeb bot: what is this? why does this exist? rip your discord server if you ever
 | `bruh giogio` | Plays il vento d'oro, with a 4/5 chance to only play the best part |  |
 | `bruh finna smash` | Plays a random smash bros theme, with a high chance of playing ringading |  |
 | `bruh shid (time*)` | Joins and leaves the author's voice channel for (time) seconds | Default 10 seconds |
+| `bruh pendi` | Plays a random pendi song | https://www.youtube.com/channel/UC0irG5cbAEYFDzryfNp3Htg |
+| `bruh oof` | Plays Roblox death sound |  |
+| `bruh xgames` | Playes the xgames mode vine |  |
+| `bruh hello` | Plays random video that says hello |  |
