@@ -69,6 +69,10 @@ pendis = ['https://www.youtube.com/watch?v=X_hDLdwe7E8', 'https://www.youtube.co
     'https://www.youtube.com/watch?v=P_Lwtl85ADs'
 ]
 
+hellos = ['https://www.youtube.com/watch?v=7ZtyJK6mgLQ', 'https://www.youtube.com/watch?v=nlLhw1mtCFA',
+    'https://www.youtube.com/watch?v=3Njvr6-OVao', 'https://www.youtube.com/watch?v=z6-FWJteNLI'
+]
+
 ytdl = YoutubeDL(ytdlopts)
 
 if not discord.opus.is_loaded():
@@ -467,7 +471,7 @@ class Music(commands.Cog):
     @commands.command(name='onjah', aliases=['on jah', 'on_jah', 'on-jah', 'x'])
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def onjah_(self, ctx):
-        await self.play_.callback(self, ctx, search='https://www.youtube.com/watch?v=fGZb5SpRCi0')
+        await self.play_.callback(self, ctx, search='https://www.youtube.com/watch?v=EiUjYQgsmwA')
         await ctx.send('https://c7.uihere.com/files/510/792/52/jocelyn-flores-music-sad-club-dread-thumb.jpg')
 
     @commands.command(name='moment')
@@ -543,7 +547,7 @@ class Music(commands.Cog):
             if args[0] == 'verbose':
                 [embed.add_field(name="** **", value=desc, inline=True) for desc in article_descriptions]
             elif args[0] == 'verbosify':
-                [embed.add_field(name="** **", value=verbosify._verbosify(desc), inline=True) for desc in article_descriptions]
+                [embed.add_field(name="** **", value=verbosify.verbosify(desc), inline=True) for desc in article_descriptions]
             
 
         await ctx.send(embed=embed)
@@ -575,7 +579,10 @@ class Music(commands.Cog):
             except:
                 await ctx.voice_client.disconnect()
                 pass
-
+                       
+    @commands.command(name='hello', aliases=['howdy', 'hola', 'harro eburynyan'])
+    async def hello_(self, ctx):
+        await self.play_.callback(self, ctx, search=random.choice(hellos))
 
 def setup(bot):
     bot.add_cog(Music(bot))

@@ -21,6 +21,9 @@ dictionary = PyDictionary()
 def user_is_me(ctx):
     return ctx.author.id == 228017779511394304
 
+def user_is_bot_contributor(ctx):
+    return ctx.author.id == 228017779511394304 or ctx.author.id == 150093212034269184 or ctx.author.id == 188179573484158976
+
 class Bruh(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -227,6 +230,8 @@ class Bruh(commands.Cog):
                 selected_words += ' ' + all_words[random.randrange(165)][:-1]
         
         elif num_times.isdigit():
+            if int(num_times) > 1000: num_times = 1000
+
             for i in range(int(num_times)):
                 selected_words += ' ' + all_words[random.randrange(165)][:-1]
 
@@ -310,17 +315,9 @@ class Bruh(commands.Cog):
     
     @commands.command()
     async def verbosify(self, ctx, *, input_sentence):
-        # get spot to break up message
-        def get_breakpoint(msg):
-            i = 2000
-            while i > 0 and msg[i] != ' ': i -= 1
-            
-            return 2000 if i == 0 else i
-            
-        
         num_times = 1
         # Detect num_times argument. gotta check for positive and negative numbers
-        if input_sentence.split()[0].isdigit() or input_sentence.split()[0][1:].isdigit():
+        if verbosify.isdigit(input_sentence.split()[0]):
             num_times = int(input_sentence.split()[0])
 
             # bruh don't try to break it bruh
@@ -330,58 +327,88 @@ class Bruh(commands.Cog):
 
             input_sentence = ' '.join(input_sentence.split()[1:])
 
-        # edge cases
-        if num_times == 0:
-            await ctx.send(input_sentence)
-            return
-        elif num_times == 1:
-            await ctx.send(verbosify.verbosify(input_sentence))
-            return
-
-        # Run verbosify num_times number of times
-        to_print = [round(num_times*(i/5)) for i in range(1,5)] # when to print progress
-        max_char_count = False
-
-        verbosified = verbosify.verbosify(input_sentence)
-        msg = await ctx.send('`[1]` ' + verbosified)
+        # run verbosify numerous times
+        await verbosify.verbosify_ception(ctx, input_sentence, num_times)
         
-        for i in range(2, num_times):
-            if len(verbosified) > 10000: break  # would go past 10 messages...
-            new_verbosified = verbosify.verbosify(verbosified)
+
+    @commands.command()
+    async def valortne(self, ctx, *args):
+        agents = {
+            'SAGE': 'The bastion of China, Sage creates safety for herself and her team wherever she goes. Able to revive fallen friends and stave off forceful assaults, she provides a calm center to a hellish battlefield.',
+            'SOVA': 'Born from the eternal winter of Russia’s tundra, Sova tracks, finds, and eliminates enemies with ruthless efficiency and precision. His custom bow and incredible scouting abilities ensure that even if you run, you cannot hide.',
+            'BREACH': 'The bionic Swede Breach fires powerful, targeted kinetic blasts to aggressively clear a path through enemy ground. The damage and disruption he inflicts ensures no fight is ever fair.',
+            'VIPER': 'The American Chemist, Viper deploys an array of poisonous chemical devices to control the battlefield and cripple the enemy’s vision. If the toxins don’t kill her prey, her mind games surely will.',
+            'BRIMSTONE': 'Joining from the USA, Brimstone’s orbital arsenal ensures his squad always has the advantage. His ability to deliver utility precisely and safely make him the unmatched boots-on-the-ground commander.',
+            'CYPHER': 'The Moroccan information broker, Cypher is a one-man surveillance network who keeps tabs on the enemy’s every move. No secret is safe. No maneuver goes unseen. Cypher is always watching.',
+            'JETT': 'Representing her home country of South Korea, Jett’s agile and evasive fighting style lets her take risks no one else can. She runs circles around every skirmish, cutting enemies up before they even know what hit them.',
+            'OMEN': 'A phantom of a memory, Omen hunts in the shadows. He renders enemies blind, teleports across the field, then lets paranoia take hold as his foe scrambles to uncover where he might strike next.',
+            'PHOENIX': 'Hailing from the UK, Phoenix\'s star power shines through in his fighting style, igniting the battlefield with flash and flare. Whether he\'s got backup or not, he\'s rushing in to fight on his own terms.',
+            'RAZE': 'Raze explodes out of Brazil with her big personality and big guns. With her blunt-force-trauma playstyle, she excels at flushing entrenched enemies and clearing tight spaces with a generous dose of "boom".',
+            'REYNA': 'Forged in the heart of Mexico, Reyna dominates single combat, popping off with each kill she scores. Her capability is only limited by her raw skill, making her sharply dependent on performance.',
+            'KILLJOY': 'The genius of Germany, Killjoy secures and defends key battlefield positions with a collection of traps, turrets, and mines. Each invention is primed to punish any assailant too dumb to back down.'
+        }
+
+        types = {
+            'DUELIST': 'Duelists are self-sufficient fraggers who their team expects, through abilities and skills, to get high frags and seek out engagements first.',
+            'INITIATOR': 'Initiators challenge angles by setting up their team to enter contested ground and push defenders away.',
+            'CONTROLLER': 'Controllers are experts in slicing up dangerous territory to set their team up for success.',
+            'SENTINEL': 'Sentinels are defensive experts who can lock down areas and watch flanks, both on attacker and defender rounds.'
+        }
+
+        abilities = {
+            'SAGE': ['BARRIER ORB', 'SLOW ORB', 'HEALING ORB', 'RESURRECTION'],
+            'SOVA': ['OWL DRONE', 'SHOCK BOLT', 'RECON BOLT', 'HUNTER\'S FURY'],
+            'BREACH': ['AFTER SHOCK', 'FLASH POINT', 'FAULT LINE', 'ROLLING THUNDER'],
+            'VIPER': ['SNAKE BITE', 'POISON CLOUD', 'TOXIC SCREEN', 'POISON PIT'],
+            'BRIMSTONE': ['STIM BEACON', 'INCENDIARY', 'SKY SMOKE', 'ORBITAL STRIKE'],
+            'CYPHER': ['TRIP WIRE', 'CYBER CAGE', 'SPYCAM', 'NEUTRAL THEFT'],
+            'JETT': ['CLOUD BURST', 'UP DRAFT', 'TAILWIND', 'BLADE STORM'],
+            'OMEN': ['SHROUDED STEP', 'PARANOIA', 'DARK COVER', 'FROM THE SHADOWS'],
+            'PHOENIX': ['BLAZE', 'CURVEBALL', 'HOT HANDS', 'RUN IT BACK'],
+            'RAZE': ['BOOM BOT', 'BLAST PACK', 'PAINT SHELLS', 'SHOW STOPPER'],
+            'REYNA': ['LEER', 'DEVOUR', 'DISMISS', 'EMPRESS'],
+            'KILLJOY': ['ALARM BOT', 'NANO SWARM', 'TURRET', 'LOCKDOWN']
             
-            if len(new_verbosified) > 1990 and not max_char_count:
-                time.sleep(1)
-                await msg.edit(content='`[...]` ' + verbosified)
-                max_char_count = True
-            else:
-                verbosified = new_verbosified
+        }
 
-                if i in to_print and len(verbosified) < 1990:
-                    time.sleep(1)
-                    await msg.edit(content='`[{}]` {}'.format(i, verbosified))
+        # abilities = {
+        #     'BARRIER ORB': 'EQUIP a barrier orb. FIRE places a solid wall. ALT FIRE rotates the targeter.',
+        #     'SLOW ORB': 'EQUIP a slowing orb. FIRE to throw a slowing orb forward that detonates upon landing, creating a lingering fielld that slows players caught inside of it.',
+        #     'HEALING ORB': 'EQUIP a healing orb. FIRE with your crosshairs over a damaged ally to activate a heal-over-time on them. ALT FIRE while Sage is damaged to activate a self heal-over-time.'
+        #     'RESURRECTION': 'EQUIP a resurrection ability. FIRE with your crosshairs placed over a dead ally to begin resurrecting them. After a brief channel, the ally will be brought back to life with full health.',
 
-        # Final output
-        time.sleep(1)
-        verbosified = verbosify.verbosify(verbosified) # one last time
+        #     'OWL DRONE': 'EQUIP an owl drone. FIRE to deploy and take control of movement of the drone. While in control of the drone, FIRE to shoot a marking dart. This dart will reveal the location of any player struck by the dart.',
+        #     'SHOCK BOLT': 'EQUIP a bow with a shock bolt. FIRE to send the explosive bolt forward, detonating upon collision and damaging players nearby. HOLD FIRE to extend the range of the projectile. ALTERNATE FIRE to add up to two bounces to this arrow.',
+
+        #     'AFTERSHOCK': 'EQUIP a fusion charge. FIRE the charge to set a slow-acting burst through the wall. The burst does heavy damage to anyone caught in its area.'
+        # }
         
-        if len(verbosified) <= 2000: await msg.edit(content=verbosified)
-        else:
-            first_output = True
+        # default values
+        num_times = 1
+        agent_text = random.choice(list(agents.values()))
 
-            # keep looping until message is under 2000
-            while len(verbosified) > 2000:
-                bp = get_breakpoint(verbosified)
+        if len(args) == 1:
+            # 1 word arg = arg agent, 1 time
+            if args[0].upper() in agents: agent_text = agents[args[0].upper()]
+            # 1 numerical arg = random agent, arg times
+            elif verbosify.isdigit(args[0]): num_times = int(args[0])
+        
+        elif len(args) == 2:
+            # check first arg as agent
+            if args[0].upper() in agents: agent_text = agents[args[0].upper()]
+            # check second arg as number
+            if verbosify.isdigit(args[1]): num_times = int(args[1])
 
-                if first_output:
-                    await msg.edit(content=verbosified[:bp])
-                    first_output = False
-                else: await ctx.send(verbosified[:bp], delete_after=30)
-                
-                verbosified = verbosified[bp+1:]
+        # get 4 random abilities
+        rand_abilities = []
+        for _ in range(4):
+            rand_agent = random.choice(list(agents.keys()))
+            rand_ability = random.choice(abilities[rand_agent])
+            rand_abilities.append(verbosify.verbosify(rand_ability).upper())
 
-            # send last message
-            await ctx.send(verbosified, delete_after=30)
-
+        rand_abilities = ', '.join(rand_abilities)
+        output = agent_text + '(' + rand_abilities + ')'
+        await verbosify.verbosify_ception(ctx, output, num_times)
         
 
 
@@ -434,8 +461,9 @@ class Bruh(commands.Cog):
 
     @commands.command()
     async def korra(self, ctx):
+        will_cookie = 'https://media.discordapp.net/attachments/661185720211341312/739759077302861875/image0.jpg'
         links = [
-            'https://media.discordapp.net/attachments/661185720211341312/739759077302861875/image0.jpg',
+            'https://cdn.discordapp.com/attachments/661185720211341312/733258810713571378/Screenshot_20200716-0248022.png',
             'https://cdn.discordapp.com/attachments/661185720211341312/739748973597818880/unknown.png',
             'https://cdn.discordapp.com/attachments/661185720211341312/738668566793945098/unknown.png',
             'https://cdn.discordapp.com/attachments/661185720211341312/737209307900149811/unknown.png',
@@ -444,32 +472,23 @@ class Bruh(commands.Cog):
             'https://cdn.discordapp.com/attachments/661185720211341312/737203345894408232/unknown.png',
             'https://cdn.discordapp.com/attachments/661185720211341312/736516684663226398/unknown.png',
             'https://cdn.discordapp.com/attachments/661185720211341312/736511129538265128/unknown.png',
-            'https://cdn.discordapp.com/attachments/661185720211341312/733258810713571378/Screenshot_20200716-0248022.png',
+            'https://media.discordapp.net/attachments/661185720211341312/741580668592586783/unknown.png',
+            'https://media.discordapp.net/attachments/661185720211341312/741950835348471909/unknown.png',
+            'https://media.discordapp.net/attachments/661185720211341312/741950996279984138/unknown.png',
+            'https://media.discordapp.net/attachments/661185720211341312/741951109631049748/unknown.png',
+            'https://media.discordapp.net/attachments/661185720211341312/741952947122077696/unknown.png',
+            'https://media.discordapp.net/attachments/661185720211341312/741956214157475860/unknown.png',
         ]
 
-        i = random.randrange(len(links))
-        if i == 0: await ctx.send(links[0])
-        else: await ctx.send(links[i], delete_after=30)
-    
-    @commands.command()
-    async def valortne(self, ctx):
-        agents = [
-            'The bastion of China, Sage creates safety for herself and her team wherever she goes. Able to revive fallen friends and stave off forceful assaults, she provides a calm center to a hellish battlefield.',
-            'Born from the eternal winter of Russia’s tundra, Sova tracks, finds, and eliminates enemies with ruthless efficiency and precision. His custom bow and incredible scouting abilities ensure that even if you run, you cannot hide.',
-            'The bionic Swede Breach fires powerful, targeted kinetic blasts to aggressively clear a path through enemy ground. The damage and disruption he inflicts ensures no fight is ever fair.',
-            'The American Chemist, Viper deploys an array of poisonous chemical devices to control the battlefield and cripple the enemy’s vision. If the toxins don’t kill her prey, her mind games surely will.',
-            'Joining from the USA, Brimstone’s orbital arsenal ensures his squad always has the advantage. His ability to deliver utility precisely and safely make him the unmatched boots-on-the-ground commander.',
-            'The Moroccan information broker, Cypher is a one-man surveillance network who keeps tabs on the enemy’s every move. No secret is safe. No maneuver goes unseen. Cypher is always watching.',
-            'Representing her home country of South Korea, Jett’s agile and evasive fighting style lets her take risks no one else can. She runs circles around every skirmish, cutting enemies up before they even know what hit them.',
-            'A phantom of a memory, Omen hunts in the shadows. He renders enemies blind, teleports across the field, then lets paranoia take hold as his foe scrambles to uncover where he might strike next.',
-            'Hailing from the UK, Phoenix\'s star power shines through in his fighting style, igniting the battlefield with flash and flare. Whether he\'s got backup or not, he\'s rushing in to fight on his own terms.',
-            'Raze explodes out of Brazil with her big personality and big guns. With her blunt-force-trauma playstyle, she excels at flushing entrenched enemies and clearing tight spaces with a generous dose of "boom".',
-            'Forged in the heart of Mexico, Reyna dominates single combat, popping off with each kill she scores. Her capability is only limited by her raw skill, making her sharply dependent on performance.',
-            'The genius of Germany, Killjoy secures and defends key battlefield positions with a collection of traps, turrets, and mines. Each invention is primed to punish any assailant too dumb to back down.'
-        ]
+        if random.randrange(10) == 0: await ctx.send(will_cookie)
+        else: await ctx.send(random.choice(links), delete_after=30)
         
-        await ctx.send(verbosify.verbosify(random.choice(agents)))
-
+    @commands.command()
+    async def shityourpants(self, ctx):
+        if user_is_bot_contributor(ctx):
+            await self.bot.logout()
+        else:
+            await ctx.send('No. I have eaten my fiber.')
 
 def setup(bot):
     bot.add_cog(Bruh(bot))
