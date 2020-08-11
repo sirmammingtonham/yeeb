@@ -35,17 +35,25 @@ class Speech(commands.Cog):
 
     @commands.command(name='listen', aliases=['alexa', 'hear me out'])
     async def listen(self, ctx):
-        await ctx.send("👁👄👁")
         if self.sink is None:
             self.sink = TranscriptionSink(self.recognizer_callback, asyncio.get_event_loop())
         try:
             self.ctx = ctx
-            self.vc = await ctx.author.voice.channel.connect()
-            self.vc.listen(self.sink)
-            await asyncio.sleep(1)  # record some data before trying to listen
-            self.task = asyncio.create_task(self.sink.initListenerLoop())
-        except discord.DiscordException as e:
-            print("shid happen: {e}")
+            self.vc = ctx.voice_client
+            if self.vc is None:
+                try:
+                    self.vc = await ctx.author.voice.channel.connect()
+                except asyncio.TimeoutError:
+                    print(f"shid happen: {e}")
+
+            if not self.vc.is_listening():
+                self.vc.listen(self.sink)
+                await asyncio.sleep(1)  # record some data before trying to listen
+                self.task = asyncio.create_task(self.sink.initListenerLoop())
+                await ctx.send("👁👄👁")
+            else:
+                await ctx.send("already listening bruh")
+
 
     
     @commands.command(name='cancel', aliases=['unlisten'])
