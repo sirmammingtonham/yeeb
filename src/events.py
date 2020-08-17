@@ -108,8 +108,8 @@ class Events(commands.Cog):
         if 'is gone' in text:
             text = text.upper()
             image = cv2.imread('../images/crabrave.gif')
-            await message.channel.send(cv2.putText(image, text, (20,40), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=1,(255, 255, 255))
-                  
+            await message.channel.send(cv2.putText(image, text, (20,40), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=1,(255, 255, 255)))
+
     @commands.Cog.listener()
     async def on_member_join(self, member):
         if(member.guild.id == 319277087401705482):
