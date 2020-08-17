@@ -482,7 +482,7 @@ class Bruh(commands.Cog):
         if random.randrange(10) == 0: await ctx.send(will_cookie)
         else: await ctx.send(random.choice(links), delete_after=30)
         
-    @commands.command()
+    @commands.command(name='shityourpants', aliases=['shitthinebritches', 'poopyourself'])
     async def shityourpants(self, ctx):
         if user_is_bot_contributor(ctx):
             await self.bot.logout()
