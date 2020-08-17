@@ -25,42 +25,50 @@ class Speech(commands.Cog):
             )
             print(f'detected {pred}')
             if pred.strip() in self.command_mapping:
-                await self.ctx.invoke(self.command_mapping[pred.strip()][0])
+                try:
+                    await self.ctx.invoke(self.command_mapping[pred.strip()][0])
+                except Exception as e:
+                    print(f"error invoking {pred}: {e}")
+                    await self.ctx.send("bruh momenti", delete_after=15)
             else:
-                await self.ctx.send("no understando", delete_after=10)
+                await self.ctx.send("no understando", delete_after=15)
 
-            
         except AudioClasses.UnknownValueError as e:
+            await self.ctx.send("no understando", delete_after=15)
             print(e)
 
     @commands.command(name='listen', aliases=['alexa', 'hear me out'])
     async def listen(self, ctx):
         if self.sink is None:
             self.sink = TranscriptionSink(self.recognizer_callback, asyncio.get_event_loop())
-        try:
-            self.ctx = ctx
-            self.vc = ctx.voice_client
-            if self.vc is None:
-                try:
-                    self.vc = await ctx.author.voice.channel.connect()
-                except asyncio.TimeoutError:
-                    print(f"shid happen: {e}")
 
-            if not self.vc.is_listening():
-                self.vc.listen(self.sink)
-                await asyncio.sleep(1)  # record some data before trying to listen
-                self.task = asyncio.create_task(self.sink.initListenerLoop())
-                await ctx.send("👁👄👁")
-            else:
-                await ctx.send("already listening bruh")
+        self.ctx = ctx
+        self.vc = ctx.voice_client
+        if self.vc is None:
+            try:
+                self.vc = await ctx.author.voice.channel.connect()
+            except asyncio.TimeoutError:
+                print(f"shid happen: {e}")
 
+        if not self.vc.is_listening():
+            self.vc.listen(self.sink)
+            await asyncio.sleep(1)  # record some data before trying to listen
+            self.task = asyncio.create_task(self.sink.initListenerLoop())
+            await ctx.send("👁👄👁")
+        else:
+            await ctx.send("already listening bruh")
 
-    
     @commands.command(name='cancel', aliases=['unlisten'])
     async def cancel(self, ctx):
         if self.task is not None and not self.task.cancelled():
+            self.sink.cleanup()
             self.task.cancel()
         self.vc.stop_listening()
+        print("stopped listening")
+
+    @commands.command()
+    async def test(self, ctx):
+        await ctx.send("bruh")
 
 def setup(bot):
     speech = Speech(bot)

@@ -4,6 +4,7 @@ from discord.reader import AudioSink
 from .DiscordPCMStream import DiscordPCMStream
 from .AudioClasses import WaitTimeoutError, RequestError, UnknownValueError, AudioData
 
+from collections import deque
 import asyncio
 import os, sys
 import math
@@ -39,12 +40,20 @@ class TranscriptionSink(AudioSink):
         self.non_speaking_duration = 0.5  # seconds of non-speaking audio to keep on both sides of the recording
 
         # sink variables
-        self.buffer = asyncio.Queue()
+        self.buffer = deque()
+        self.queue = asyncio.Queue()
         self.callback = callback
-        self.stream = DiscordPCMStream(self.buffer)
+        self.stream = DiscordPCMStream(self.queue)
 
         self.loop = loop
         self.stop = False
+
+        ### debug stuff
+        # import wave
+        # self.bruh = wave.open("pain.wav", "wb")
+        # self.bruh.setnchannels(Decoder.CHANNELS)
+        # self.bruh.setsampwidth(Decoder.SAMPLE_SIZE//Decoder.CHANNELS)
+        # self.bruh.setframerate(Decoder.SAMPLING_RATE)
 
 
     async def snowboy_wait_for_hot_word(self, source, timeout=None):
@@ -229,16 +238,30 @@ class TranscriptionSink(AudioSink):
         return transcript
 
     async def initListenerLoop(self):
-        while not self.stop:
-            with self.stream as source:
+        with self.stream as source:
+            while not self.stop:
                 audio = await self.listen(source, snowboy_configuration=(
                     "../src/audio/snowboy", ["../src/audio/snowboy/bruh.pmdl"]
                 ))
                 await self.callback(audio)
 
+    # creates a deque to store frames issued at the same time, 
+    # then combines them once the original user speaks again (data structures moment)
     def write(self, data):
-        asyncio.run_coroutine_threadsafe(self.buffer.put(data.data), loop=self.loop)
+        self.buffer.append(data)
         
+        # check if the current data is spoken by the same guy as the bottom of the stack
+        loop_begin = self.buffer[0]
+        if data.user == loop_begin.user:
+            mix = self.buffer.popleft().data
+            # add up the frame data
+            while self.buffer:
+                mix = audioop.add(mix, self.buffer.popleft().data, 2)
+            # push the mix onto the async queue to be read
+            asyncio.run_coroutine_threadsafe(self.queue.put(mix), loop=self.loop)
+            
+            # debug stuff
+            # self.bruh.writeframes(mix)
 
     def cleanup(self):
         self.stop = True
