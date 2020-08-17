@@ -7,6 +7,7 @@ from bs4 import BeautifulSoup
 from mediawikiapi import MediaWikiAPI
 from random import shuffle
 from discord.utils import get
+import cv2
 
 ligma = [' balls\nhttps://i.ytimg.com/vi/ylYqTYJ8vbs/maxresdefault.jpg', ' dick\nhttps://i.ytimg.com/vi/ylYqTYJ8vbs/maxresdefault.jpg',
          ' deez nuts\nhttps://i.ytimg.com/vi/ylYqTYJ8vbs/maxresdefault.jpg', ' dick fit in yo mouth son?\nhttps://i.ytimg.com/vi/ylYqTYJ8vbs/maxresdefault.jpg',
@@ -105,8 +106,9 @@ class Events(commands.Cog):
             await message.channel.send('Hi ' + text + ', I\'m yeeb bot')
                   
         if 'is gone' in text:
-            #await self.play_.callback(self, ctx, search='https://www.youtube.com/watch?v=qmnCnnlFEC0')
-            await message.channel.send('https://tenor.com/view/crab-safe-dance-gif-13211112')
+            text = text.upper()
+            image = cv2.imread('../images/crabrave.gif')
+            await message.channel.send(cv2.putText(image, text, (20,40), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=1,(255, 255, 255))
                   
     @commands.Cog.listener()
     async def on_member_join(self, member):
