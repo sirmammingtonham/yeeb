@@ -361,8 +361,8 @@ class Bruh(commands.Cog):
             'BREACH': ['AFTER SHOCK', 'FLASH POINT', 'FAULT LINE', 'ROLLING THUNDER'],
             'VIPER': ['SNAKE BITE', 'POISON CLOUD', 'TOXIC SCREEN', 'POISON PIT'],
             'BRIMSTONE': ['STIM BEACON', 'INCENDIARY', 'SKY SMOKE', 'ORBITAL STRIKE'],
-            'CYPHER': ['TRIP WIRE', 'CYBER CAGE', 'SPYCAM', 'NEUTRAL THEFT'],
-            'JETT': ['CLOUD BURST', 'UP DRAFT', 'TAILWIND', 'BLADE STORM'],
+            'CYPHER': ['TRIP WIRE', 'CYBER CAGE', 'SPY CAMERA', 'NEURAL THEFT'],
+            'JETT': ['CLOUD BURST', 'UP DRAFT', 'TAIL WIND', 'BLADE STORM'],
             'OMEN': ['SHROUDED STEP', 'PARANOIA', 'DARK COVER', 'FROM THE SHADOWS'],
             'PHOENIX': ['BLAZE', 'CURVEBALL', 'HOT HANDS', 'RUN IT BACK'],
             'RAZE': ['BOOM BOT', 'BLAST PACK', 'PAINT SHELLS', 'SHOW STOPPER'],
@@ -407,7 +407,7 @@ class Bruh(commands.Cog):
             rand_abilities.append(verbosify.verbosify(rand_ability).upper())
 
         rand_abilities = ', '.join(rand_abilities)
-        output = agent_text + '(' + rand_abilities + ')'
+        output = agent_text + ' (' + rand_abilities + ')'
         await verbosify.verbosify_ception(ctx, output, num_times)
         
 

@@ -79,6 +79,13 @@ def get_breakpoint(msg):
 def isdigit(s):
     return s.isdigit() or s[1:].isdigit()
 
+# util function for correct case (title, upper, lower)
+def case_correction(word, syn):
+    if word == 'I': return syn
+
+    if word.istitle(): return syn.title()
+    elif word.isupper(): return syn.upper()
+    else: return syn.lower()
 
 
 # -- verbosify core function -- #
@@ -88,10 +95,12 @@ def verbosify(input_sentence):
     # go through every word
     for word, pos in pos_tag(get_word_list(input_sentence)):
         # punctuation/whitespace/possessive, whitelist, whitelist misspellings, normal word
-        if re.match(r'[^\w]', word) or word == "'s": new_sentence += word
-        elif any([word in s for s in WHITELIST]): new_sentence += get_whitelist_synonym(word)
-        elif word in MISSPELLINGS: new_sentence += get_whitelist_synonym(MISSPELLINGS[word])
-        else: new_sentence += get_synonym(word, get_wordnet_pos(pos))
+        if re.match(r'[^\w]', word) or word == "'s": to_add = word
+        elif any([word in s for s in WHITELIST]): to_add = get_whitelist_synonym(word)
+        elif word in MISSPELLINGS: to_add = get_whitelist_synonym(MISSPELLINGS[word])
+        else: to_add = get_synonym(word, get_wordnet_pos(pos))
+
+        new_sentence += case_correction(word, to_add)
 
     # return the sentence
     return new_sentence
