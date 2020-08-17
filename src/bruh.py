@@ -407,7 +407,9 @@ class Bruh(commands.Cog):
             rand_abilities.append(verbosify.verbosify(rand_ability).upper())
 
         rand_abilities = ', '.join(rand_abilities)
-        output = agent_text + ' (' + rand_abilities + ')'
+
+        output = agent_text + '\nABILITIES: ' + rand_abilities
+
         await verbosify.verbosify_ception(ctx, output, num_times)
         
 
@@ -483,7 +485,7 @@ class Bruh(commands.Cog):
         if random.randrange(10) == 0: await ctx.send(will_cookie)
         else: await ctx.send(random.choice(links), delete_after=30)
         
-    @commands.command()
+    @commands.command(name='shityourpants', aliases=['shitthinebritches', 'poopyourself'])
     async def shityourpants(self, ctx):
         if user_is_bot_contributor(ctx):
             await self.bot.logout()
