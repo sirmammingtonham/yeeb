@@ -26,8 +26,6 @@ class DiscordPCMStream:
         self.FRAME_COUNT = self.stream_data.qsize()*self.CHUNK  #len(b"".join(self.stream_data))
         self.DURATION = self.FRAME_COUNT / float(self.SAMPLE_RATE)
 
-        print(f"FRAME COUNT: {self.FRAME_COUNT}")
-
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
@@ -41,7 +39,6 @@ class DiscordPCMStream:
             self.bytesPosition = 0
 
         async def read(self, sample_offset=0):
-            print("reading")
             buffer = await self.stream_data.get()
             buffer = audioop.tomono(buffer, self.SAMPLE_WIDTH, 1, 1)  # convert stereo audio data to mono (this is the part that fucked me up bruh)
             return buffer
