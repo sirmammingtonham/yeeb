@@ -248,20 +248,24 @@ class TranscriptionSink(AudioSink):
     # creates a deque to store frames issued at the same time, 
     # then combines them once the original user speaks again (data structures moment)
     def write(self, data):
-        self.buffer.append(data)
-        
-        # check if the current data is spoken by the same guy as the bottom of the stack
-        loop_begin = self.buffer[0]
-        if data.user == loop_begin.user:
-            mix = self.buffer.popleft().data
-            # add up the frame data
-            while self.buffer:
-                mix = audioop.add(mix, self.buffer.popleft().data, 2)
-            # push the mix onto the async queue to be read
-            asyncio.run_coroutine_threadsafe(self.queue.put(mix), loop=self.loop)
-            
-            # debug stuff
-            # self.bruh.writeframes(mix)
+        # self.buffer.append(data)
+
+        if not self.buffer:
+            self.buffer.append(data)
+        else:
+            # check if the current data is spoken by the same guy as the bottom of the stack
+            loop_begin = self.buffer[0]
+            if data.user == loop_begin.user:
+                mix = self.buffer.popleft().data
+                # add up the frame data
+                while self.buffer:
+                    mix = audioop.add(mix, self.buffer.popleft().data, 2)
+                # push the mix onto the async queue to be read
+                asyncio.run_coroutine_threadsafe(self.queue.put(mix), loop=self.loop)
+                
+                # debug stuff
+                # self.bruh.writeframes(mix)
+            self.buffer.append(data)
 
     def cleanup(self):
         self.stop = True
