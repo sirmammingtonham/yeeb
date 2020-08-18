@@ -1,7 +1,12 @@
 #!/usr/bin/python3
+import os
 from subprocess import Popen
 
+os.system("pipenv shell")
 while True:
     print("\nStarting ")
-    p = Popen("python3 bot.py", shell=True)
-    p.wait()
+    p = Popen("python3.8 bot.py", shell=True)
+    return_code = p.wait()
+    print(return_code)
+    if return_code == 0:
+        break

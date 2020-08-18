@@ -149,6 +149,7 @@ class Events(commands.Cog):
 
             await message.channel.send('out.gif')
                   
+
     @commands.Cog.listener()
     async def on_member_join(self, member):
         if(member.guild.id == 319277087401705482):
