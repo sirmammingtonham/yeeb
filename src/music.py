@@ -413,8 +413,10 @@ class Music(commands.Cog):
         if len(args) == 0: return await ctx.send('choose a song bruh')
         elif len(args) == 1: search = args[0]
         else:
-            search = args[0]
-            if args[1].isdigit(): num_times = int(args[1])
+            search = args[1]
+            if args[0].isdigit(): num_times = int(args[0])
+        
+        print('it will run', num_times, 'times')
 
         await ctx.trigger_typing()
         vc = ctx.voice_client
@@ -431,7 +433,8 @@ class Music(commands.Cog):
         # If download is True, source will be a discord.FFmpegPCMAudio with a VolumeTransformer.
         source = await YTDLSource.create_source(ctx, search, loop=self.bot.loop, download=True)
         
-        for _ in range(num_times):
+        for i in range(num_times):
+            print('bet', i)
             await player.queue.put(source)
 
 
