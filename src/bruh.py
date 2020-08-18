@@ -480,6 +480,9 @@ class Bruh(commands.Cog):
             'https://media.discordapp.net/attachments/661185720211341312/741951109631049748/unknown.png',
             'https://media.discordapp.net/attachments/661185720211341312/741952947122077696/unknown.png',
             'https://media.discordapp.net/attachments/661185720211341312/741956214157475860/unknown.png',
+            'https://cdn.discordapp.com/attachments/661185720211341312/744820991078957076/unknown.png',
+            'https://cdn.discordapp.com/attachments/661185720211341312/744822933897347122/unknown.png',
+            'https://cdn.discordapp.com/attachments/425056372548173834/744426038238380032/unknown.png'
         ]
 
         if random.randrange(10) == 0: await ctx.send(will_cookie)
