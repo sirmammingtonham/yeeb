@@ -398,7 +398,7 @@ class Music(commands.Cog):
         await ctx.send(f":notes: Connected to channel: **{channel}**", delete_after=20)
         
     @commands.command(name='play', aliases=['p', 'pp'])
-    async def play_(self, ctx, *, search: str):
+    async def play_(self, ctx, *args):
         """Request a song and add it to the queue.
         This command attempts to join a valid voice channel if the bot is not already in one.
         Uses YTDL to automatically search and retrieve a song.
@@ -407,8 +407,15 @@ class Music(commands.Cog):
         search: str [Required]
             The song to search and retrieve using YTDL. This could be a simple search, an ID or URL.
         """
-        await ctx.trigger_typing()
 
+        # parse arguments
+        num_times = 1
+        if len(args) == 0: return await ctx.send('choose a song bruh')
+        elif len(args) == 1: search = args[0]
+        else:
+            search, num_times = args
+
+        await ctx.trigger_typing()
         vc = ctx.voice_client
 
         if not vc:
@@ -422,7 +429,9 @@ class Music(commands.Cog):
         # If download is False, source will be a dict which will be used later to regather the stream.
         # If download is True, source will be a discord.FFmpegPCMAudio with a VolumeTransformer.
         source = await YTDLSource.create_source(ctx, search, loop=self.bot.loop, download=True)
-        await player.queue.put(source)
+        
+        for _ in range(num_times):
+            await player.queue.put(source)
 
 
     @commands.command(name='whatsthisfire', aliases=['np', 'current', 'currentsong', 'playing', 'what\'sthisfire'])
