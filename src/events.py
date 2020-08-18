@@ -147,7 +147,7 @@ class Events(commands.Cog):
             # save frames as GIF
             frames[0].save('out.gif', save_all=True, append_images=frames[1:])
 
-            await message.channel.send('out.gif')
+            await message.channel.send('out.gif', delete_after=10)
                   
 
     @commands.Cog.listener()
