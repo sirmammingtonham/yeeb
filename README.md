@@ -8,7 +8,7 @@ yeeb bot: what is this? why does this exist? rip your discord server if you ever
 | `bruh apex (platform*) (user)` | Check apex legends stats for (user). api is pretty trash rn tho, so it can only track one legend, and whatever trackers you have equipped | Default is pc because pc is better. You can also use xbox or psn |
 | `bruh help` | Dms you "bet" |  |
 | `bruh clear (num)` | Clears (num) of messages from the chat channel |  |
-| `bruh snap` | Randomly clears half of all messages from the chat channel, and sends a gif of thanos doing fortnite dances |  |
+| `bruh snap` | Randomly clears half of all bot messages from the chat channel, and sends a gif of thanos doing fortnite dances |  |
 | `bruh finnasmash` | Tells you to use `bruh finna smash` instead lol |  |
 | `bruh spam (message) (num)` | Spams (message) into the chat channel (num) times | oof, luckily only I can use this |
 | `bruh thatsprettycringe` | Sends a pic of a cringe-ass nae nae baby |  |
