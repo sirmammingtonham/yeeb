@@ -128,7 +128,7 @@ class Bruh(commands.Cog):
         channel = ctx.message.channel
         messages = []
         async for message in ctx.channel.history(after=datetime.now() - timedelta(days=14)):
-            if not message.pinned:
+            if not message.pinned and message.author.id == 547156702626185230:
                 messages.append(message)
         random.shuffle(messages)
         await ctx.channel.delete_messages(messages[:len(messages)//2])
