@@ -508,7 +508,7 @@ class Music(commands.Cog):
         await self.play_.callback(self, ctx, search='https://www.youtube.com/watch?v=hLjTqH_ZvO4')
                         
     @commands.command(name='xgames', aliases=['o mah gahd', 'he on xgames'])
-    async def xgames_(self, ctx):
+    async def obama_(self, ctx):
         await self.play_.callback(self, ctx, search='https://www.youtube.com/watch?v=OWl_HlyHeVc')
 
     @commands.command(name='this')
