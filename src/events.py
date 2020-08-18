@@ -7,7 +7,6 @@ from bs4 import BeautifulSoup
 from mediawikiapi import MediaWikiAPI
 from random import shuffle
 from discord.utils import get
-import cv2
 
 from PIL import Image, ImageDraw, ImageSequence, ImageFile, ImageFont
 import io
@@ -123,7 +122,7 @@ class Events(commands.Cog):
                 color = '#fff'
                 
                 # draw message
-                myFont = ImageFont.truetype("GILLSANS.ttf", 42)
+                myFont = ImageFont.truetype("GILLSANS.TTF", 42)
                 top_msg = text[:-8].upper()
                 w, h = d.textsize(top_msg, font=myFont)
                 d.text(((W-w)/2, 50), top_msg, font=myFont, fill=color)
@@ -145,9 +144,10 @@ class Events(commands.Cog):
                 frames.append(frame)
                 
             # save frames as GIF
-            frames[0].save('out.gif', save_all=True, append_images=frames[1:])
-
-            await message.channel.send('out.gif')
+            f = io.BytesIO()
+            frames[0].save(f, format="GIF", save_all=True, append_images=frames[1:])
+            f.seek(0)
+            await message.channel.send(file=discord.File(f, 'obama.gif'))
                   
 
     @commands.Cog.listener()
