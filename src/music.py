@@ -408,6 +408,26 @@ class Music(commands.Cog):
             The song to search and retrieve using YTDL. This could be a simple search, an ID or URL.
         """
 
+        # core function
+        async def play_helper(self, ctx, search):
+            await ctx.trigger_typing()
+            vc = ctx.voice_client
+
+            if not vc:
+                await ctx.invoke(self.connect_)
+
+            elif ctx.author not in ctx.guild.voice_client.channel.members:
+                return await ctx.send(":notes: You're the reason why we can't have nice things. Join my voice channel to execute this command. smh my head.", delete_after=20)
+
+            player = self.get_player(ctx)
+
+            # If download is False, source will be a dict which will be used later to regather the stream.
+            # If download is True, source will be a discord.FFmpegPCMAudio with a VolumeTransformer.
+            source = await YTDLSource.create_source(ctx, search, loop=self.bot.loop, download=True)
+            
+            await player.queue.put(source)
+            
+        
         # parse arguments
         num_times = 1
         if len(args) == 0: return await ctx.send('choose a song bruh')
@@ -418,24 +438,11 @@ class Music(commands.Cog):
         
         print('it will run', num_times, 'times')
 
-        await ctx.trigger_typing()
-        vc = ctx.voice_client
-
-        if not vc:
-            await ctx.invoke(self.connect_)
-
-        elif ctx.author not in ctx.guild.voice_client.channel.members:
-            return await ctx.send(":notes: You're the reason why we can't have nice things. Join my voice channel to execute this command. smh my head.", delete_after=20)
-
-        player = self.get_player(ctx)
-
-        # If download is False, source will be a dict which will be used later to regather the stream.
-        # If download is True, source will be a discord.FFmpegPCMAudio with a VolumeTransformer.
-        source = await YTDLSource.create_source(ctx, search, loop=self.bot.loop, download=True)
-        
+        # run helper function
         for i in range(num_times):
-            print('bet', i)
-            await player.queue.put(source)
+            print('run', i)
+            play_helper(self, ctx, search)
+
 
 
     @commands.command(name='whatsthisfire', aliases=['np', 'current', 'currentsong', 'playing', 'what\'sthisfire'])
