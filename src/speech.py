@@ -23,6 +23,9 @@ class Speech(commands.Cog):
                 credentials_json="audio/yeeb-cloud.json",
                 show_all=False
             )
+
+            pred = pred.lower() # make all heard words lower
+
             print(f'detected {pred}')
             if pred.strip() in self.command_mapping:
                 try:
