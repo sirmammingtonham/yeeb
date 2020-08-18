@@ -413,7 +413,8 @@ class Music(commands.Cog):
         if len(args) == 0: return await ctx.send('choose a song bruh')
         elif len(args) == 1: search = args[0]
         else:
-            search, num_times = args
+            search = args[0]
+            if num_times.isdigit(): num_times = int(args[1])
 
         await ctx.trigger_typing()
         vc = ctx.voice_client
