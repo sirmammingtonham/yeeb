@@ -464,29 +464,29 @@ class Bruh(commands.Cog):
     @commands.command()
     async def korra(self, ctx):
         will_cookie = 'https://media.discordapp.net/attachments/661185720211341312/739759077302861875/image0.jpg'
-        links = [
-            'https://cdn.discordapp.com/attachments/661185720211341312/733258810713571378/Screenshot_20200716-0248022.png',
-            'https://cdn.discordapp.com/attachments/661185720211341312/739748973597818880/unknown.png',
-            'https://cdn.discordapp.com/attachments/661185720211341312/738668566793945098/unknown.png',
-            'https://cdn.discordapp.com/attachments/661185720211341312/737209307900149811/unknown.png',
-            'https://cdn.discordapp.com/attachments/661185720211341312/737203525330665502/unknown.png',
-            'https://cdn.discordapp.com/attachments/661185720211341312/737203457781530744/unknown.png',
-            'https://cdn.discordapp.com/attachments/661185720211341312/737203345894408232/unknown.png',
-            'https://cdn.discordapp.com/attachments/661185720211341312/736516684663226398/unknown.png',
-            'https://cdn.discordapp.com/attachments/661185720211341312/736511129538265128/unknown.png',
-            'https://media.discordapp.net/attachments/661185720211341312/741580668592586783/unknown.png',
-            'https://media.discordapp.net/attachments/661185720211341312/741950835348471909/unknown.png',
-            'https://media.discordapp.net/attachments/661185720211341312/741950996279984138/unknown.png',
-            'https://media.discordapp.net/attachments/661185720211341312/741951109631049748/unknown.png',
-            'https://media.discordapp.net/attachments/661185720211341312/741952947122077696/unknown.png',
-            'https://media.discordapp.net/attachments/661185720211341312/741956214157475860/unknown.png',
-            'https://cdn.discordapp.com/attachments/661185720211341312/744820991078957076/unknown.png',
-            'https://cdn.discordapp.com/attachments/661185720211341312/744822933897347122/unknown.png',
-            'https://cdn.discordapp.com/attachments/425056372548173834/744426038238380032/unknown.png'
-        ]
+        links = {
+            'https://cdn.discordapp.com/attachments/661185720211341312/733258810713571378/Screenshot_20200716-0248022.png': 7,
+            'https://cdn.discordapp.com/attachments/661185720211341312/739748973597818880/unknown.png': 8,
+            'https://cdn.discordapp.com/attachments/661185720211341312/738668566793945098/unknown.png': 6,
+            'https://cdn.discordapp.com/attachments/661185720211341312/737209307900149811/unknown.png': 3,
+            'https://cdn.discordapp.com/attachments/661185720211341312/737203525330665502/unknown.png': 6,
+            'https://cdn.discordapp.com/attachments/661185720211341312/737203457781530744/unknown.png': 8,
+            'https://cdn.discordapp.com/attachments/661185720211341312/737203345894408232/unknown.png': 8,
+            'https://cdn.discordapp.com/attachments/661185720211341312/736516684663226398/unknown.png': 5,
+            'https://cdn.discordapp.com/attachments/661185720211341312/736511129538265128/unknown.png': 6,
+            'https://media.discordapp.net/attachments/661185720211341312/741580668592586783/unknown.png': 3,
+            'https://media.discordapp.net/attachments/661185720211341312/741950835348471909/unknown.png': 8,
+            'https://media.discordapp.net/attachments/661185720211341312/741950996279984138/unknown.png': 6,
+            'https://media.discordapp.net/attachments/661185720211341312/741951109631049748/unknown.png': 6,
+            'https://media.discordapp.net/attachments/661185720211341312/741952947122077696/unknown.png': 7,
+            'https://media.discordapp.net/attachments/661185720211341312/741956214157475860/unknown.png': 8,
+            'https://cdn.discordapp.com/attachments/661185720211341312/744820991078957076/unknown.png': 12,
+            'https://cdn.discordapp.com/attachments/661185720211341312/744822933897347122/unknown.png': 6,
+            'https://cdn.discordapp.com/attachments/425056372548173834/744426038238380032/unknown.png': 5
+        }
 
-        if random.randrange(10) == 0: await ctx.send(will_cookie)
-        else: await ctx.send(random.choice(links), delete_after=30)
+        if random.randrange(int(len(links)/1.5)) == 0: await ctx.send(will_cookie)
+        else: await ctx.send(random.choices(list(links.keys()), weights=links.values(), k=1)[0], delete_after=30)
         
     @commands.command(name='shityourpants', aliases=['shitthinebritches', 'poopyourself'])
     async def shityourpants(self, ctx):
