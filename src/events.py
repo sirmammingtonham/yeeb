@@ -147,7 +147,7 @@ class Events(commands.Cog):
             f = io.BytesIO()
             frames[0].save(f, format="GIF", save_all=True, append_images=frames[1:])
             f.seek(0)
-            await message.channel.send(file=discord.File(f, 'obama.gif'))
+            await message.channel.send(file=discord.File(f, 'obama.gif'), delete_after=15)
                   
 
     @commands.Cog.listener()
