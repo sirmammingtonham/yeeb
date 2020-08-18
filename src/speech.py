@@ -82,7 +82,7 @@ def setup(bot):
         # bruh.py
         "help": (bot.get_command('help'), False),
         "clear": (bot.get_command('clear'), False),
-        "snap": (bot.get_command('snap'), False),
+        # "snap": (bot.get_command('snap'), False),
         "spam": (bot.get_command('spam'), True),
         "cringe": (bot.get_command('thatsprettycringe'), False),
         "how long": (bot.get_command('howlong'), False),
