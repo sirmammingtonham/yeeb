@@ -414,7 +414,7 @@ class Music(commands.Cog):
         elif len(args) == 1: search = args[0]
         else:
             search = args[0]
-            if num_times.isdigit(): num_times = int(args[1])
+            if args[1].isdigit(): num_times = int(args[1])
 
         await ctx.trigger_typing()
         vc = ctx.voice_client
