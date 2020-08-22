@@ -159,3 +159,18 @@ async def verbosify_ception(ctx, input_sentence, num_times):
 
         # send last message
         await ctx.send(verbosified, delete_after=30)
+
+
+
+
+# -- START DEFINE -- #
+async def get_definition(ctx, word):
+    # get lemma
+    syns = wordnet.synsets(word)
+    if len(syns) == 0: return await ctx.send("bruh: a male friend (often used as a form of address).")
+    else: syn = syns[0]
+
+    # get definition and example
+    output = '`' + word.replace('_', ' ') + ': ' + syns.definition() + '`\n'
+    if len(syns.examples()) == 0: return await ctx.send(output)
+    else: return await ctx.send(output + '>' + syns.examples()[0])

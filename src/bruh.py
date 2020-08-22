@@ -332,6 +332,11 @@ class Bruh(commands.Cog):
         
 
     @commands.command()
+    async def define(self, ctx, *args):
+        if len(args) == 0: await ctx.send("bruh: a male friend (often used as a form of address).")
+        else: await verbosify.get_definition(ctx, '_'.join(args).lower())
+
+    @commands.command()
     async def valortne(self, ctx, *args):
         agents = {
             'SAGE': 'The bastion of China, Sage creates safety for herself and her team wherever she goes. Able to revive fallen friends and stave off forceful assaults, she provides a calm center to a hellish battlefield.',
