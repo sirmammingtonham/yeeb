@@ -526,6 +526,10 @@ class Music(commands.Cog):
     async def xgames_(self, ctx):
         await self.play_helper(ctx, 'https://www.youtube.com/watch?v=OWl_HlyHeVc')
 
+    @commands.command(name='obama', aliases=['mr flag', 'president'])
+    async def obama_(self, ctx):
+        await self.play_helper(ctx, 'https://www.youtube.com/watch?v=TuTZjZ6lPxo')
+
     @commands.command(name='this')
     async def this_(self, ctx, *args):
         # vc = ctx.voice_client
