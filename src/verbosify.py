@@ -167,7 +167,7 @@ async def verbosify_ception(ctx, input_sentence, num_times):
 async def get_definition(ctx, word):
     # get lemma
     syns = wordnet.synsets(word)
-    if len(syns) == 0: return await ctx.send("bruh: a male friend (often used as a form of address).")
+    if len(syns) == 0: return await ctx.send("`bruh: a male friend (often used as a form of address).`\n> this big bruh headass.")
     else: syn = syns[0]
 
     # get definition and example

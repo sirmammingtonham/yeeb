@@ -1,0 +1,3 @@
+*.ipynb linguist-detectable=false
+src/audio/snowboy/* linguist-vendored
+src/audio/sphinx_en-US/* linguist-vendored
