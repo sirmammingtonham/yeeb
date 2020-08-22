@@ -171,6 +171,6 @@ async def get_definition(ctx, word):
     else: syn = syns[0]
 
     # get definition and example
-    output = '`' + word.replace('_', ' ') + ': ' + syns.definition() + '`\n'
-    if len(syns.examples()) == 0: return await ctx.send(output)
-    else: return await ctx.send(output + '>' + syns.examples()[0])
+    output = '`' + word.replace('_', ' ') + ': ' + syn.definition() + '`\n'
+    if len(syn.examples()) == 0: return await ctx.send(output)
+    else: return await ctx.send(output + '> ' + syn.examples()[0])
