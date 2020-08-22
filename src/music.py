@@ -433,13 +433,10 @@ class Music(commands.Cog):
         else:
             search = args[1]
             if args[0].isdigit(): num_times = int(args[0])
-        
-        print('it will run', num_times, 'times')
 
         # run helper function
         for i in range(num_times):
-            print('run', i)
-            await self.play_helper(ctx, search)
+            await play_helper(self, ctx, search)
 
 
 
