@@ -396,19 +396,9 @@ class Music(commands.Cog):
                 raise VoiceConnectionError(f'Connecting to channel: <{channel}> timed out. :regional_indicator_f: ')
 
         await ctx.send(f":notes: Connected to channel: **{channel}**", delete_after=20)
-        
-    @commands.command(name='play', aliases=['p', 'pp'])
-    async def play_(self, ctx, *, search: str):
-        """Request a song and add it to the queue.
-        This command attempts to join a valid voice channel if the bot is not already in one.
-        Uses YTDL to automatically search and retrieve a song.
-        Parameters
-        ------------
-        search: str [Required]
-            The song to search and retrieve using YTDL. This could be a simple search, an ID or URL.
-        """
-        await ctx.trigger_typing()
 
+    async def play_helper(self, ctx, search):
+        await ctx.trigger_typing()
         vc = ctx.voice_client
 
         if not vc:
@@ -422,7 +412,32 @@ class Music(commands.Cog):
         # If download is False, source will be a dict which will be used later to regather the stream.
         # If download is True, source will be a discord.FFmpegPCMAudio with a VolumeTransformer.
         source = await YTDLSource.create_source(ctx, search, loop=self.bot.loop, download=True)
+        
         await player.queue.put(source)
+        
+    @commands.command(name='play', aliases=['p', 'pp'])
+    async def play_(self, ctx, *args):
+        """Request a song and add it to the queue.
+        This command attempts to join a valid voice channel if the bot is not already in one.
+        Uses YTDL to automatically search and retrieve a song.
+        Parameters
+        ------------
+        search: str [Required]
+            The song to search and retrieve using YTDL. This could be a simple search, an ID or URL.
+        """
+            
+        # parse arguments
+        num_times = 1
+        if len(args) == 0: return await ctx.send('choose a song bruh')
+        elif len(args) == 1: search = args[0]
+        else:
+            search = args[1]
+            if args[0].isdigit(): num_times = int(args[0])
+
+        # run helper function
+        for i in range(num_times):
+            await play_helper(self, ctx, search)
+
 
 
     @commands.command(name='whatsthisfire', aliases=['np', 'current', 'currentsong', 'playing', 'what\'sthisfire'])
@@ -471,12 +486,12 @@ class Music(commands.Cog):
     @commands.command(name='onjah', aliases=['on jah', 'on_jah', 'on-jah', 'x'])
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def onjah_(self, ctx):
-        await self.play_.callback(self, ctx, search='https://www.youtube.com/watch?v=EiUjYQgsmwA')
+        await self.play_helper(ctx, 'https://www.youtube.com/watch?v=EiUjYQgsmwA')
         await ctx.send('https://c7.uihere.com/files/510/792/52/jocelyn-flores-music-sad-club-dread-thumb.jpg')
 
     @commands.command(name='moment')
     async def bruh_moment_(self, ctx):
-        await self.play_.callback(self, ctx, search='https://www.youtube.com/watch?v=2ZIpFytCSVc')
+        await self.play_helper(ctx, 'https://www.youtube.com/watch?v=2ZIpFytCSVc')
 
     @commands.command(name='go')
     @commands.cooldown(1, 10, commands.BucketType.user)
@@ -485,35 +500,35 @@ class Music(commands.Cog):
         for word in args:
             check += word
         if check == 'sickomode':
-            await self.play_.callback(self, ctx, search='https://www.youtube.com/watch?v=qMc6xlZaxYA')
+            await self.play_helper(ctx, 'https://www.youtube.com/watch?v=qMc6xlZaxYA')
             await ctx.send('https://media1.giphy.com/media/1oE3Ee4299mmXN8OYb/source.gif')
 
     @commands.command(name='jojo')
     async def jojo_(self, ctx, idx:int=None):
         if idx is None:
-            await self.play_.callback(self, ctx, search=random.choice(jojos))
+            await self.play_helper(ctx, random.choice(jojos))
         else:
-            await self.play_.callback(self, ctx, search=jojos[idx])
+            await self.play_helper(ctx, jojos[idx])
 
     @commands.command(name='giogio', aliases=['muda', 'piano', 'gangstar'])
     async def giogio_(self, ctx):
-        await self.play_.callback(self, ctx, search=random.choice(giogios))
+        await self.play_helper(ctx, random.choice(giogios))
                         
     @commands.command(name='pendi', aliases=['r u ok', '24/7 lofi hip hop', 'chilledcow'])
     async def pendi_(self, ctx):
-        await self.play_.callback(self, ctx, search=random.choice(pendis))
+        await self.play_helper(ctx, random.choice(pendis))
                         
     @commands.command(name='oof', aliases=['roblox', 'big oof'])
     async def oof_(self, ctx):
-        await self.play_.callback(self, ctx, search='https://www.youtube.com/watch?v=hLjTqH_ZvO4')
+        await self.play_helper(ctx, 'https://www.youtube.com/watch?v=hLjTqH_ZvO4')
                         
     @commands.command(name='xgames', aliases=['o mah gahd', 'he on xgames'])
     async def xgames_(self, ctx):
-        await self.play_.callback(self, ctx, search='https://www.youtube.com/watch?v=OWl_HlyHeVc')
-                        
+        await self.play_helper(ctx, 'https://www.youtube.com/watch?v=OWl_HlyHeVc')
+
     @commands.command(name='obama', aliases=['mr flag', 'president'])
     async def obama_(self, ctx):
-        await self.play_.callback(self, ctx, search='https://www.youtube.com/watch?v=TuTZjZ6lPxo')
+        await self.play_helper(ctx, 'https://www.youtube.com/watch?v=TuTZjZ6lPxo')
 
     @commands.command(name='this')
     async def this_(self, ctx, *args):
@@ -531,7 +546,7 @@ class Music(commands.Cog):
         #     song_split = song.split(' - ')
 
         #     await ctx.send(f'This is so sad, Alexa play {song_split[0]} by {song_split[-1]}')
-        #     await self.play_.callback(self, ctx, search=song)
+        #     await self.play_helper(ctx, song)
 
     @commands.command(name='that')
     async def that_(self, ctx, *args):
@@ -559,7 +574,7 @@ class Music(commands.Cog):
 
     @commands.command(name='finna', aliases=['smash', 'finna_smash', 'finna-smash'])
     async def finna_(self, ctx, *args):
-        await self.play_.callback(self, ctx, search=random.choice(smash))
+        await self.play_helper(ctx, random.choice(smash))
     
     @commands.command(name='stop', aliases=['disconnect', 'dc', 'gtfo', 'cease'])
     async def dc_(self, ctx):
@@ -583,22 +598,10 @@ class Music(commands.Cog):
             except:
                 await ctx.voice_client.disconnect()
                 pass
-                        
-    @commands.command(name='gone')
-    async def gone_(self, ctx, name:str=''):
-        if name == '':
-            pass
-        elif not name.startswith('<@'):
-            try:
-                name = ctx.guild.get_member_named(name).mention
-            except:
-                name = ctx.author.mention
-        await self.play_.callback(self, ctx, search='https://www.youtube.com/watch?v=LDU_Txk06tM')
-        await ctx.send(name + ' is gone https://tenor.com/view/crab-safe-dance-gif-13211112')
-
+                       
     @commands.command(name='hello', aliases=['howdy', 'hola', 'harro eburynyan'])
     async def hello_(self, ctx):
-        await self.play_.callback(self, ctx, search=random.choice(hellos))
+        await self.play_helper(ctx, random.choice(hellos))
 
 def setup(bot):
     bot.add_cog(Music(bot))

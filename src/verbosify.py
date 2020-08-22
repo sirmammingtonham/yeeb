@@ -1,5 +1,6 @@
 import random
 import re
+import time
 from nltk.corpus import wordnet
 from nltk import pos_tag
 
@@ -67,18 +68,109 @@ def get_wordnet_pos(treebank_tag):
     elif treebank_tag.startswith('R'): return 'r'
     else: return ''
 
+# get spot to break up message
+def get_breakpoint(msg):
+    i = 2000
+    while i > 0 and msg[i] != ' ': i -= 1
+    
+    return 2000 if i == 0 else i
 
-# -- main verbosify function -- #
+# util function for better isdigit
+def isdigit(s):
+    return s.isdigit() or s[1:].isdigit()
+
+# util function for correct case (title, upper, lower)
+def case_correction(word, syn):
+    if word == 'I': return syn
+
+    if word.istitle(): return syn.title()
+    elif word.isupper(): return syn.upper()
+    else: return syn.lower()
+
+
+# -- verbosify core function -- #
 def verbosify(input_sentence):
     new_sentence = ''
 
     # go through every word
     for word, pos in pos_tag(get_word_list(input_sentence)):
         # punctuation/whitespace/possessive, whitelist, whitelist misspellings, normal word
-        if re.match(r'[^\w]', word) or word == "'s": new_sentence += word
-        elif any([word in s for s in WHITELIST]): new_sentence += get_whitelist_synonym(word)
-        elif word in MISSPELLINGS: new_sentence += get_whitelist_synonym(MISSPELLINGS[word])
-        else: new_sentence += get_synonym(word, get_wordnet_pos(pos))
+        if re.match(r'[^\w]', word) or word == "'s": to_add = word
+        elif any([word in s for s in WHITELIST]): to_add = get_whitelist_synonym(word)
+        elif word in MISSPELLINGS: to_add = get_whitelist_synonym(MISSPELLINGS[word])
+        else: to_add = get_synonym(word, get_wordnet_pos(pos))
+
+        new_sentence += case_correction(word, to_add)
 
     # return the sentence
     return new_sentence
+
+
+# -- verbosify repetition -- #
+async def verbosify_ception(ctx, input_sentence, num_times):
+    # edge cases
+    if num_times == 0:
+        await ctx.send(input_sentence)
+        return
+    elif num_times == 1:
+        await ctx.send(verbosify(input_sentence))
+        return
+
+    # Run verbosify num_times number of times
+    to_print = [round(num_times*(i/5)) for i in range(1,5)] # when to print progress
+    max_char_count = False
+
+    verbosified = verbosify(input_sentence)
+    msg = await ctx.send('`[1]` ' + verbosified)
+    
+    for i in range(2, num_times):
+        if len(verbosified) > 10000: break  # would go past 10 messages...
+        new_verbosified = verbosify(verbosified)
+        
+        if len(new_verbosified) > 1990 and not max_char_count:
+            time.sleep(1)
+            await msg.edit(content='`[...]` ' + verbosified)
+            max_char_count = True
+        else:
+            verbosified = new_verbosified
+
+            if i in to_print and len(verbosified) < 1990:
+                time.sleep(1)
+                await msg.edit(content='`[{}]` {}'.format(i, verbosified))
+
+    # Final output
+    time.sleep(1)
+    verbosified = verbosify(verbosified) # one last time
+    
+    if len(verbosified) <= 2000: await msg.edit(content=verbosified)
+    else:
+        first_output = True
+
+        # keep looping until message is under 2000
+        while len(verbosified) > 2000:
+            bp = get_breakpoint(verbosified)
+
+            if first_output:
+                await msg.edit(content=verbosified[:bp])
+                first_output = False
+            else: await ctx.send(verbosified[:bp], delete_after=30)
+            
+            verbosified = verbosified[bp+1:]
+
+        # send last message
+        await ctx.send(verbosified, delete_after=30)
+
+
+
+
+# -- START DEFINE -- #
+async def get_definition(ctx, word):
+    # get lemma
+    syns = wordnet.synsets(word)
+    if len(syns) == 0: return await ctx.send("bruh: a male friend (often used as a form of address).")
+    else: syn = syns[0]
+
+    # get definition and example
+    output = '`' + word.replace('_', ' ') + ': ' + syns.definition() + '`\n'
+    if len(syns.examples()) == 0: return await ctx.send(output)
+    else: return await ctx.send(output + '>' + syns.examples()[0])

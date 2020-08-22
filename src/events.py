@@ -8,6 +8,10 @@ from mediawikiapi import MediaWikiAPI
 from random import shuffle
 from discord.utils import get
 
+from PIL import Image, ImageDraw, ImageSequence, ImageFile, ImageFont
+import io
+ImageFile.LOAD_TRUNCATED_IMAGES = True
+
 ligma = [' balls\nhttps://i.ytimg.com/vi/ylYqTYJ8vbs/maxresdefault.jpg', ' dick\nhttps://i.ytimg.com/vi/ylYqTYJ8vbs/maxresdefault.jpg',
          ' deez nuts\nhttps://i.ytimg.com/vi/ylYqTYJ8vbs/maxresdefault.jpg', ' dick fit in yo mouth son?\nhttps://i.ytimg.com/vi/ylYqTYJ8vbs/maxresdefault.jpg',
          ' ass, lil bitch\nhttps://i.ytimg.com/vi/ylYqTYJ8vbs/maxresdefault.jpg',
@@ -104,6 +108,48 @@ class Events(commands.Cog):
             text = text[text.find(im) + len(im)+1:]
             await message.channel.send('Hi ' + text + ', I\'m yeeb bot')
                   
+        if 'is gone' in text:
+            W, H = (352,200)
+            im = Image.open('../images/crabrave.gif')
+
+            frames = []
+            # Loop over each frame in the animated image
+            for frame in ImageSequence.Iterator(im):
+                frame = frame.convert('RGB')
+                
+                # Draw the text on the frame
+                d = ImageDraw.Draw(frame)
+                color = '#fff'
+                
+                # draw message
+                myFont = ImageFont.truetype("GILLSANS.TTF", 42)
+                top_msg = text[:-8].upper()
+                w, h = d.textsize(top_msg, font=myFont)
+                d.text(((W-w)/2, 50), top_msg, font=myFont, fill=color)
+                
+                w, h = d.textsize('IS GONE', font=myFont)
+                d.text(((W-w)/2, 100), 'IS GONE', font=myFont, fill=color)
+                
+                # draw line
+                d.line((int(W*0.15),H/2, int(W*0.85),H/2), fill=color)
+                
+                del d
+                
+                # save
+                b = io.BytesIO()
+                frame.save(b, format="GIF")
+                frame = Image.open(b)
+
+                # Then append the single frame image to a list of frames
+                frames.append(frame)
+                
+            # save frames as GIF
+            f = io.BytesIO()
+            frames[0].save(f, format="GIF", save_all=True, append_images=frames[1:])
+            f.seek(0)
+            await message.channel.send(file=discord.File(f, 'obama.gif'), delete_after=15)
+                  
+
     @commands.Cog.listener()
     async def on_member_join(self, member):
         if(member.guild.id == 319277087401705482):
