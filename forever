@@ -2,11 +2,11 @@
 import os
 from subprocess import Popen
 
+os.chdir(os.path.expanduser('~/yeeb/src/'))
 while True:
-    os.chdir("src/")
     print("\nStarting ")
     p = Popen("pipenv run python3.8 bot.py", shell=True)
     return_code = p.wait()
-    print(return_code)
+    print(f'Exit! Status: {return_code}')
     if return_code == 0:
         break
