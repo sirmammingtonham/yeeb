@@ -1,7 +1,0 @@
-{
-    "python.pythonPath": "C:\\Users\\ethan\\Anaconda3\\envs\\discord\\python.exe",
-    "python.linting.pylintEnabled": false,
-    "python.linting.banditEnabled": false,
-    "python.linting.enabled": false,
-    "python.linting.flake8Enabled": true
-}

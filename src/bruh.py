@@ -118,7 +118,7 @@ class Bruh(commands.Cog):
         await ctx.send('I\'m still logging all your data lol', delete_after=10)
 
     @clear.error
-    async def clear_error(error, ctx):
+    async def clear_error(self, error, ctx):
         if isinstance(error, MissingPermissions):
             await ctx.send('You don\'t have the power, peasant.')
 
@@ -135,7 +135,7 @@ class Bruh(commands.Cog):
         await ctx.send('perfectly balanced\nhttps://media1.tenor.com/images/d89ba4e965cb9144c82348a1c234d425/tenor.gif?itemid=11793362', delete_after=30)
 
     @snap.error
-    async def snap_error(error, ctx):
+    async def snap_error(self, error, ctx):
         if isinstance(error, MissingPermissions):
             await ctx.send('You don\'t have the power, peasant.')
 
@@ -210,13 +210,13 @@ class Bruh(commands.Cog):
             
     @commands.command()
     async def swear(self, ctx):
-        words = open("swearwords.txt").readlines()
+        words = open("../res/swearwords.txt").readlines()
         word = words[random.randrange(165)][:-1]
         await ctx.send(word)
         
     @commands.command()
     async def swearat(self, ctx, name:str='', num_times:str=''):
-        all_words = open("swearwords.txt").readlines()
+        all_words = open("../res/swearwords.txt").readlines()
         selected_words = all_words[random.randrange(165)][:-1]
         
         # see if "twice" or "thrice" is written in the command

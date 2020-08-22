@@ -104,6 +104,7 @@ venv.bak/
 .mypy_cache/
 
 # others
+.vscode/
 yeeb-cloud.json
 yeebbot.pem
 token.txt
