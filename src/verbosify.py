@@ -68,10 +68,6 @@ def get_wordnet_pos(treebank_tag):
     elif treebank_tag.startswith('R'): return 'r'
     else: return ''
 
-def get_last_msg(ctx):
-    channel = ctx.channel
-    return channel.get_message(channel.last_message_id)
-
 
 # get spot to break up message
 def get_breakpoint(msg):
@@ -114,7 +110,7 @@ def verbosify(input_sentence):
 # -- verbosify repetition -- #
 async def verbosify_ception(ctx, input_sentence, num_times):
     # get previous message if applicable
-    if input_sentence == 'that': input_sentence = get_last_msg(ctx)
+    if input_sentence == 'that': input_sentence = ctx.channel.last_message
 
     # edge cases
     if num_times == 0:
