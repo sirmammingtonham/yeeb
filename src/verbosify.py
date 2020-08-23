@@ -110,7 +110,7 @@ def verbosify(input_sentence):
 # -- verbosify repetition -- #
 async def verbosify_ception(ctx, input_sentence, num_times):
     # get previous message if applicable
-    if input_sentence == 'that': input_sentence = ctx.channel.last_message
+    if input_sentence == 'that': input_sentence = ctx.channel.last_message.content
 
     # edge cases
     if num_times == 0:
