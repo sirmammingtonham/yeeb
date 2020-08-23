@@ -182,17 +182,16 @@ def get_ud_data(word):
 # format output for bruh define
 def fdefine(word, meaning, examples):
     output = '`' + word + ': ' + meaning + '`\n'
+    if len(examples): output += '>>> _' + examples[0] + '_'
 
-    if len(examples) == 0: return output
-    else: return output + '> ' + examples[0]
-
+    return output.replace('&apos;', "'")
 
 # main bruh define function
 async def get_definition(ctx, word):
     syns = wordnet.synsets(word.replace(' ', '_'))
 
     # use nltk
-    if len(syns): return await (fdefine(word, syns[0].definition(), syns[0].examples()))
+    if len(syns): return await ctx.send(fdefine(word, syns[0].definition(), syns[0].examples()))
     
     # use urban dictionary if no lemma found
     else: return await ctx.send(fdefine(word, *get_ud_data(word)))
