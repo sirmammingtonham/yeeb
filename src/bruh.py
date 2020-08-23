@@ -14,6 +14,7 @@ from io import BytesIO
 
 import verbosify
 import time
+from bs4 import BeautifulSoup
 
 from PyDictionary import PyDictionary
 dictionary = PyDictionary()
@@ -334,6 +335,12 @@ class Bruh(commands.Cog):
     @commands.command()
     async def define(self, ctx, *args):
         await verbosify.get_definition(ctx, '_'.join(args).lower())
+    
+    @commands.command()
+    async def ud(self, ctx, *, word):
+        r = requests.get("http://www.urbandictionary.com/define.php?term={}".format(word.replace(' ', '%20')))
+        soup = BeautifulSoup(r.content)
+        await ctx.send(soup.find("div",attrs={"class":"meaning"}).text)
 
     @commands.command()
     async def valortne(self, ctx, *args):
