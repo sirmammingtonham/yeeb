@@ -174,20 +174,25 @@ async def verbosify_ception(ctx, input_sentence, num_times):
 
 
 # -- START DEFINE -- #
-def get_ud_def(word):
+def get_ud_data(word):
     r = requests.get("http://www.urbandictionary.com/define.php?term={}".format(word.replace('_', '%20')))
     soup = BeautifulSoup(r.content, "html.parser")
-    return soup.find("div",attrs={"class":"meaning"}).text
+    return (soup.find("div",attrs={"class":"meaning"}).text, [soup.find("div",attrs={"class":"example"}).text])
 
+# format output for bruh define
+def fdefine(word, meaning, examples):
+    output = '`' + word + ': ' + meaning + '`\n'
+
+    if len(examples) == 0: return output
+    else: return output + '> ' + examples[0]
+
+
+# main bruh define function
 async def get_definition(ctx, word):
-    # get lemma
-    syns = wordnet.synsets(word)
-    if len(syns) == 0:
-        return await ctx.send(get_ud_def(word))
-        # return await ctx.send("`bruh: a male friend (often used as a form of address).`\n> this big bruh headass.")
-    else: syn = syns[0]
+    syns = wordnet.synsets(word.replace(' ', '_'))
 
-    # get definition and example
-    output = '`' + word.replace('_', ' ') + ': ' + syn.definition() + '`\n'
-    if len(syn.examples()) == 0: return await ctx.send(output)
-    else: return await ctx.send(output + '> ' + syn.examples()[0])
+    # use nltk
+    if len(syns): return await (fdefine(word, syns[0].definition(), syns[0].examples()))
+    
+    # use urban dictionary if no lemma found
+    else: return await ctx.send(fdefine(word, *get_ud_data(word)))

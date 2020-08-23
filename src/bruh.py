@@ -332,8 +332,8 @@ class Bruh(commands.Cog):
         
 
     @commands.command()
-    async def define(self, ctx, *args):
-        await verbosify.get_definition(ctx, '_'.join(args).lower())
+    async def define(self, ctx, *, word):
+        await verbosify.get_definition(ctx, word.lower())
     
     @commands.command()
     async def valortne(self, ctx, *args):
