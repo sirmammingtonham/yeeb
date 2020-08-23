@@ -114,7 +114,7 @@ def verbosify(input_sentence):
 # -- verbosify repetition -- #
 async def verbosify_ception(ctx, input_sentence, num_times):
     # get previous message if applicable
-    if input_sentence == 'that': input_sentence = get_prev_msg(ctx)
+    if input_sentence == 'that': input_sentence = get_last_msg(ctx)
 
     # edge cases
     if num_times == 0:
