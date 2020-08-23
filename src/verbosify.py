@@ -110,7 +110,10 @@ def verbosify(input_sentence):
 # -- verbosify repetition -- #
 async def verbosify_ception(ctx, input_sentence, num_times):
     # get previous message if applicable
-    if input_sentence == 'that': input_sentence = await ctx.channel.history(limit=2).flatten()[1]
+    if input_sentence == 'that':
+        msg_history = await ctx.channel.history(limit=2).flatten()
+        input_sentence = msg_history[1].content
+        print('previous sentence:', input_sentence)
 
     # edge cases
     if num_times == 0:
