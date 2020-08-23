@@ -171,7 +171,7 @@ async def verbosify_ception(ctx, input_sentence, num_times):
 
 
 # -- START DEFINE -- #
-async def get_ud_def(word):
+def get_ud_def(word):
     r = requests.get("http://www.urbandictionary.com/define.php?term={}".format(word.replace(' ', '%20')))
     soup = BeautifulSoup(r.content, "html.parser")
     return soup.find("div",attrs={"class":"meaning"}).text
