@@ -4,6 +4,9 @@ import time
 from nltk.corpus import wordnet
 from nltk import pos_tag
 
+import requests
+from bs4 import BeautifulSoup
+
 # -- Helper functions for verbosify -- #
 MISSPELLINGS = {'im': "I'm", "i'm": "I'm", 'Im': "I'm", 'i': 'I'}
 WHITELIST = [['a', 'an', 'the'],

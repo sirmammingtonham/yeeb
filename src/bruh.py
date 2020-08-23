@@ -14,7 +14,6 @@ from io import BytesIO
 
 import verbosify
 import time
-from bs4 import BeautifulSoup
 
 from PyDictionary import PyDictionary
 dictionary = PyDictionary()
