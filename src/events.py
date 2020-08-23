@@ -122,7 +122,7 @@ class Events(commands.Cog):
                 color = '#fff'
                 
                 # draw message
-                myFont = ImageFont.truetype("GILLSANS.TTF", 42)
+                myFont = ImageFont.truetype("../res/GILLSANS.TTF", 42)
                 top_msg = text[:-8].upper()
                 w, h = d.textsize(top_msg, font=myFont)
                 d.text(((W-w)/2, 50), top_msg, font=myFont, fill=color)

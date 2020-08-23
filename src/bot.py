@@ -4,7 +4,7 @@ import discord
 from discord.ext import commands
 
 
-with open("token.txt", "r") as f:
+with open("../res/token.txt", "r") as f:
     TOKEN = f.read()
 bot = commands.Bot(command_prefix = 'bruh ')
 bot.remove_command('help')

@@ -69,10 +69,6 @@ class Speech(commands.Cog):
         self.vc.stop_listening()
         print("stopped listening")
 
-    @commands.command()
-    async def test(self, ctx):
-        await ctx.send("bruh")
-
 def setup(bot):
     speech = Speech(bot)
     bot.add_cog(speech)
@@ -130,7 +126,6 @@ def setup(bot):
         # speech.py
         # "listen": (bot.get_command('listen'), False),
         "cancel": (bot.get_command('cancel'), False),
-        "test": (bot.get_command('test'), False),
     }
     speech.command_mapping = command_mapping
 
