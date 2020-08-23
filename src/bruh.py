@@ -337,12 +337,6 @@ class Bruh(commands.Cog):
         await verbosify.get_definition(ctx, '_'.join(args).lower())
     
     @commands.command()
-    async def ud(self, ctx, *, word):
-        r = requests.get("http://www.urbandictionary.com/define.php?term={}".format(word.replace(' ', '%20')))
-        soup = BeautifulSoup(r.content)
-        await ctx.send(soup.find("div",attrs={"class":"meaning"}).text)
-
-    @commands.command()
     async def valortne(self, ctx, *args):
         agents = {
             'SAGE': 'The bastion of China, Sage creates safety for herself and her team wherever she goes. Able to revive fallen friends and stave off forceful assaults, she provides a calm center to a hellish battlefield.',

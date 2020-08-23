@@ -171,10 +171,17 @@ async def verbosify_ception(ctx, input_sentence, num_times):
 
 
 # -- START DEFINE -- #
+async def get_ud_def(word):
+    r = requests.get("http://www.urbandictionary.com/define.php?term={}".format(word.replace(' ', '%20')))
+    soup = BeautifulSoup(r.content, "html.parser")
+    return soup.find("div",attrs={"class":"meaning"}).text
+
 async def get_definition(ctx, word):
     # get lemma
     syns = wordnet.synsets(word)
-    if len(syns) == 0: return await ctx.send("`bruh: a male friend (often used as a form of address).`\n> this big bruh headass.")
+    if len(syns) == 0:
+        return await ctx.send(get_ud_def(word))
+        # return await ctx.send("`bruh: a male friend (often used as a form of address).`\n> this big bruh headass.")
     else: syn = syns[0]
 
     # get definition and example
