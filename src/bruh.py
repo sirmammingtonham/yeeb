@@ -461,6 +461,64 @@ class Bruh(commands.Cog):
         r = requests.get("https://source.unsplash.com/featured/?cucumber")
         await ctx.send(r.url)
     
+    @commands.command()
+    async def blur(self, ctx, *, word):
+        def _cv2_radial_blur(img):
+            w, h = img.shape[:2]
+
+            center_x = w / 2
+            center_y = h / 2
+            blur = 0.005
+            iterations = 5
+
+            growMapx = np.tile(np.arange(h) + ((np.arange(h) - center_x)*blur), (w, 1)).astype(np.float32)
+            shrinkMapx = np.tile(np.arange(h) - ((np.arange(h) - center_x)*blur), (w, 1)).astype(np.float32)
+            growMapy = np.tile(np.arange(w) + ((np.arange(w) - center_y)*blur), (h, 1)).transpose().astype(np.float32)
+            shrinkMapy = np.tile(np.arange(w) - ((np.arange(w) - center_y)*blur), (h, 1)).transpose().astype(np.float32)
+
+            for i in range(iterations):
+                tmp1 = cv2.remap(img, growMapx, growMapy, cv2.INTER_LINEAR)
+                tmp2 = cv2.remap(img, shrinkMapx, shrinkMapy, cv2.INTER_LINEAR)
+                img = cv2.addWeighted(tmp1, 0.5, tmp2, 0.5, 0)
+
+        def _radically_blur(f, word):
+            # place image on white background
+            overlay = cv2.imdecode(np.fromstring(f.read(), np.uint8), 1)
+            overlay = cv2.resize(overlay, (400, 300))
+            img = np.full((500,800,3), 255, np.uint8)
+            img[100:400, 50:450] = overlay
+
+            # put text on image
+            cv2.putText(img, word, (500,250), cv2.FONT_HERSHEY_TRIPLEX, 2, (0,0,0), 3)
+
+            # blur image
+            img = _cv2_radial_blur(img)
+
+            # return
+            _, buffer = cv2.imencode(".jpg", img)
+            return buffer
+        
+
+        # get query keyword and word to display on image
+        query = word.replace(' ', '-')
+        i = word.find(' as ')
+        if i != -1:
+            query = word[:i].replace(' ', '-')
+            word = word[i+4:]
+
+        print(query, word)
+
+        r = requests.get("https://source.unsplash.com/featured/?{}".format(query))
+
+        if r.status_code == 200:
+            f = BytesIO(r.content)
+            blurred = _radically_blur(f, word)
+            await ctx.send(file=discord.File(BytesIO(blurred), 'blur_boi.jpg'))
+        else:
+            await ctx.send("this big bruh moment is a big bruh moment for sure")
+
+
+
     @commands.command(name='cum', aliases=['nut'])
     async def cum(self, ctx):
         await ctx.send("https://i.pinimg.com/736x/38/e9/57/38e957bb23e73d3759dda419cece5bc0.jpg")
@@ -492,6 +550,7 @@ class Bruh(commands.Cog):
 
         if random.randrange(int(len(links)/1.5)) == 0: await ctx.send(will_cookie)
         else: await ctx.send(random.choices(list(links.keys()), weights=links.values(), k=1)[0], delete_after=30)
+
         
     @commands.command(name='shityourpants', aliases=['shitthinebritches', 'poopyourself'])
     async def shityourpants(self, ctx):
