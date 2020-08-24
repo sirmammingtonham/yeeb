@@ -480,6 +480,8 @@ class Bruh(commands.Cog):
                 tmp1 = cv2.remap(img, growMapx, growMapy, cv2.INTER_LINEAR)
                 tmp2 = cv2.remap(img, shrinkMapx, shrinkMapy, cv2.INTER_LINEAR)
                 img = cv2.addWeighted(tmp1, 0.5, tmp2, 0.5, 0)
+            
+            return img
 
         def _radically_blur(f, word):
             # place image on white background
