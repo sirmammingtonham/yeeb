@@ -482,6 +482,24 @@ class Bruh(commands.Cog):
                 img = cv2.addWeighted(tmp1, 0.5, tmp2, 0.5, 0)
             
             return img
+        
+        def place_text(word, img):
+            INITIAL_Y = [None,250,210,170,130]
+            words = word.split()
+            y = 270 - 35*(len(words)-1) # initial y
+            
+            for word in words:
+                cv2.putText(img, word, (500,y), cv2.FONT_HERSHEY_TRIPLEX, 2, (0,0,0), 3)
+                y += 70
+            
+            return img
+
+            formatted = word.replace(' ', '\n')
+            print(formatted)
+
+            l = len(word.split())
+            if l < 5: return (formatted, (500,250 - 50*(l-1)))
+            else: return (formatted, (500,50))
 
         def _radically_blur(f, word):
             # place image on white background
@@ -491,10 +509,10 @@ class Bruh(commands.Cog):
             img[100:400, 50:450] = overlay
 
             # put text on image
-            cv2.putText(img, word, (500,250), cv2.FONT_HERSHEY_TRIPLEX, 2, (0,0,0), 3)
+            img = place_text(word, img)
 
             # blur image
-            img = _cv2_radial_blur(img)
+            return _cv2_radial_blur(img)
 
             # return
             _, buffer = cv2.imencode(".jpg", img)
