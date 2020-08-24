@@ -468,8 +468,8 @@ class Bruh(commands.Cog):
 
             center_x = w / 2
             center_y = h / 2
-            blur = 0.005
-            iterations = 5
+            blur = 0.008
+            iterations = 7
 
             growMapx = np.tile(np.arange(h) + ((np.arange(h) - center_x)*blur), (w, 1)).astype(np.float32)
             shrinkMapx = np.tile(np.arange(h) - ((np.arange(h) - center_x)*blur), (w, 1)).astype(np.float32)
