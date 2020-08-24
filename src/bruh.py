@@ -512,7 +512,7 @@ class Bruh(commands.Cog):
             img = place_text(word, img)
 
             # blur image
-            return _cv2_radial_blur(img)
+            img = _cv2_radial_blur(img)
 
             # return
             _, buffer = cv2.imencode(".jpg", img)
