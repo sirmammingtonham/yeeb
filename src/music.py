@@ -436,7 +436,7 @@ class Music(commands.Cog):
 
         # run helper function
         for i in range(num_times):
-            await play_helper(self, ctx, search)
+            await self.play_helper(ctx, search)
 
 
 
