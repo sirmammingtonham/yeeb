@@ -336,6 +336,10 @@ class Bruh(commands.Cog):
         await verbosify.get_definition(ctx, '_'.join(args).lower())
     
     @commands.command()
+    async def vernaculate(self, ctx, *args):
+        await ctx.send('<@&{}> it is gamer time'.format(748768498343346216))
+
+    @commands.command()
     async def valortne(self, ctx, *args):
         agents = {
             'SAGE': 'The bastion of China, Sage creates safety for herself and her team wherever she goes. Able to revive fallen friends and stave off forceful assaults, she provides a calm center to a hellish battlefield.',
