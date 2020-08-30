@@ -188,7 +188,8 @@ def fdefine(word, meaning, examples):
 
 # main bruh define function
 async def get_definition(ctx, args):
-    syns = wordnet.synsets('_'.join(args).lower())
+    word = ' '.join(args).lower()
+    syns = wordnet.synsets(word.replace(' ', '_'))
 
     # use nltk
     if len(syns): return await ctx.send(fdefine(word, syns[0].definition(), syns[0].examples()))
