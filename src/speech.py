@@ -27,9 +27,10 @@ class Speech(commands.Cog):
             pred = pred.lower() # make all heard words lower
 
             print(f'detected {pred}')
-            if pred.strip() in self.command_mapping:
+            if pred.strip()[0] in self.bot.commands:
                 try:
-                    await self.ctx.invoke(self.command_mapping[pred.strip()][0])
+                    pred = pred.strip()
+                    await self.ctx.invoke(self.bot.get_command(pred[0]), query=' '.join(pred[1]))
                 except Exception as e:
                     print(f"error invoking {pred}: {e}")
                     await self.ctx.send("bruh momenti", delete_after=15)
