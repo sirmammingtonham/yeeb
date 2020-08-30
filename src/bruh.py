@@ -333,8 +333,8 @@ class Bruh(commands.Cog):
         
 
     @commands.command()
-    async def define(self, ctx, *, word):
-        await verbosify.get_definition(ctx, word.lower())
+    async def define(self, ctx, *args):
+        await verbosify.get_definition(ctx, args)
     
     @commands.command()
     async def vernaculate(self, ctx, *args):
@@ -467,7 +467,7 @@ class Bruh(commands.Cog):
         await ctx.send(r.url)
     
     @commands.command()
-    async def blur(self, ctx, *, word):
+    async def blur(self, ctx, *args):
         def _cv2_radial_blur(img):
             w, h = img.shape[:2]
 
@@ -525,7 +525,7 @@ class Bruh(commands.Cog):
         
 
         # get query keyword and word to display on image
-        query = word.replace(' ', '-')
+        query = '-'.join(args)
         i = word.find(' as ')
         if i != -1:
             query = word[:i].replace(' ', '-')
