@@ -4,6 +4,7 @@ import asyncio
 from datetime import datetime, timedelta
 import random
 import requests
+from bs4 import BeautifulSoup
 from dateutil.relativedelta import relativedelta
 from apex_legends import ApexLegends
 
@@ -582,6 +583,14 @@ class Bruh(commands.Cog):
             await self.bot.logout()
         else:
             await ctx.send('No. I have eaten my fiber.')
+    
+    @commands.command(name='yo')
+    async def yo_mama(self, ctx):
+        response = requests.get('https://www.laughfactory.com/jokes/yo-momma-jokes')
+        soup = BeautifulSoup(response.text, 'html.parser')
+        div = soup.find_all('div', {'class': 'joke-text'})
+        jokes = [joke.find('p').text.strip() for joke in div]
+        await ctx.send(random.choice(jokes))
 
 def setup(bot):
     bot.add_cog(Bruh(bot))

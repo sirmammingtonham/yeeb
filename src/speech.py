@@ -24,13 +24,17 @@ class Speech(commands.Cog):
                 show_all=False
             )
 
-            pred = pred.lower() # make all heard words lower
+            pred = pred.lower().strip().split() # normalize input
+            cmd_name = pred[0]
+            query = ' '.join(pred[1:])
 
-            print(f'detected {pred}')
-            if pred.strip()[0] in self.bot.commands:
+            print('command is "' + cmd_name + '"')
+            print('query detected is "' + query + '"')
+            if self.bot.get_command(cmd_name): # can we find this command?
+                print('command found')
                 try:
-                    pred = pred.strip()
-                    await self.ctx.invoke(self.bot.get_command(pred[0]), query=' '.join(pred[1]))
+                    if not query: await self.ctx.invoke(self.bot.get_command(cmd_name))
+                    else: await self.ctx.invoke(self.bot.get_command(cmd_name), query)
                 except Exception as e:
                     print(f"error invoking {pred}: {e}")
                     await self.ctx.send("bruh momenti", delete_after=15)
