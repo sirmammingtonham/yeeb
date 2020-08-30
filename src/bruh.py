@@ -525,6 +525,7 @@ class Bruh(commands.Cog):
         
 
         # get query keyword and word to display on image
+        word = ' '.join(args)
         query = '-'.join(args)
         i = word.find(' as ')
         if i != -1:
