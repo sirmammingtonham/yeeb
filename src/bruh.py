@@ -336,7 +336,7 @@ class Bruh(commands.Cog):
     async def define(self, ctx, *args):
         await verbosify.get_definition(ctx, args)
     
-    @commands.command()
+    @commands.command(name='vernaculate', aliases=['conflobrinate'])
     async def vernaculate(self, ctx, *args):
         await ctx.send('<@&{}> it is gamer time'.format(748768498343346216))
 
