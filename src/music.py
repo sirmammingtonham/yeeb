@@ -430,9 +430,10 @@ class Music(commands.Cog):
         num_times = 1
         if len(args) == 0: return await ctx.send('choose a song bruh')
         elif len(args) == 1: search = args[0]
-        else:
-            search = args[1]
-            if args[0].isdigit(): num_times = int(args[0])
+        elif args[0].isdigit():
+            search = args[1:]
+            num_times = int(args[0])
+        else: search = args[1:]
 
         # run helper function
         for i in range(num_times):
