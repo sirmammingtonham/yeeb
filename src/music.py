@@ -397,8 +397,36 @@ class Music(commands.Cog):
 
         await ctx.send(f":notes: Connected to channel: **{channel}**", delete_after=20)
 
-    async def play_helper(self, ctx, search):
+    # async def play_helper(self, ctx, search):
+    #     await ctx.trigger_typing()
+    #     vc = ctx.voice_client
+
+    #     if not vc:
+    #         await ctx.invoke(self.connect_)
+
+    #     elif ctx.author not in ctx.guild.voice_client.channel.members:
+    #         return await ctx.send(":notes: You're the reason why we can't have nice things. Join my voice channel to execute this command. smh my head.", delete_after=20)
+
+    #     player = self.get_player(ctx)
+
+    #     # If download is False, source will be a dict which will be used later to regather the stream.
+    #     # If download is True, source will be a discord.FFmpegPCMAudio with a VolumeTransformer.
+    #     source = await YTDLSource.create_source(ctx, search, loop=self.bot.loop, download=True)
+        
+    #     await player.queue.put(source)
+        
+    @commands.command(name='play', aliases=['p', 'pp'])
+    async def play_helper(self, ctx, *, search: str):
+        """Request a song and add it to the queue.
+        This command attempts to join a valid voice channel if the bot is not already in one.
+        Uses YTDL to automatically search and retrieve a song.
+        Parameters
+        ------------
+        search: str [Required]
+            The song to search and retrieve using YTDL. This could be a simple search, an ID or URL.
+        """
         await ctx.trigger_typing()
+
         vc = ctx.voice_client
 
         if not vc:
@@ -412,32 +440,30 @@ class Music(commands.Cog):
         # If download is False, source will be a dict which will be used later to regather the stream.
         # If download is True, source will be a discord.FFmpegPCMAudio with a VolumeTransformer.
         source = await YTDLSource.create_source(ctx, search, loop=self.bot.loop, download=True)
-        
         await player.queue.put(source)
-        
-    @commands.command(name='play', aliases=['p', 'pp'])
-    async def play_(self, ctx, *args):
-        """Request a song and add it to the queue.
-        This command attempts to join a valid voice channel if the bot is not already in one.
-        Uses YTDL to automatically search and retrieve a song.
-        Parameters
-        ------------
-        search: str [Required]
-            The song to search and retrieve using YTDL. This could be a simple search, an ID or URL.
-        """
+    
+    # async def play_(self, ctx, *args):
+    #     """Request a song and add it to the queue.
+    #     This command attempts to join a valid voice channel if the bot is not already in one.
+    #     Uses YTDL to automatically search and retrieve a song.
+    #     Parameters
+    #     ------------
+    #     search: str [Required]
+    #         The song to search and retrieve using YTDL. This could be a simple search, an ID or URL.
+    #     """
             
-        # parse arguments
-        num_times = 1
-        if len(args) == 0: return await ctx.send('choose a song bruh')
-        elif len(args) == 1: search = args[0]
-        elif args[0].isdigit():
-            search = args[1:]
-            num_times = int(args[0])
-        else: search = args[1:]
+    #     # parse arguments
+    #     num_times = 1
+    #     if len(args) == 0: return await ctx.send('choose a song bruh')
+    #     elif len(args) == 1: search = args[0]
+    #     elif args[0].isdigit():
+    #         search = args[1:]
+    #         num_times = int(args[0])
+    #     else: search = args[1:]
 
-        # run helper function
-        for i in range(num_times):
-            await self.play_helper(ctx, search)
+    #     # run helper function
+    #     for i in range(num_times):
+    #         await self.play_helper(ctx, search)
 
 
 
