@@ -592,6 +592,11 @@ class Bruh(commands.Cog):
         div = soup.find_all('div', {'class': 'joke-text'})
         jokes = [joke.find('p').text.strip() for joke in div]
         await ctx.send(random.choice(jokes))
+    
+    @commands.command(name='delete', aliases=['d'])
+    async def delete(self, ctx, *args):
+        msg_history = await ctx.channel.history(limit=2).flatten()
+        msg_history[1].delete()
 
 def setup(bot):
     bot.add_cog(Bruh(bot))
