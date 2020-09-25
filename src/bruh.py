@@ -344,7 +344,7 @@ class Bruh(commands.Cog):
     async def fellas(self, ctx, *args):
         emojis = {'alexs': '<:alexface:758937361001349150>', 'justin':'<:justinface:758939166607933490>',
             'jacob': '<:jacobface:758937359928262676>', 'willu': '<:willuface:758937362821546026>',
-            'willc': '<:willcface:758937363257753650>' 'craftyclashr': '<:craftyclashr:758942144651722764>'}
+            'willc': '<:willcface:758937363257753650>', 'craftyclashr': '<:craftyclashr:758942144651722764>'}
         
         await ctx.send(' '.join(emojis.values()))
 
