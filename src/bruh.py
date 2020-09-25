@@ -345,7 +345,7 @@ class Bruh(commands.Cog):
         emojis = {'alexs': '<:alexface:758937361001349150>', 'justin':'<:justinface:758939166607933490>',
                   'jacob': '<:jacobface:758937359928262676>', 'willu': '<:willuface:758937362821546026>',
                   'willc': '<:willcface:758937363257753650>', 'craftyclashr': '<:craftyclashr:758942144651722764>',
-                  'ethan': '<:ethanface:758956834882715648>'}
+                  'ethan': '<:ethanface:758956834882715648>', 'boyu': '<:boyuface:759184421030723646>'}
         emoji_values = (list(emojis.values()))
         random.shuffle(emoji_values)
         await ctx.send(' '.join(emoji_values))
