@@ -339,9 +339,14 @@ class Bruh(commands.Cog):
     @commands.command(name='vernaculate', aliases=['conflobrinate'])
     async def vernaculate(self, ctx, *args):
         await ctx.send('<@&{}> it is gamer time'.format(748768498343346216))
-        await ctx.send('<:alexface:758937361001349150> <:justinface:758939166607933490> \
-                        <:jacobface:758937359928262676> <:willuface:758937362821546026> \
-                        <:willcface:758937363257753650> <:craftyclashr:758942144651722764>')
+
+    @commands.command(name='fellas')
+    async def fellas(self, ctx, *args):
+        emojis = {'alexs': '<:alexface:758937361001349150>', 'justin':'<:justinface:758939166607933490>',
+            'jacob': '<:jacobface:758937359928262676>', 'willu': '<:willuface:758937362821546026>',
+            'willc': '<:willcface:758937363257753650>' 'craftyclashr': '<:craftyclashr:758942144651722764>'}
+        
+        await ctx.send(' '.join(emojis.values()))
 
     @commands.command()
     async def valortne(self, ctx, *args):
