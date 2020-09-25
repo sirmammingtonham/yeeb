@@ -339,6 +339,9 @@ class Bruh(commands.Cog):
     @commands.command(name='vernaculate', aliases=['conflobrinate'])
     async def vernaculate(self, ctx, *args):
         await ctx.send('<@&{}> it is gamer time'.format(748768498343346216))
+        await ctx.send('<:alexface:758937361001349150> <:justinface:758939166607933490> \
+                        <:jacobface:758937359928262676> <:willuface:758937362821546026> \
+                        <:willcface:758937363257753650> <:craftyclashr:758942144651722764>')
 
     @commands.command()
     async def valortne(self, ctx, *args):
