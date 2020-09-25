@@ -346,8 +346,9 @@ class Bruh(commands.Cog):
                   'jacob': '<:jacobface:758937359928262676>', 'willu': '<:willuface:758937362821546026>',
                   'willc': '<:willcface:758937363257753650>', 'craftyclashr': '<:craftyclashr:758942144651722764>',
                   'ethan': '<:ethanface:758956834882715648>'}
-        shuffled = random.shuffle(list(emojis.values()))
-        await ctx.send(' '.join(shuffled))
+        emoji_values = (list(emojis.values()))
+        random.shuffle(emoji_values)
+        await ctx.send(' '.join(emoji_values))
 
     @commands.command()
     async def valortne(self, ctx, *args):
