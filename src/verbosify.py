@@ -177,10 +177,19 @@ async def verbosify_ception(ctx, input_sentence, num_times):
 def get_ud_data(word):
     r = requests.get("http://www.urbandictionary.com/define.php?term={}".format(word.replace('_', '%20')))
     soup = BeautifulSoup(r.content, "html.parser")
+
+    if not soup.find("div",attrs={"class":"meaning"}): return [None,None]
     return (soup.find("div",attrs={"class":"meaning"}).text, [soup.find("div",attrs={"class":"example"}).text])
+
+def get_nltk_data(word):
+    syns = wordnet.synsets(word.replace(' ', '_'))
+    if len(syns): return (syns[0].definition(), syns[0].examples())
+    else: return [None,None]
 
 # format output for bruh define
 def fdefine(word, meaning, examples):
+    if meaning is None: fdefine('bruh', get_ud_data('bruh'))
+
     output = '`' + word + ': ' + meaning + '`\n'
     if len(examples): output += '>>> _' + examples[0] + '_'
 
@@ -189,10 +198,9 @@ def fdefine(word, meaning, examples):
 # main bruh define function
 async def get_definition(ctx, args):
     word = ' '.join(args).lower()
-    syns = wordnet.synsets(word.replace(' ', '_'))
 
-    # use nltk
-    if len(syns): return await ctx.send(fdefine(word, syns[0].definition(), syns[0].examples()))
+    # use nltk if specified
+    if args[0] is 'normal': return await ctx.send(fdefine(word, *get_nltk_data(word)))
     
-    # use urban dictionary if no lemma found
+    # use urban dictionary otherwise
     else: return await ctx.send(fdefine(word, *get_ud_data(word)))
