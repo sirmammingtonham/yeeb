@@ -188,7 +188,7 @@ def get_nltk_data(word):
 
 # format output for bruh define
 def fdefine(word, meaning, examples):
-    if meaning is None: fdefine('bruh', *get_ud_data('bruh'))
+    if meaning is None: return fdefine('bruh', *get_ud_data('bruh'))
 
     output = '`' + word + ': ' + meaning + '`\n'
     if len(examples): output += '>>> _' + examples[0] + '_'
