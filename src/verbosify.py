@@ -188,7 +188,7 @@ def get_nltk_data(word):
 
 # format output for bruh define
 def fdefine(word, meaning, examples):
-    if meaning is None: return fdefine('bruh', *get_ud_data('bruh'))
+    if meaning is None: return '`bruh: bruh`\n>>> _person 1: bruh\nperson 2: bruh_'
 
     output = '`' + word + ': ' + meaning + '`\n'
     if len(examples): output += '>>> _' + examples[0] + '_'
@@ -197,10 +197,12 @@ def fdefine(word, meaning, examples):
 
 # main bruh define function
 async def get_definition(ctx, args):
-    word = ' '.join(args).lower()
-
-    # use nltk if specified
-    if args[0] is 'normal': return await ctx.send(fdefine(word, *get_nltk_data(word)))
+    # try urban dictionary first
+    if args[0] != 'normal':
+        word = ' '.join(args).lower()
+        ud_data = get_ud_data(word)
+        if ud_data[0]: return await ctx.send(fdefine(word, *get_ud_data(word)))
+    else: word = ' '.join(args[1:]).lower()
     
-    # use urban dictionary otherwise
-    else: return await ctx.send(fdefine(word, *get_ud_data(word)))
+    # if we got here, either args[0] is normal, or UD failed to find a definition so try nltk
+    return await ctx.send(fdefine(word, *get_nltk_data(word)))
