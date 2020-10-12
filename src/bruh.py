@@ -343,14 +343,15 @@ class Bruh(commands.Cog):
     @commands.command(name='fellas')
     async def fellas(self, ctx, *args):
         # first entry is emoji, second entry (if not None) is big photo version
-        emojis = {'alex': ('<:alexface:758937361001349150>', None),
-                  'justin': ('<:justinface:758939166607933490>', None),
-                  'jacob': ('<:jacobface:758937359928262676>', None),
-                  'willu': ('<:willuface:758937362821546026>', 'https://cdn.discordapp.com/attachments/425056372548173834/764762192208855050/willu.png'),
-                  'willc': ('<:willcface:758937363257753650>', 'https://cdn.discordapp.com/attachments/425056372548173834/764761954299805746/willcface.png'),
+        emojis = {'alex': ('<:alex:758937361001349150>', None),
+                  'justin': ('<:justin:758939166607933490>', None),
+                  'jacob': ('<:jacob:758937359928262676>', None),
+                  'willu': ('<:willu:758937362821546026>', 'https://cdn.discordapp.com/attachments/425056372548173834/764762192208855050/willu.png'),
+                  'willc': ('<:willc:758937363257753650>', 'https://cdn.discordapp.com/attachments/425056372548173834/764761954299805746/willcface.png'),
                   'craftyclashr': ('<:craftyclashr:758942144651722764>', None),
-                  'ethan': ('<:ethanface:758956834882715648>', 'https://cdn.discordapp.com/attachments/425056372548173834/764762005839675392/ethanface.png'),
-                  'boyu': ('<:boyuface:759184421030723646>', 'https://cdn.discordapp.com/attachments/425056372548173834/764762458710999071/unknown.png')}
+                  'ethan': ('<:ethan:758956834882715648>', 'https://cdn.discordapp.com/attachments/425056372548173834/764762005839675392/ethanface.png'),
+                  'boyu': ('<:boyu:765031756687605761>', 'https://cdn.discordapp.com/attachments/731662398196416573/765031191409065994/35DJIAAAAAElFTkSuQmCC.png')}
+                #   'boyu': ('<:oldboyu:759184421030723646>', 'https://cdn.discordapp.com/attachments/425056372548173834/764762458710999071/unknown.png')}
         
         # chose a specific person
         if args and args[0] in emojis:
