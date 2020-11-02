@@ -13,7 +13,7 @@ intents.members = True
 bot = commands.Bot(command_prefix = 'bruh', guild_subscriptions=True, intents=intents) 
 bot.remove_command('help')
 
-extensions = ['bruh', 'music', 'events', 'card', 'speech']
+extensions = ['bruh', 'music', 'events', 'card']  # 'speech'
 
 if __name__ == '__main__':
     for extension in extensions:
