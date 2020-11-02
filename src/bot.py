@@ -6,10 +6,7 @@ from discord.ext import commands
 
 with open("../res/token.txt", "r") as f:
     TOKEN = f.read()
-# Configure intents (1.5.0)
-intents = discord.Intents.default()
-intents.members = True
-bot = commands.Bot(command_prefix = 'bruh', guild_subscriptions=True, intents=intents) 
+bot = commands.Bot(command_prefix = 'bruh', guild_subscriptions=True) 
 bot.remove_command('help')
 
 extensions = ['bruh', 'music', 'events', 'card', 'speech']
