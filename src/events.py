@@ -86,6 +86,7 @@ class Events(commands.Cog):
         #if message.author.id == self.bot.user.id:
         #    return
         text = message.content.lower()
+        words = text.split()
         if 'what\'s' in text or 'whats' in text:
             what = 'what\'s' if 'what\'s' in text else 'whats'
             text = text[text.find(what) + len(what)+1:]
@@ -107,6 +108,10 @@ class Events(commands.Cog):
             im = 'i\'m' if 'i\'m' in text else 'im'
             text = text[text.find(im) + len(im)+1:]
             await message.channel.send('Hi ' + text + ', I\'m yeeb bot')
+                  
+        for word in words:
+            if word[-2:] == 'er':
+                await message.channel.send(word + '? I hardly know her.')
                   
         if 'is gone' in text:
             W, H = (352,200)
