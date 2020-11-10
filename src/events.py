@@ -83,8 +83,8 @@ class Events(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        #if message.author.id == self.bot.user.id:
-        #    return
+        if message.author.id == self.bot.user.id:
+            return
         text = message.content.lower()
         if 'what\'s' in text or 'whats' in text:
             what = 'what\'s' if 'what\'s' in text else 'whats'
