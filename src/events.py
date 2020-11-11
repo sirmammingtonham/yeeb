@@ -1,3 +1,4 @@
+import re
 import discord
 import random
 from discord.ext import commands
@@ -5,7 +6,7 @@ import asyncio
 from itertools import cycle
 from bs4 import BeautifulSoup
 from mediawikiapi import MediaWikiAPI
-from random import shuffle
+import random
 from discord.utils import get
 
 from PIL import Image, ImageDraw, ImageSequence, ImageFile, ImageFont
@@ -25,14 +26,14 @@ def wikitable(page):
     mediawikiapi = MediaWikiAPI()
     page = mediawikiapi.page(page)
     soup = BeautifulSoup(page.html(), 'html.parser')
-    rows=table.findAll("tr")
-    ncols=max([len(r.findAll(['th','td'])) for r in rows])
+    rows = soup.findAll("tr")
+    ncols = max([len(r.findAll(['th','td'])) for r in rows])
 
     # preallocate table structure
     # (this is required because we need to move forward in the table
     # structure once we've found a row span)
     data=[]
-    for i in range(nrows):
+    for i in range(len(rows)):
         rowD=[]
         for j in range(ncols):
             rowD.append('')
@@ -75,7 +76,80 @@ async def change_status(bot, data):
 class Events(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.ignore_servers = [669396255260016642]
 
+    async def _crabby(self, message, text):
+        W, H = (352,200)
+        im = Image.open('../images/crabrave.gif')
+
+        frames = []
+        # Loop over each frame in the animated image
+        for frame in ImageSequence.Iterator(im):
+            frame = frame.convert('RGB')
+            
+            # Draw the text on the frame
+            d = ImageDraw.Draw(frame)
+            color = '#fff'
+            
+            # draw message
+            myFont = ImageFont.truetype("../res/GILLSANS.TTF", 42)
+            top_msg = text[:-8].upper()
+            w, h = d.textsize(top_msg, font=myFont)
+            d.text(((W-w)/2, 50), top_msg, font=myFont, fill=color)
+            
+            w, h = d.textsize('IS GONE', font=myFont)
+            d.text(((W-w)/2, 100), 'IS GONE', font=myFont, fill=color)
+            
+            # draw line
+            d.line((int(W*0.15),H/2, int(W*0.85),H/2), fill=color)
+            
+            del d
+            
+            # save
+            b = io.BytesIO()
+            frame.save(b, format="GIF")
+            frame = Image.open(b)
+
+            # Then append the single frame image to a list of frames
+            frames.append(frame)
+            
+        # save frames as GIF
+        f = io.BytesIO()
+        frames[0].save(f, format="GIF", save_all=True, append_images=frames[1:])
+        f.seek(0)
+        await message.channel.send(file=discord.File(f, 'obama.gif'), delete_after=120)
+    
+    async def _ligma(self, message, text):
+        what = 'what\'s' if 'what\'s' in text else 'whats'
+        text = text[text.find(what) + len(what)+1:]
+
+        if text == 'ligma':
+            await message.channel.send(text + ligma[0], delete_after=30)
+        elif text == 'kisma':
+            await message.channel.send(text + ligma[1], delete_after=30)
+        elif text == 'bofa':
+            await message.channel.send(text + ligma[2], delete_after=30)
+        elif text == 'candice':
+            await message.channel.send(text + ligma[3], delete_after=30)
+        elif text == 'fugma':
+            await message.channel.send(text + ligma[4], delete_after=30)
+        else:
+            await message.channel.send(text + ligma[random.randint(0,4)], delete_after=30)
+    
+    async def _dad(self, message, text):
+        im = 'i\'m' if 'i\'m' in text else 'im' if 'im' in text else 'i am'
+        word = text[text.find(im) + len(im)+1:]
+        await message.channel.send('Hi ' + word + ', I\'m yeeb bot', delete_after=15)
+    
+    async def _her(self, message, text):
+        if message.author.id == self.bot.user.id:
+           return
+        
+        matches = re.findall(r'(\w*er|\w*or)\b', text)  # regex matches all words that end in 'er' or 'or'
+        for match in matches:
+            # if random.random() < 0.33:
+            await message.channel.send(match.capitalize() + '? I hardly know her.', delete_after=15)
+    
     @commands.Cog.listener()
     async def on_ready(self):
         self.bot.loop.create_task(change_status(self.bot, headings('List of video games notable for negative reception')))
@@ -83,76 +157,24 @@ class Events(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        #if message.author.id == self.bot.user.id:
-        #    return
+
         text = message.content.lower()
-        words = text.split()
-        if 'what\'s' in text or 'whats' in text:
-            what = 'what\'s' if 'what\'s' in text else 'whats'
-            text = text[text.find(what) + len(what)+1:]
 
-            if text == 'ligma':
-                await message.channel.send(text + ligma[0], delete_after=30)
-            elif text == 'kisma':
-                await message.channel.send(text + ligma[1], delete_after=30)
-            elif text == 'bofa':
-                await message.channel.send(text + ligma[2], delete_after=30)
-            elif text == 'candice':
-                await message.channel.send(text + ligma[3], delete_after=30)
-            elif text == 'fugma':
-                await message.channel.send(text + ligma[4], delete_after=30)
-            else:
-                await message.channel.send(text + ligma[random.randint(0,4)], delete_after=30)
-
-        if text.startswith('i\'m') or text.startswith('im'):
-            im = 'i\'m' if 'i\'m' in text else 'im'
-            text = text[text.find(im) + len(im)+1:]
-            await message.channel.send('Hi ' + text + ', I\'m yeeb bot')
-                  
-        for word in words:
-            if word[-2:] == 'er':
-                await message.channel.send(word + '? I hardly know her.')
-                  
         if 'is gone' in text:
-            W, H = (352,200)
-            im = Image.open('../images/crabrave.gif')
+            await self._crabby(message, text)
+        
+        # dont want the other commands spamming important servers
+        if message.guild.id in self.ignore_servers:
+            return
+        
+        if 'what\'s' in text or 'whats' in text:
+            await self._ligma(message, text)
 
-            frames = []
-            # Loop over each frame in the animated image
-            for frame in ImageSequence.Iterator(im):
-                frame = frame.convert('RGB')
-                
-                # Draw the text on the frame
-                d = ImageDraw.Draw(frame)
-                color = '#fff'
-                
-                # draw message
-                myFont = ImageFont.truetype("../res/GILLSANS.TTF", 42)
-                top_msg = text[:-8].upper()
-                w, h = d.textsize(top_msg, font=myFont)
-                d.text(((W-w)/2, 50), top_msg, font=myFont, fill=color)
-                
-                w, h = d.textsize('IS GONE', font=myFont)
-                d.text(((W-w)/2, 100), 'IS GONE', font=myFont, fill=color)
-                
-                # draw line
-                d.line((int(W*0.15),H/2, int(W*0.85),H/2), fill=color)
-                
-                del d
-                
-                # save
-                b = io.BytesIO()
-                frame.save(b, format="GIF")
-                frame = Image.open(b)
-
-                # Then append the single frame image to a list of frames
-                frames.append(frame)
-                
-            # save frames as GIF
-            f = io.BytesIO()
-            frames[0].save(f, format="GIF", save_all=True, append_images=frames[1:])
-            f.seek(0)
-            await message.channel.send(file=discord.File(f, 'obama.gif'), delete_after=15)
+        if text.startswith('i\'m') or text.startswith('im') or text.startswith('i am'):
+            await self._dad(message, text)
+        
+        if 'er' in text or 'or' in text:
+            await self._her(message, text)
                   
 
     @commands.Cog.listener()
