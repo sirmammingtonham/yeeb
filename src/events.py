@@ -18,6 +18,9 @@ ligma = [' balls\nhttps://i.ytimg.com/vi/ylYqTYJ8vbs/maxresdefault.jpg', ' dick\
          ' ass, lil bitch\nhttps://i.ytimg.com/vi/ylYqTYJ8vbs/maxresdefault.jpg',
         ]
 
+ihardlyknowher = open('../res/erwords.txt', 'r').read()
+
+
 def wikitable(page):
     """
     Exports a Wikipedia table parsed by BeautifulSoup. Deals with spanning: 
@@ -145,10 +148,15 @@ class Events(commands.Cog):
         if message.author.id == self.bot.user.id:
            return
         
-        matches = re.findall(r'(\w*er|\w*or)\b', text)  # regex matches all words that end in 'er' or 'or'
-        for match in matches:
-            # if random.random() < 0.33:
-            await message.channel.send(match.capitalize() + '? I hardly know her.', delete_after=15)
+        for word in text:
+            if word in ihardlyknowher and random.random() < 0.33:
+                return await message.channel.send(word.capitalize() + '? I hardly know her.', delete_after=15)
+
+        # matches = re.findall(r'(\w*er|\w*or)\b', text)  # regex matches all words that end in 'er' or 'or'
+
+        # for match in matches:
+        #     # if random.random() < 0.33:
+        #     await message.channel.send(match.capitalize() + '? I hardly know her.', delete_after=15)
     
     @commands.Cog.listener()
     async def on_ready(self):
