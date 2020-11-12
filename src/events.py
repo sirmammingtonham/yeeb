@@ -18,7 +18,7 @@ ligma = [' balls\nhttps://i.ytimg.com/vi/ylYqTYJ8vbs/maxresdefault.jpg', ' dick\
          ' ass, lil bitch\nhttps://i.ytimg.com/vi/ylYqTYJ8vbs/maxresdefault.jpg',
         ]
 
-ihardlyknowher = open('../res/erwords.txt', 'r').read()
+ihardlyknowher = open('../res/erwords.txt', 'r').read().split()
 
 
 def wikitable(page):
