@@ -148,7 +148,7 @@ class Events(commands.Cog):
         if message.author.id == self.bot.user.id:
            return
         
-        for word in text:
+        for word in text.split():
             if word in ihardlyknowher and random.random() < 0.33:
                 return await message.channel.send(word.capitalize() + '? I hardly know her.', delete_after=15)
 
