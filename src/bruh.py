@@ -379,7 +379,8 @@ class Bruh(commands.Cog):
             'PHOENIX': 'Hailing from the UK, Phoenix\'s star power shines through in his fighting style, igniting the battlefield with flash and flare. Whether he\'s got backup or not, he\'s rushing in to fight on his own terms.',
             'RAZE': 'Raze explodes out of Brazil with her big personality and big guns. With her blunt-force-trauma playstyle, she excels at flushing entrenched enemies and clearing tight spaces with a generous dose of "boom".',
             'REYNA': 'Forged in the heart of Mexico, Reyna dominates single combat, popping off with each kill she scores. Her capability is only limited by her raw skill, making her sharply dependent on performance.',
-            'KILLJOY': 'The genius of Germany, Killjoy secures and defends key battlefield positions with a collection of traps, turrets, and mines. Each invention is primed to punish any assailant too dumb to back down.'
+            'KILLJOY': 'The genius of Germany, Killjoy secures and defends key battlefield positions with a collection of traps, turrets, and mines. Each invention is primed to punish any assailant too dumb to back down.',
+            'SKYE': 'Hailing from Australia, Skye and her band of beasts trailblaze the way through hostile territory. With her creations hampering the enemy, and her power to heal others, the team is strongests and safest by Skye\'s side.'
         }
 
         types = {
@@ -401,8 +402,8 @@ class Bruh(commands.Cog):
             'PHOENIX': ['BLAZE', 'CURVEBALL', 'HOT HANDS', 'RUN IT BACK'],
             'RAZE': ['BOOM BOT', 'BLAST PACK', 'PAINT SHELLS', 'SHOW STOPPER'],
             'REYNA': ['LEER', 'DEVOUR', 'DISMISS', 'EMPRESS'],
-            'KILLJOY': ['ALARM BOT', 'NANO SWARM', 'TURRET', 'LOCKDOWN']
-            
+            'KILLJOY': ['ALARM BOT', 'NANO SWARM', 'TURRET', 'LOCKDOWN'],
+            'SKYE': ['REGROWTH', 'GUIDING LIGHT', 'TRAILBLAZER', 'SEEKERS']
         }
 
         # abilities = {
