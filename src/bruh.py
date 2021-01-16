@@ -425,6 +425,11 @@ class Bruh(commands.Cog):
         if len(args) == 1:
             # 1 word arg = arg agent, 1 time
             if args[0].upper() in agents: agent_text = agents[args[0].upper()]
+            # or, chooose 5 random agents! added Jan 15 2021
+            elif args[0].upper() == 'RANDOM':
+                random_agent_list = random.sample(agents.keys(), 5)
+                return await ctx.send(', '.join(random_agent_list))
+             
             # 1 numerical arg = random agent, arg times
             elif verbosify.isdigit(args[0]): num_times = int(args[0])
         
