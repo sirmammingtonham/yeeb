@@ -215,7 +215,7 @@ class Bruh(commands.Cog):
         word = words[random.randrange(165)][:-1]
         await ctx.send(word)
         
-    @commands.command()
+    @commands.command(name='swearat', aliases=['insult'])
     async def swearat(self, ctx, name:str='', num_times:str=''):
         all_words = open("../res/swearwords.txt").readlines()
         selected_words = all_words[random.randrange(165)][:-1]
