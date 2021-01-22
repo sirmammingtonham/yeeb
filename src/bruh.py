@@ -337,8 +337,8 @@ class Bruh(commands.Cog):
         await verbosify.get_definition(ctx, args)
     
     @commands.command(name='vernaculate', aliases=['conflobrinate'])
-    async def vernaculate(self, ctx, *, video_game):
-        if video_game: await ctx.send(f'<@&{748768498343346216}> it is {video_game} gamer time')
+    async def vernaculate(self, ctx, *args):
+        if args: await ctx.send(f'<@&{748768498343346216}> it is {' '.join(args)} gamer time')
         else: await ctx.send(f'<@&{748768498343346216}> it is gamer time')
 
     @commands.command(name='fellas')
