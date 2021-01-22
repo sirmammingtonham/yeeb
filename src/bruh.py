@@ -338,7 +338,9 @@ class Bruh(commands.Cog):
     
     @commands.command(name='vernaculate', aliases=['conflobrinate'])
     async def vernaculate(self, ctx, *args):
-        await ctx.send('<@&{}> it is gamer time'.format(748768498343346216))
+        video_game = ''
+        if args: video_game = ' ' + args[0]
+        await ctx.send(f'<@&{748768498343346216}> it is{video_game} gamer time')
 
     @commands.command(name='fellas')
     async def fellas(self, ctx, *args):
