@@ -159,9 +159,10 @@ class Bruh(commands.Cog):
 
     @commands.command(name='howlong', aliases=['schmurda', 'how long'])
     async def howlong(self, ctx):
-        td = relativedelta(datetime(2020, 12, 11), datetime.now())
-        await ctx.send(f'Bobby Shmurda will be released in {td.years} years, {td.months} months, {td.days} days, {td.hours} hours, {td.minutes} minutes, and {td.seconds} seconds.')
-
+        # td = relativedelta(datetime(2020, 12, 11), datetime.now())
+        # await ctx.send(f'Bobby Shmurda will be released in {td.years} years, {td.months} months, {td.days} days, {td.hours} hours, {td.minutes} minutes, and {td.seconds} seconds.')
+        td = relativedelta(datetime.now(), datetime(2021, 2, 23))
+        await ctx.send(f'Bobby Shmurda was released {td.years} years, {td.months} months, {td.days} days, {td.hours} hours, {td.minutes} minutes, and {td.seconds} seconds ago.')
     @commands.command()
     async def code(self, ctx):
         await ctx.send('https://github.com/sirmammingtonham/yeeb')
