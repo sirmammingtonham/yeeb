@@ -631,6 +631,21 @@ class Bruh(commands.Cog):
     async def delete(self, ctx, *args):
         msg_history = await ctx.channel.history(limit=2).flatten()
         await msg_history[1].delete()
+    
+
+
+    # 6/19/21 one-time command to remove asheft nicknames
+    @commands.command(name='asheftnt')
+    async def remove_asheft_nicknames(self, ctx):
+        for member in ctx.message.guild.members:
+            if member.nick == "asheft":
+                try:
+                    await member.edit(nick=None)
+                except:
+                    await ctx.send('the fella ' + member.name + ' did not have their nickname changed')
+        
+        return await ctx.send('nicknames are asheftn\'t')
+
 
 def setup(bot):
     bot.add_cog(Bruh(bot))
