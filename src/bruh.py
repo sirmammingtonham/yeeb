@@ -29,6 +29,9 @@ class Bruh(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+        # used for command rotate (function name rotate_vc_nicknames)
+        self.original_nicks = {}
+
     @commands.group()
     async def apex(self, ctx, player:str):
         if ctx.invoked_subcommand is None:
@@ -652,7 +655,7 @@ class Bruh(commands.Cog):
         if not args:
             selected_names = random.sample(channel_name_list, 4)
 
-        # pull titles from youtube playlist
+        # pull titles from youtube playlist (not implemented yet)
         elif args[0] == 'youtube':
             return await ctx.send('nah')
         
@@ -673,7 +676,46 @@ class Bruh(commands.Cog):
         return await ctx.send('viva la cumber')
 
 
+    @commands.command(name='rotate')
+    async def rotate_vc_nicknames(self, ctx, *args):
+        # get voice channel and members in vc
+        curr_vc = ctx.author.voice.channel
+        if not curr_vc: return await ctx.send('hop in a vc you dummy')
+        vc_members = curr_vc.members
 
+        # reset nicknames if specified
+        if args and args[0] == 'reset':
+            for member, nick in self.original_nicks.items():
+                await member.edit(nick=nick)
+            
+            return await ctx.send(':arrow_right_hook:', delete_after=10)
+        
+
+        # -- main process -- #
+        # save the original nicknames, if we haven't already
+        for member in vc_members:
+            if member not in self.original_nicks:
+                self.original_nicks[member] = member.nick
+
+        # get nicknames (or normal name)
+        vc_nicks = [member.nick if member.nick else member.name for member in vc_members]
+        sorted(vc_nicks)
+
+        # rotate nicknames
+        new_first_nick = vc_nicks[-1] # save last member's nick
+
+        for i in range(len(vc_nicks)-1, 0, -1): # push all names down one
+            await vc_members[i].edit(nick = vc_nicks[i-1])
+
+        await vc_members[0].edit(nick = new_first_nick) # complete the rotation
+
+        # return
+        # print([f'{member.name} -> {nick}' for member, nick in self.original_nicks.items()])
+        return await ctx.send(':arrows_counterclockwise:', delete_after=10)
+
+
+
+    
 
 
     # 6/19/21 one-time command to remove asheft nicknames
