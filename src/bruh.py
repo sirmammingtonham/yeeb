@@ -634,6 +634,48 @@ class Bruh(commands.Cog):
     
 
 
+    @commands.command(name='revolution', aliases=['uprising', 'schism', 'rebrand'])
+    async def change_text_channel_names(self, ctx, *args):
+        channel_ids = [425056372548173834, 319277087401705482, 425153597148233728, 431675428110073857]
+        default_name_list = ['in-de-beninging', 'most-dangerous-lead', 'top-5-nuts', 'vernaculate']
+        channel_name_list = ['cumber', 'girlcumber', 'thunderous', 'shit-your-pants', 'yo-mama', 'thats-pretty-cringe',
+            'back-it-up-terry', 'swear', 'fellas', 'valortne', 'dawg-fam', 'dingus']
+
+        # get current guild and see if permissions are correct
+        curr_guild = ctx.message.guild
+        
+        if not (curr_guild.id == 319277087401705482 and 748768498343346216 in [role.id for role in ctx.author.roles]):
+            return await ctx.send('nah')
+
+
+        # pull titles from custom list
+        if not args:
+            selected_names = random.sample(channel_name_list, 4)
+
+        # pull titles from youtube playlist
+        elif args[0] == 'youtube':
+            return await ctx.send('nah')
+        
+        # set titles back to current default (from June 20 2021)
+        elif args[0] == 'default':
+            selected_names = default_name_list
+
+        # (default behavior) pull titles from custom list
+        else:
+            selected_names = random.sample(channel_name_list, 4)
+
+        
+        # now actually set the name of the channels
+        for id, channel_name in zip(channel_ids, selected_names):
+            print(f'changing channel id {id} to name {channel_name}')
+            await curr_guild.get_channel(id).edit(name=channel_name)
+        
+        return await ctx.send('viva la cumber')
+
+
+
+
+
     # 6/19/21 one-time command to remove asheft nicknames
     @commands.command(name='asheftnt')
     async def remove_asheft_nicknames(self, ctx):
