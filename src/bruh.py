@@ -679,9 +679,9 @@ class Bruh(commands.Cog):
     @commands.command(name='rotate')
     async def rotate_vc_nicknames(self, ctx, *args):
         # get voice channel and members in vc
-        curr_vc = ctx.author.voice.channel
+        curr_vc = ctx.author.voice
         if not curr_vc: return await ctx.send('hop in a vc you dummy')
-        vc_members = curr_vc.members
+        vc_members = curr_vc.channel.members
 
         # reset nicknames if specified
         if args and args[0] == 'reset':
