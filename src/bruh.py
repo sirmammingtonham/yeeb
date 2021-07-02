@@ -641,7 +641,30 @@ class Bruh(commands.Cog):
     async def change_text_channel_names(self, ctx, *args):
         channel_ids = [425056372548173834, 319277087401705482, 425153597148233728, 431675428110073857]
         default_name_list = ['in-de-beninging', 'most-dangerous-lead', 'top-5-nuts', 'vernaculate']
-        channel_name_list = ['cumber', 'girlcumber', 'thunderous', 'shit-your-pants', 'yo-mama', 'thats-pretty-cringe',
+        
+        custom_list = ['call-an-ambulance', 'juan']
+        youtube_funny_list = ['pubg-mobile', 'back-it-up-terry', 'reverse-the-vehicle-terrence', 'bitconnect', 'whai',
+            'i-dont-care-that-you-broke-your-elbow', 'whose-toes-are-those', 'he-disconnected', 'there-are-8-days-in-a-week',
+            'oh-shiver-me-timbers', 'thats-a-ten', 'i-love-refrigerators', 'skin-tone-chicken-bone', 'can-you-tell-the-time',
+            'im-brian', 'my-love-for-you-is-like-diarrhea', 'there-is-no-fridge', 'cat-hits-juul', 'jesus-christ-its-jason-bourne',
+            'this-guy-moaned-at-least-this-loud', '846-minutes-to-get-no-questions-right', 'my-teacher-answered-lol',
+            'eric-andre-danny-devito', 'chonk-chart', 'oh-lawd-he-comin', 'are-you-gettin-rude-to-man', 'bop-thats-what-you-get-fam',
+            'whos-endz-you-comin-to-now-fam', 'im-with-the-science-team', 'how-tall-are-you-yogurt', 'your-moms-a-hoe',
+            'went-to-africa-a-week-ago', 'i-aint-never-heard-a-fart-hit-3rd-gear', 'clown-juice', 'they-gave-me-clown-juice',
+            'oh-no-fart', 'shrub', 'beeeeean', 'a-mimir', 'protactinium', 'carlos', 'travis-scott-yeeaeuh', 'ritz-car',
+            'gtfo-outta-here-slap-slap-slap', 'st', 'new-bathroom-ayee', 'indeed', 'toilet-2',
+            'give-orange-me-give-eat-orange-me-eat-orange-give-me-eat-orange-give-me-you', 'ua', 'pepperoni-pizza',
+            'if-the-movie-was-silent-why-cant-you-be', 'climb-everest-but-hes-gay', 'but-hes-gay', 'i-love-you-and-i-miss-you-heeeeuüü',
+            'the-max-condom', 'maximum-pleasure-maximum-protection', 'i-have-no-time-for-racist-questions',
+            'seven-hundred-and-sixty-nine-eight-hundred-and-twenty', 'seven-hundred-listen-properly', 'dont-let-the-bed-bugs-bite',
+            'i-so-pale', 'let-me-play-among-us', 'wit-time-is-it', 'hey :b:eter', 'i-made-the-catch', 'and-we-just-made-minecraft',
+            'im-making-piss', 'yall-mind-if-i-praise-the-lord', 'not-to-be-racist-but-asian-people', 'go-back-i-want-to-be-monkey',
+            'is-jellyfish-a-herb', 'so-youre-the-punk-ive-heard-about', 'i-know-cause-i-won-both-of-them',
+            'you-dare-speak-to-me-in-that-tone-of-voice-boy', 'turn-right-to-go-left', 'its-our-song']
+        
+        channel_name_list = custom_list + youtube_funny_list
+
+        channel_name_list_old = ['cumber', 'girlcumber', 'thunderous', 'shit-your-pants', 'yo-mama', 'thats-pretty-cringe',
             'back-it-up-terry', 'swear', 'fellas', 'valortne', 'dawg-fam', 'dingus']
 
         # get current guild and see if permissions are correct
@@ -686,7 +709,12 @@ class Bruh(commands.Cog):
         # reset nicknames if specified
         if args and args[0] == 'reset':
             for member, nick in self.original_nicks.items():
-                await member.edit(nick=nick)
+                try:
+                    await member.edit(nick=nick)
+                except:
+                    await ctx.send('could not change back name for', member.name, delete_after=30)
+            
+            self.original_nicks = {} # clear nickname dictionary
             
             return await ctx.send(':arrow_right_hook:', delete_after=10)
         
