@@ -148,19 +148,7 @@ class Events(commands.Cog):
             frames[0].save(f, format="GIF", save_all=True, append_images=frames[1:])
             f.seek(0)
             await message.channel.send(file=discord.File(f, 'obama.gif'), delete_after=15)
-    
 
-    # if someone reacts, yeebbot will add that same reaction
-    @commands.Cog.listener()
-    async def on_reaction_add(self, reaction, user):
-        await reaction.message.add_reaction(reaction)
-    
-    # (or remove it if user removes their reaction)
-    @commands.Cog.listener()
-    async def on_reaction_remove(self, reaction, user):
-        # long number is user ID of the bot
-        await reaction.message.remove_reaction(reaction, 228017779511394304)
-    
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
