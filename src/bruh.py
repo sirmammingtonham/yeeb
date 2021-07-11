@@ -660,7 +660,8 @@ class Bruh(commands.Cog):
             'i-so-pale', 'let-me-play-among-us', 'wit-time-is-it', 'hey :b:eter', 'i-made-the-catch', 'and-we-just-made-minecraft',
             'im-making-piss', 'yall-mind-if-i-praise-the-lord', 'not-to-be-racist-but-asian-people', 'go-back-i-want-to-be-monkey',
             'is-jellyfish-a-herb', 'so-youre-the-punk-ive-heard-about', 'i-know-cause-i-won-both-of-them',
-            'you-dare-speak-to-me-in-that-tone-of-voice-boy', 'turn-right-to-go-left', 'its-our-song']
+            'you-dare-speak-to-me-in-that-tone-of-voice-boy', 'turn-right-to-go-left', 'its-our-song', 'slap-my-nuts',
+            'woman-pours-water-on-old-mans-back', 'he-says-ohh-and-head-enlarges']
         
         channel_name_list = custom_list + youtube_funny_list
 
