@@ -193,8 +193,9 @@ class Events(commands.Cog):
     # (or remove it if user removes their reaction)
     @commands.Cog.listener()
     async def on_reaction_remove(self, reaction, user):
-        # long number is user ID of the bot
-        await reaction.message.remove_reaction(reaction, 228017779511394304)
+        # get yeebbot member object
+        yeebbot = reaction.message.guild.get_member(228017779511394304)
+        await reaction.message.remove_reaction(reaction, yeebbot)
     
         
     #@commands.Cog.listener()
