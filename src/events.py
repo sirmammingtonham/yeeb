@@ -194,7 +194,7 @@ class Events(commands.Cog):
     @commands.Cog.listener()
     async def on_reaction_remove(self, reaction, user):
         # get yeebbot member object
-        yeebbot = reaction.message.guild.get_member(228017779511394304)
+        yeebbot = reaction.message.guild.get_member(547156702626185230)
         await reaction.message.remove_reaction(reaction, yeebbot)
     
         
