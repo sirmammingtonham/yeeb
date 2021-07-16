@@ -661,7 +661,10 @@ class Bruh(commands.Cog):
             'im-making-piss', 'yall-mind-if-i-praise-the-lord', 'not-to-be-racist-but-asian-people', 'go-back-i-want-to-be-monkey',
             'is-jellyfish-a-herb', 'so-youre-the-punk-ive-heard-about', 'i-know-cause-i-won-both-of-them',
             'you-dare-speak-to-me-in-that-tone-of-voice-boy', 'turn-right-to-go-left', 'its-our-song', 'slap-my-nuts',
-            'woman-pours-water-on-old-mans-back', 'he-says-ohh-and-head-enlarges']
+            'woman-pours-water-on-old-mans-back', 'he-says-ohh-and-head-enlarges', 'shaggy-and-scooby-doo',
+            'i-have-just-one-thing-to-say-to-you-oughruohhghouroh', 'i-wont-kidnap-you','you-mad-ugly', 'gaming-is-intense',
+            'this-is-my-kingdom-come', 'two-dogs-in-the-house', 'jellybean-dog', 'what-the-dog-doing',
+            'segregation-was-the-worst-thing']
         
         channel_name_list = custom_list + youtube_funny_list
 
