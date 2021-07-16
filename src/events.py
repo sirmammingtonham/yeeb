@@ -198,12 +198,12 @@ class Events(commands.Cog):
         await reaction.message.remove_reaction(reaction, yeebbot)
     
         
-    #@commands.Cog.listener()
-    #async def on_member_join(self, member):
-        #if(member.guild.id == 319277087401705482):
-            #role_id = 428410186072588289
-            #fellas_role = get(member.guild.roles, id=role_id)
-            #await member.edit(nick = 'sample text', roles = [fellas_role])
+    @commands.Cog.listener()
+    async def on_member_join(self, member):
+        if(member.guild.id == 319277087401705482):
+            role_id = 428410186072588289
+            fellas_role = get(member.guild.roles, id=role_id)
+            await member.edit(nick = 'sample text', roles = [fellas_role])
                  
 
 def setup(bot):
