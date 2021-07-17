@@ -666,7 +666,7 @@ class Bruh(commands.Cog):
             selected_names = random.sample(channel_name_list, 4)
         
         # add new channel name to text file
-        if args[0] == 'add':
+        elif args[0] == 'add':
             # try to get name
             if len(args) == 1: return await ctx.send('provide channel name pls')
             new_channel_name = args[1]
@@ -681,7 +681,7 @@ class Bruh(commands.Cog):
             return await ctx.send('big if true')
         
         # remove previous added channel item
-        if args[0] == 'remove':
+        elif args[0] == 'remove':
             # read file, delete
             with open(self.youtube_funny_file, 'r') as f:
                 filecontents = f.read().splitlines()
