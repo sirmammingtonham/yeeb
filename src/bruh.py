@@ -32,6 +32,11 @@ class Bruh(commands.Cog):
         # used for command rotate (function name rotate_vc_nicknames)
         self.original_nicks = {}
 
+        # used for command revolution (function name change_text_channel_names)
+        # remove two lines, which are youtube link and newline
+        with open('/res/channelnames_funnyplaylist.txt') as f:
+            self.youtube_funny_list = f.read().splitlines()[2:]
+
     @commands.group()
     async def apex(self, ctx, player:str):
         if ctx.invoked_subcommand is None:
@@ -637,62 +642,64 @@ class Bruh(commands.Cog):
     
 
 
-    @commands.command(name='revolution', aliases=['uprising', 'schism', 'rebrand'])
+    @commands.command(name='revolution', aliases=['uprising', 'schism', 'rebrand', 'remodel'])
     async def change_text_channel_names(self, ctx, *args):
+        # get current guild and see if permissions are correct
+        curr_guild = ctx.message.guild
+        if not (curr_guild.id == 319277087401705482 and 748768498343346216 in [role.id for role in ctx.author.roles]):
+            return await ctx.send('nah')
+        
+        # get constants
         channel_ids = [425056372548173834, 319277087401705482, 425153597148233728, 431675428110073857]
         default_name_list = ['in-de-beninging', 'most-dangerous-lead', 'top-5-nuts', 'vernaculate']
         
-        custom_list = ['call-an-ambulance', 'juan']
-        youtube_funny_list = ['pubg-mobile', 'back-it-up-terry', 'reverse-the-vehicle-terrence', 'bitconnect', 'whai',
-            'i-dont-care-that-you-broke-your-elbow', 'whose-toes-are-those', 'he-disconnected', 'there-are-8-days-in-a-week',
-            'oh-shiver-me-timbers', 'thats-a-ten', 'i-love-refrigerators', 'skin-tone-chicken-bone', 'can-you-tell-the-time',
-            'im-brian', 'my-love-for-you-is-like-diarrhea', 'there-is-no-fridge', 'cat-hits-juul', 'jesus-christ-its-jason-bourne',
-            'this-guy-moaned-at-least-this-loud', '846-minutes-to-get-no-questions-right', 'my-teacher-answered-lol',
-            'eric-andre-danny-devito', 'chonk-chart', 'oh-lawd-he-comin', 'are-you-gettin-rude-to-man', 'bop-thats-what-you-get-fam',
-            'whos-endz-you-comin-to-now-fam', 'im-with-the-science-team', 'how-tall-are-you-yogurt', 'your-moms-a-hoe',
-            'went-to-africa-a-week-ago', 'i-aint-never-heard-a-fart-hit-3rd-gear', 'clown-juice', 'they-gave-me-clown-juice',
-            'oh-no-fart', 'shrub', 'beeeeean', 'a-mimir', 'protactinium', 'carlos', 'travis-scott-yeeaeuh', 'ritz-car',
-            'gtfo-outta-here-slap-slap-slap', 'st', 'new-bathroom-ayee', 'indeed', 'toilet-2',
-            'give-orange-me-give-eat-orange-me-eat-orange-give-me-eat-orange-give-me-you', 'ua', 'pepperoni-pizza',
-            'if-the-movie-was-silent-why-cant-you-be', 'climb-everest-but-hes-gay', 'but-hes-gay', 'i-love-you-and-i-miss-you-heeeeuüü',
-            'the-max-condom', 'maximum-pleasure-maximum-protection', 'i-have-no-time-for-racist-questions',
-            'seven-hundred-and-sixty-nine-eight-hundred-and-twenty', 'seven-hundred-listen-properly', 'dont-let-the-bed-bugs-bite',
-            'i-so-pale', 'let-me-play-among-us', 'wit-time-is-it', 'hey :b:eter', 'i-made-the-catch', 'and-we-just-made-minecraft',
-            'im-making-piss', 'yall-mind-if-i-praise-the-lord', 'not-to-be-racist-but-asian-people', 'go-back-i-want-to-be-monkey',
-            'is-jellyfish-a-herb', 'so-youre-the-punk-ive-heard-about', 'i-know-cause-i-won-both-of-them',
-            'you-dare-speak-to-me-in-that-tone-of-voice-boy', 'turn-right-to-go-left', 'its-our-song', 'slap-my-nuts',
-            'woman-pours-water-on-old-mans-back', 'he-says-ohh-and-head-enlarges', 'shaggy-and-scooby-doo',
-            'i-have-just-one-thing-to-say-to-you-oughruohhghouroh', 'i-wont-kidnap-you','you-mad-ugly', 'gaming-is-intense',
-            'this-is-my-kingdom-come', 'two-dogs-in-the-house', 'jellybean-dog', 'what-the-dog-doing',
-            'segregation-was-the-worst-thing']
-        
-        channel_name_list = custom_list + youtube_funny_list
+        custom_list = ['call-an-ambulance', 'juan'] # from random youtube videos, not just funny playlist
+        channel_name_list = custom_list + self.youtube_funny_list
 
         channel_name_list_old = ['cumber', 'girlcumber', 'thunderous', 'shit-your-pants', 'yo-mama', 'thats-pretty-cringe',
-            'back-it-up-terry', 'swear', 'fellas', 'valortne', 'dawg-fam', 'dingus']
-
-        # get current guild and see if permissions are correct
-        curr_guild = ctx.message.guild
-        
-        if not (curr_guild.id == 319277087401705482 and 748768498343346216 in [role.id for role in ctx.author.roles]):
-            return await ctx.send('nah')
+            'back-it-up-terry', 'swear', 'fellas', 'valortne', 'dawg-fam', 'dingus'] # a backup
 
 
         # pull titles from custom list
         if not args:
             selected_names = random.sample(channel_name_list, 4)
+        
+        # add new channel name to text file
+        if args[0] == 'add':
+            # try to get name
+            if len(args) == 1: return await ctx.send('provide channel name pls')
+            new_channel_name = args[1]
+
+            # add to text file
+            with open('../res/channelnames_funnyplaylist.txt', 'a') as f:
+                f.write('\n' + new_channel_name)
+            
+            # add to list in python memory
+            self.youtube_funny_list.append(new_channel_name)
+            
+            return await ctx.send('big if true')
+        
+        # remove previous added channel item
+        if args[0] == 'remove':
+            # read file, delete
+            with open('../res/channelnames_funnyplaylist.txt', 'r') as f:
+                filecontents = f.read().splitlines()
+
+            with open('../res/channelnames_funnyplaylist.txt', 'w') as f:
+                f.write('\n'.join(filecontents[:-1]))
+            
+            # remove from list in python memory
+            self.youtube_funny_list = self.youtube_funny_list[:-1]
+            
+            return await ctx.send('say less')
+
 
         # pull titles from youtube playlist (not implemented yet)
-        elif args[0] == 'youtube':
-            return await ctx.send('nah')
-        
+        elif args[0] == 'youtube': return await ctx.send('nah')
         # set titles back to current default (from June 20 2021)
-        elif args[0] == 'default':
-            selected_names = default_name_list
-
+        elif args[0] == 'default': selected_names = default_name_list
         # (default behavior) pull titles from custom list
-        else:
-            selected_names = random.sample(channel_name_list, 4)
+        else: selected_names = random.sample(channel_name_list, 4)
 
         
         # now actually set the name of the channels
