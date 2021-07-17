@@ -34,7 +34,8 @@ class Bruh(commands.Cog):
 
         # used for command revolution (function name change_text_channel_names)
         # remove two lines, which are youtube link and newline
-        with open('/res/channelnames_funnyplaylist.txt') as f:
+        self.youtube_funny_file = '../res/channelnames_funnyplaylist.txt'
+        with open(self.youtube_funny_file) as f:
             self.youtube_funny_list = f.read().splitlines()[2:]
 
     @commands.group()
@@ -671,7 +672,7 @@ class Bruh(commands.Cog):
             new_channel_name = args[1]
 
             # add to text file
-            with open('../res/channelnames_funnyplaylist.txt', 'a') as f:
+            with open(self.youtube_funny_file, 'a') as f:
                 f.write('\n' + new_channel_name)
             
             # add to list in python memory
@@ -682,16 +683,17 @@ class Bruh(commands.Cog):
         # remove previous added channel item
         if args[0] == 'remove':
             # read file, delete
-            with open('../res/channelnames_funnyplaylist.txt', 'r') as f:
+            with open(self.youtube_funny_file, 'r') as f:
                 filecontents = f.read().splitlines()
 
-            with open('../res/channelnames_funnyplaylist.txt', 'w') as f:
+            with open(self.youtube_funny_file, 'w') as f:
                 f.write('\n'.join(filecontents[:-1]))
             
             # remove from list in python memory
+            removed_channel_name = self.youtube_funny_list[-1]
             self.youtube_funny_list = self.youtube_funny_list[:-1]
             
-            return await ctx.send('say less')
+            return await ctx.send(f'say less (removed {removed_channel_name})')
 
 
         # pull titles from youtube playlist (not implemented yet)
