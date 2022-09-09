@@ -1,11 +1,8 @@
 import os
 import discord
-import nltk
 from src.bot import YeebBot
 
 print('discord version', discord.__version__)
-nltk.download('wordnet')
-nltk.download('averaged_perceptron_tagger')
 
 bot = YeebBot(command_prefix='bruh ', guild_subscriptions=True,
               intents=discord.Intents.all())
