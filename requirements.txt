@@ -85,7 +85,7 @@ mediawikiapi == 1.1.3
 # discord/tests/.ipynb_checkpoints/better_verbosify_tests-checkpoint.ipynb: 3
 # discord/tests/better_verbosify_tests.ipynb: 3
 # discord/tests/willc_tests.ipynb: 8,9,92
-nltk == 3.5
+nltk == 3.6.6
 
 # discord/hearthstone/gameUtils.py: 2
 # discord/src/bruh.py: 12
