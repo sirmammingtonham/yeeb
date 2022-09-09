@@ -1,10 +1,8 @@
-import os, sys
-sys.path.append(os.path.join(os.getcwd(), "../hearthstone"))
-from Game import YEET
-import asyncio
+from .hearthstone.Game import YEET
 import discord
 from discord.ext import commands
 from fireplace.exceptions import InvalidAction
+
 
 class Hearthstone(commands.Cog):
     ICONS = {'Rexxar': 'https://i.imgur.com/b3MUi1H.png',
@@ -16,7 +14,8 @@ class Hearthstone(commands.Cog):
              'Thrall': 'https://i.imgur.com/7xiRyiI.png',
              'Gul\'dan': 'https://i.imgur.com/6VFRzA8.png',
              'Garrosh Hellscream': 'https://i.imgur.com/HUltfT7.png',
-            }
+             }
+
     def __init__(self, bot):
         self.bot = bot
         self.game_active = False
@@ -28,7 +27,7 @@ class Hearthstone(commands.Cog):
         check = ''
         for word in args:
             check += word
-        if (check == 'hearthstone' or check =='hs') and not self.game_active:
+        if (check == 'hearthstone' or check == 'hs') and not self.game_active:
             self.g = YEET()
             self.game_active = True
             await ctx.send(':video_game: Created a new shitty hearthstone game... Type ```css\nbruh hs join\n``` to join')
@@ -74,16 +73,18 @@ class Hearthstone(commands.Cog):
             except KeyError:
                 await ctx.send(':video_game: Goddammit your terrible rng broke it. Run ```css\nbruh hs itstimetoduel\n``` to try again')
                 return
-            curPlayer = 0 #useless, just need it because i haven't cleaned up the other functions
+            curPlayer = 0  # useless, just need it because i haven't cleaned up the other functions
             self.players[game_instance.players[0].name] = self.p1
             self.players[game_instance.players[1].name] = self.p2
 
             def check(message):
                 return message.author == self.players[game_instance.current_player.name] and \
-                message.channel == ctx.message.channel and (message.content.isdigit() or message.content == '-1')
+                    message.channel == ctx.message.channel and (
+                        message.content.isdigit() or message.content == '-1')
 
             while not game_instance.ended or game_instance.turn > 180:
-                embed, embed_hand, embed_field, embed_oppfield, embed_other = self.create_action_embed(game_instance, ctx)
+                embed, embed_hand, embed_field, embed_oppfield, embed_other = self.create_action_embed(
+                    game_instance, ctx)
                 async with ctx.channel.typing():
                     await ctx.send(embed=embed)
                     await ctx.send(embed=embed_hand)
@@ -94,7 +95,8 @@ class Hearthstone(commands.Cog):
                 while True:
                     try:
                         action = await self.bot.wait_for('message', check=check)
-                        embed_target = self.create_target_embed(int(action.content), game_instance, ctx)
+                        embed_target = self.create_target_embed(
+                            int(action.content), game_instance, ctx)
 
                         if embed_target.fields:
                             await ctx.trigger_typing()
@@ -107,7 +109,8 @@ class Hearthstone(commands.Cog):
                         if int(action.content) == -1:
                             action.content = 19
 
-                        _, curPlayer = self.g.getNextState(curPlayer, (int(action.content), target), game_instance)
+                        _, curPlayer = self.g.getNextState(
+                            curPlayer, (int(action.content), target), game_instance)
 
                     except IndexError:
                         await ctx.send(':video_game: Invalid action you absolute melon, try again')
@@ -137,35 +140,43 @@ class Hearthstone(commands.Cog):
             color = discord.Colour.blue()
         else:
             color = discord.Colour.red()
-        embed = discord.Embed(colour = color)
+        embed = discord.Embed(colour=color)
         embed.set_author(name=self.players[game_instance.current_player.name])
-        embed.set_footer(text=':video_game: please type [action index] to input your action (-1 is concede)')
+        embed.set_footer(
+            text=':video_game: please type [action index] to input your action (-1 is concede)')
         embed.set_thumbnail(url=Hearthstone.ICONS[str(you.hero)])
-        embed.add_field(name=f'{you.hero}', value=f'Health: {you.hero.health}', inline=True)
-        embed.add_field(name=f'Opponent', value=f'Health: {you.opponent.hero.health}', inline=True)
+        embed.add_field(name=f'{you.hero}',
+                        value=f'Health: {you.hero.health}', inline=True)
+        embed.add_field(
+            name=f'Opponent', value=f'Health: {you.opponent.hero.health}', inline=True)
         embed.add_field(name='Mana:', value=you.mana, inline=False)
 
-        embed_hand = discord.Embed(colour = color)
+        embed_hand = discord.Embed(colour=color)
         embed_hand.set_author(name='Hand:')
         for idx, card in enumerate(you.hand):
-            embed_hand.add_field(name=f'{card}, Index: {idx}', value=f'Cost: {card.cost}, Is Playable? {card.is_playable()}')
+            embed_hand.add_field(
+                name=f'{card}, Index: {idx}', value=f'Cost: {card.cost}, Is Playable? {card.is_playable()}')
             if card.type == 4:
-                embed_hand.set_field_at(-1, name=f'{card}', value=f'Index: {idx}, Cost: {card.cost}, Is Playable? {card.is_playable()}, Attack: {card.atk}, Health: {card.health}', inline=False)
+                embed_hand.set_field_at(
+                    -1, name=f'{card}', value=f'Index: {idx}, Cost: {card.cost}, Is Playable? {card.is_playable()}, Attack: {card.atk}, Health: {card.health}', inline=False)
 
-        embed_field = discord.Embed(colour = color)
+        embed_field = discord.Embed(colour=color)
         embed_field.set_author(name='Field:')
         for idx, card in enumerate(you.field):
-            embed_field.add_field(name=f'{card}, Index: {idx+10}', value=f'Can Attack? {card.can_attack()}', inline=False)
+            embed_field.add_field(
+                name=f'{card}, Index: {idx+10}', value=f'Can Attack? {card.can_attack()}', inline=False)
 
-        embed_oppfield = discord.Embed(colour = color)
+        embed_oppfield = discord.Embed(colour=color)
         embed_oppfield.set_author(name='Opponent\'s field:')
         for idx, card in enumerate(you.opponent.field):
-            embed_oppfield.add_field(name=f'{card}:', value=f'Attack: {card.atk}, Health: {card.health}', inline=False)
+            embed_oppfield.add_field(
+                name=f'{card}:', value=f'Attack: {card.atk}, Health: {card.health}', inline=False)
 
-        embed_other = discord.Embed(colour = color)
+        embed_other = discord.Embed(colour=color)
         embed_other.set_author(name='Other options:')
         if you.hero.power.is_usable():
-            embed_other.add_field(name='Hero Power Available', value='Index: 17')
+            embed_other.add_field(
+                name='Hero Power Available', value='Index: 17')
         if you.hero.can_attack():
             embed_other.add_field(name='Attack with Weapon', value='Index: 18')
         embed_other.add_field(name='End Turn', value='Index: 19')
@@ -178,10 +189,12 @@ class Hearthstone(commands.Cog):
             color = discord.Colour.blue()
         else:
             color = discord.Colour.red()
-        embed = discord.Embed(colour = color)
+        embed = discord.Embed(colour=color)
         embed.set_author(name='Choose a target')
-        embed.set_footer(text=':video_game: please type [target index] to input your target')
-        embed.set_thumbnail(url='http://www.usdn.ca/humour/Thumb-Hearthstone.png')
+        embed.set_footer(
+            text=':video_game: please type [target index] to input your target')
+        embed.set_thumbnail(
+            url='http://www.usdn.ca/humour/Thumb-Hearthstone.png')
         if 0 <= actionid <= 9:
             if you.hand[actionid].requires_target():
                 # embed.add_field(name='Choose a target:', value=' ', inline=False)
@@ -210,6 +223,7 @@ class Hearthstone(commands.Cog):
 
         return embed
 
-def setup(bot):
-    bot.add_cog(Hearthstone(bot))
+
+async def setup(bot):
+    await bot.add_cog(Hearthstone(bot))
     print('Hearthstone module loaded.')

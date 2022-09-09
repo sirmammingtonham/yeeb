@@ -1,24 +1,19 @@
-import sys
-sys.path.append("../discord.py/")
-import discord
 from discord.ext import commands
 
-print('discord version', discord.__version__)
 
-with open("../res/token.txt", "r") as f:
-    TOKEN = f.read()
+class YeebBot(commands.Bot):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.remove_command('help')
 
-# Configure intents (1.5.0)
-intents = discord.Intents.default()
-intents.members = True
-intents.presences = True
-
-bot = commands.Bot(command_prefix = 'bruh ', guild_subscriptions=True, intents=intents)
-bot.remove_command('help')
-
-extensions = ['bruh', 'music', 'events', 'card']  # 'speech'
-
-if __name__ == '__main__':
-    for extension in extensions:
-        bot.load_extension(extension)
-    bot.run(TOKEN)
+    async def setup_hook(self):
+        extensions = [
+            'src.bruh', 
+            'src.events', 
+            'src.card', 
+            'src.meem', 
+            'src.music',
+            # 'src.experimental.speed'
+        ]
+        for extension in extensions:
+            await self.load_extension(extension)

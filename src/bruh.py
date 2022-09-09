@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+from discord.app_commands import MissingPermissions
 import asyncio
 from datetime import datetime, timedelta
 import random
@@ -13,17 +14,19 @@ import cv2
 import numpy as np
 from io import BytesIO
 
-import verbosify
-import time
+from .util import verbosify, paths
 
 from PyDictionary import PyDictionary
 dictionary = PyDictionary()
 
+
 def user_is_me(ctx):
     return ctx.author.id == 228017779511394304
 
+
 def user_is_bot_contributor(ctx):
     return ctx.author.id == 228017779511394304 or ctx.author.id == 150093212034269184 or ctx.author.id == 188179573484158976
+
 
 class Bruh(commands.Cog):
     def __init__(self, bot):
@@ -34,12 +37,13 @@ class Bruh(commands.Cog):
 
         # used for command revolution (function name change_text_channel_names)
         # remove two lines, which are youtube link and newline
-        self.youtube_funny_file = '../res/channelnames_funnyplaylist.txt'
-        with open(self.youtube_funny_file) as f:
+        with open(paths.FUNNY_YOUTUBE, 'r') as f:
             self.youtube_funny_list = f.read().splitlines()[2:]
+        with open(paths.SWEAR_WORDS, 'r') as f:
+            self.swear_words = f.readlines()
 
     @commands.group()
-    async def apex(self, ctx, player:str):
+    async def apex(self, ctx, player: str):
         if ctx.invoked_subcommand is None:
             apex = ApexLegends("af6873a1-ef18-4ea4-aced-143ba5b6eb5d")
             try:
@@ -48,18 +52,21 @@ class Bruh(commands.Cog):
                 await ctx.send('Player not found')
                 return
             embed = discord.Embed(
-                 colour = discord.Colour.blue()
-                 )
-            embed.set_footer(text='the stat tracking right now is ass so I can only show damage and kills if you have the banner')
+                colour=discord.Colour.blue()
+            )
+            embed.set_footer(
+                text='the stat tracking right now is ass so I can only show damage and kills if you have the banner')
             embed.set_thumbnail(url=player.legends[0].icon)
-            embed.set_author(name=player.username + ' | ' + player.legends[0].legend_name, icon_url='https://cdn.gearnuke.com/wp-content/uploads/2019/02/apex-legends-logo-768x432.jpg')
+            embed.set_author(name=player.username + ' | ' + player.legends[0].legend_name,
+                             icon_url='https://cdn.gearnuke.com/wp-content/uploads/2019/02/apex-legends-logo-768x432.jpg')
             embed.add_field(name='Level:', value=player.level, inline=False)
             # for legend in player.legends:
             #   embed.add_field(name=legend.legend_name, value='Stats:', inline=False)
             for a in dir(player.legends[0]):
                 if a == 'damage' or 'kills' in a:
                     name = a + ':'
-                    embed.add_field(name=name.capitalize(), value=player.legends[0].__dict__[a], inline=True)
+                    embed.add_field(name=name.capitalize(
+                    ), value=player.legends[0].__dict__[a], inline=True)
             await ctx.send(embed=embed)
 
     @apex.command()
@@ -74,22 +81,25 @@ class Bruh(commands.Cog):
             await ctx.send('Player not found')
             return
         embed = discord.Embed(
-             colour = discord.Colour.blue()
-             )
-        embed.set_footer(text='the stat tracking right now is ass so I can only show damage and kills if you have the banner')
+            colour=discord.Colour.blue()
+        )
+        embed.set_footer(
+            text='the stat tracking right now is ass so I can only show damage and kills if you have the banner')
         embed.set_thumbnail(url=player.legends[0].icon)
-        embed.set_author(name=player.username + ' | ' + player.legends[0].legend_name, icon_url='https://cdn.gearnuke.com/wp-content/uploads/2019/02/apex-legends-logo-768x432.jpg')
+        embed.set_author(name=player.username + ' | ' + player.legends[0].legend_name,
+                         icon_url='https://cdn.gearnuke.com/wp-content/uploads/2019/02/apex-legends-logo-768x432.jpg')
         embed.add_field(name='Level:', value=player.level, inline=False)
         # for legend in player.legends:
         #   embed.add_field(name=legend.legend_name, value='Stats:', inline=False)
         for a in dir(player.legends[0]):
             if a == 'damage' or 'kills' in a:
                 name = a + ':'
-                embed.add_field(name=name.capitalize(), value=player.legends[0].__dict__[a], inline=True)
+                embed.add_field(name=name.capitalize(),
+                                value=player.legends[0].__dict__[a], inline=True)
         await ctx.send(embed=embed)
 
     @apex.command()
-    async def psn(self, ctx, player:str):
+    async def psn(self, ctx, player: str):
         apex = ApexLegends("af6873a1-ef18-4ea4-aced-143ba5b6eb5d")
         try:
             player = apex.player(player, plat=2)
@@ -97,18 +107,21 @@ class Bruh(commands.Cog):
             await ctx.send('Player not found')
             return
         embed = discord.Embed(
-             colour = discord.Colour.blue()
-             )
-        embed.set_footer(text='the stat tracking right now is ass so I can only show damage and kills if you have the banner')
+            colour=discord.Colour.blue()
+        )
+        embed.set_footer(
+            text='the stat tracking right now is ass so I can only show damage and kills if you have the banner')
         embed.set_thumbnail(url=player.legends[0].icon)
-        embed.set_author(name=player.username + ' | ' + player.legends[0].legend_name, icon_url='https://cdn.gearnuke.com/wp-content/uploads/2019/02/apex-legends-logo-768x432.jpg')
+        embed.set_author(name=player.username + ' | ' + player.legends[0].legend_name,
+                         icon_url='https://cdn.gearnuke.com/wp-content/uploads/2019/02/apex-legends-logo-768x432.jpg')
         embed.add_field(name='Level:', value=player.level, inline=False)
         # for legend in player.legends:
         #   embed.add_field(name=legend.legend_name, value='Stats:', inline=False)
         for a in dir(player.legends[0]):
             if a == 'damage' or 'kills' in a:
                 name = a + ':'
-                embed.add_field(name=name.capitalize(), value=player.legends[0].__dict__[a], inline=True)
+                embed.add_field(name=name.capitalize(),
+                                value=player.legends[0].__dict__[a], inline=True)
         await ctx.send(embed=embed)
 
     @commands.command()
@@ -117,11 +130,11 @@ class Bruh(commands.Cog):
         await asyncio.sleep(5)
         await ctx.author.send('https://github.com/sirmammingtonham/yeeb')
 
-
     @commands.command()
     @commands.has_permissions(administrator=True)
     async def clear(self, ctx, amount=100):
         channel = ctx.message.channel
+
         def is_pinned(m):
             return not m.pinned
         await channel.purge(limit=amount, check=is_pinned)
@@ -162,7 +175,7 @@ class Bruh(commands.Cog):
 
     @commands.command(name='thatsprettycringe', aliases=['that\'sprettycringe', 'naenaebaby', 'cringe'])
     async def thatsprettycringe(self, ctx):
-        if random.randint(0,1) == 0:
+        if random.randint(0, 1) == 0:
             await ctx.send('https://scontent-dfw5-1.cdninstagram.com/vp/c282a44720c779936cf34c43152ef8ae/5DED2138/t51.2885-15/e35/66229303_174304563604647_4383371938153947034_n.jpg?_nc_ht=scontent-dfw5-1.cdninstagram.com')
         else:
             await ctx.send('https://pbs.twimg.com/media/EBOgkoXXUAEf7hx.jpg')
@@ -177,7 +190,7 @@ class Bruh(commands.Cog):
         await ctx.send('https://github.com/sirmammingtonham/yeeb')
 
     @commands.command()
-    async def censor(self, ctx, *args, time:int=1):
+    async def censor(self, ctx, *args, time: int = 1):
         channel = ctx.message.channel
         if args is not None:
             user = ''
@@ -203,7 +216,7 @@ class Bruh(commands.Cog):
 
         else:
             while datetime.now() < end:
-                message = await self.bot.wait_for('message', check=lambda m: m.channel==channel)
+                message = await self.bot.wait_for('message', check=lambda m: m.channel == channel)
                 await message.delete()
                 await ctx.send(f'||{message.content}||')
 
@@ -211,36 +224,36 @@ class Bruh(commands.Cog):
     async def invite(self, ctx):
         await ctx.send('https://discordapp.com/oauth2/authorize?client_id=547156702626185230&scope=bot&permissions=8')
 
-    @commands.command()
+    @commands.command(aliases=['shityourpants', 'shitthinebritches', 'poopyourself'])
     async def die(self, ctx):
-        if user_is_me(ctx):
+        if user_is_bot_contributor(ctx):
             await self.bot.logout()
         else:
             await ctx.send('You cannot kill me, peasant.')
-            
+
     @commands.command()
     async def swear(self, ctx):
-        words = open("../res/swearwords.txt").readlines()
-        word = words[random.randrange(165)][:-1]
+        word = self.swear_words[random.randrange(165)][:-1]
         await ctx.send(word)
-        
+
     @commands.command(name='swearat', aliases=['insult'])
-    async def swearat(self, ctx, name:str='', num_times:str=''):
-        all_words = open("../res/swearwords.txt").readlines()
+    async def swearat(self, ctx, name: str = '', num_times: str = ''):
+        all_words = self.swear_words
         selected_words = all_words[random.randrange(165)][:-1]
-        
+
         # see if "twice" or "thrice" is written in the command
         if 'twice' in num_times:
             selected_words += ' ' + all_words[random.randrange(165)][:-1]
         elif 'thrice' in num_times:
             selected_words += ' ' + all_words[random.randrange(165)][:-1] \
-                            + ' ' + all_words[random.randrange(165)][:-1]
+                + ' ' + all_words[random.randrange(165)][:-1]
         elif 'random' in num_times:
             for i in range(random.randint(1, 10)):
                 selected_words += ' ' + all_words[random.randrange(165)][:-1]
-        
+
         elif num_times.isdigit():
-            if int(num_times) > 1000: num_times = 1000
+            if int(num_times) > 1000:
+                num_times = 1000
 
             for i in range(int(num_times)):
                 selected_words += ' ' + all_words[random.randrange(165)][:-1]
@@ -257,7 +270,7 @@ class Bruh(commands.Cog):
         if len(name + ' is a ' + selected_words) <= 2000:
             await ctx.send(name + ' is a ' + selected_words, delete_after=30)
         else:
-            curr_msg = name + ' is a' # build up message up to 2000 characters
+            curr_msg = name + ' is a'  # build up message up to 2000 characters
 
             for word in selected_words.split():
                 if len(curr_msg + ' ' + word) <= 2000:
@@ -267,17 +280,16 @@ class Bruh(commands.Cog):
                     curr_msg = name + ' is a ' + word  # start it over again
 
             # send anything left over
-            if len('and finally ' + curr_msg) <= 2000: await ctx.send('and finally ' + curr_msg, delete_after=30)
+            if len('and finally ' + curr_msg) <= 2000:
+                await ctx.send('and finally ' + curr_msg, delete_after=30)
             else:
                 second_last_msg, last_word = curr_msg.rsplit(' ', 1)
                 await ctx.send(second_last_msg, delete_after=30)
                 await ctx.send('and finally ' + name + ' is a ' + last_word, delete_after=30)
 
-
-            
-    @commands.command()    
+    @commands.command()
     async def jacobify(self, ctx, *args):
-        message = ''    
+        message = ''
         for word in args:
             try:
                 message += ' ' + random.choice(dictionary.synonym(word))
@@ -285,7 +297,7 @@ class Bruh(commands.Cog):
                 message += ' ' + word
         await ctx.send(message)
 
-    @commands.command()    
+    @commands.command()
     async def prolixify(self, ctx, *args):
         def _elongate(word):
             if len(word) == 1:
@@ -320,9 +332,9 @@ class Bruh(commands.Cog):
                     message += ' ' + _elongate(word)
                 else:
                     message += ' ' + _randomize(word)
-        
+
         await ctx.send(message)
-    
+
     @commands.command()
     async def verbosify(self, ctx, *, input_sentence):
         num_times = 1
@@ -339,16 +351,17 @@ class Bruh(commands.Cog):
 
         # run verbosify numerous times
         await verbosify.verbosify_ception(ctx, input_sentence, num_times)
-        
 
     @commands.command()
     async def define(self, ctx, *args):
         await verbosify.get_definition(ctx, args)
-    
+
     @commands.command(name='vernaculate', aliases=['conflobrinate'])
     async def vernaculate(self, ctx, *args):
-        if args: await ctx.send(f"<@&{748768498343346216}> it is {' '.join(args)} gamer time")
-        else: await ctx.send(f"<@&{748768498343346216}> it is gamer time")
+        if args:
+            await ctx.send(f"<@&{748768498343346216}> it is {' '.join(args)} gamer time")
+        else:
+            await ctx.send(f"<@&{748768498343346216}> it is gamer time")
 
     @commands.command(name='fellas')
     async def fellas(self, ctx, *args):
@@ -361,13 +374,15 @@ class Bruh(commands.Cog):
                   'craftyclashr': ('<:craftyclashr:758942144651722764>', 'https://media.discordapp.net/attachments/270768847445950474/765453740718686208/craftyclashr.png'),
                   'ethan': ('<:ethan:758956834882715648>', 'https://cdn.discordapp.com/attachments/425056372548173834/764762005839675392/ethanface.png'),
                   'boyu': ('<:boyu:765031756687605761>', 'https://cdn.discordapp.com/attachments/731662398196416573/765031191409065994/35DJIAAAAAElFTkSuQmCC.png')}
-                #   'boyu': ('<:oldboyu:759184421030723646>', 'https://cdn.discordapp.com/attachments/425056372548173834/764762458710999071/unknown.png')}
-        
+        #   'boyu': ('<:oldboyu:759184421030723646>', 'https://cdn.discordapp.com/attachments/425056372548173834/764762458710999071/unknown.png')}
+
         # chose a specific person
         if args and args[0] in emojis:
             person = emojis[args[0]]
-            if person[1]: await ctx.send(person[1])
-            else: await ctx.send(person[0])
+            if person[1]:
+                await ctx.send(person[1])
+            else:
+                await ctx.send(person[0])
 
         # didn't choose a specific person so send all emojis
         else:
@@ -429,27 +444,31 @@ class Bruh(commands.Cog):
 
         #     'AFTERSHOCK': 'EQUIP a fusion charge. FIRE the charge to set a slow-acting burst through the wall. The burst does heavy damage to anyone caught in its area.'
         # }
-        
+
         # default values
         num_times = 1
         agent_text = random.choice(list(agents.values()))
 
         if len(args) == 1:
             # 1 word arg = arg agent, 1 time
-            if args[0].upper() in agents: agent_text = agents[args[0].upper()]
+            if args[0].upper() in agents:
+                agent_text = agents[args[0].upper()]
             # or, chooose 5 random agents! added Jan 15 2021
             elif args[0].upper() == 'RANDOM':
                 random_agent_list = random.sample(agents.keys(), 5)
                 return await ctx.send(', '.join(random_agent_list))
-             
+
             # 1 numerical arg = random agent, arg times
-            elif verbosify.isdigit(args[0]): num_times = int(args[0])
-        
+            elif verbosify.isdigit(args[0]):
+                num_times = int(args[0])
+
         elif len(args) == 2:
             # check first arg as agent
-            if args[0].upper() in agents: agent_text = agents[args[0].upper()]
+            if args[0].upper() in agents:
+                agent_text = agents[args[0].upper()]
             # check second arg as number
-            if verbosify.isdigit(args[1]): num_times = int(args[1])
+            if verbosify.isdigit(args[1]):
+                num_times = int(args[1])
 
         # get 4 random abilities
         rand_abilities = []
@@ -463,35 +482,36 @@ class Bruh(commands.Cog):
         output = agent_text + '\nABILITIES: ' + rand_abilities
 
         await verbosify.verbosify_ception(ctx, output, num_times)
-        
 
-
-         
     @commands.command(name='cumber', aliases=['girl cumber'])
     async def cumber(self, ctx):
 
         def _cumberify(f):
             img = cv2.imdecode(np.fromstring(f.read(), np.uint8), 1)
-            hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV) # convert to hsv colorspace because we get better accuracy?
-            lower_green = np.array([25,50,50])
-            upper_green = np.array([80,255,255]) # took too damn long to find these values
-            mask = cv2.inRange(hsv, lower_green, upper_green) # create mask for all greens and yellows
+            # convert to hsv colorspace because we get better accuracy?
+            hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+            lower_green = np.array([25, 50, 50])
+            # took too damn long to find these values
+            upper_green = np.array([80, 255, 255])
+            # create mask for all greens and yellows
+            mask = cv2.inRange(hsv, lower_green, upper_green)
             mask = mask/255
             mask = mask.astype(np.bool)
-            cumbered = np.argwhere(mask) # get idxs of green pixels
+            cumbered = np.argwhere(mask)  # get idxs of green pixels
 
             # draw a rectangle around part of the cucumber (20% looks too small in most cases)
             cv2.rectangle(
-                img, 
-                (cumbered[0][1], cumbered[0][0]), 
-                (cumbered[round(len(cumbered)*0.5)][1], cumbered[round(len(cumbered)*0.5)][0]), 
-                (0,0,0), 
+                img,
+                (cumbered[0][1], cumbered[0][0]),
+                (cumbered[round(len(cumbered)*0.5)][1],
+                 cumbered[round(len(cumbered)*0.5)][0]),
+                (0, 0, 0),
                 -1
             )
 
             _, buffer = cv2.imencode(".jpg", img)
             return buffer
-        
+
         r = requests.get("https://source.unsplash.com/featured/?cucumber")
         if r.status_code == 200:
             f = BytesIO(r.content)
@@ -503,12 +523,12 @@ class Bruh(commands.Cog):
 
         else:
             await ctx.send("bruh moment occured, try again?")
-    
+
     @commands.command(name='girlcumber', aliases=['cumber legacy'])
     async def girlcumber(self, ctx):
         r = requests.get("https://source.unsplash.com/featured/?cucumber")
         await ctx.send(r.url)
-    
+
     @commands.command()
     async def blur(self, ctx, *args):
         def _cv2_radial_blur(img):
@@ -519,41 +539,39 @@ class Bruh(commands.Cog):
             blur = 0.008
             iterations = 7
 
-            growMapx = np.tile(np.arange(h) + ((np.arange(h) - center_x)*blur), (w, 1)).astype(np.float32)
-            shrinkMapx = np.tile(np.arange(h) - ((np.arange(h) - center_x)*blur), (w, 1)).astype(np.float32)
-            growMapy = np.tile(np.arange(w) + ((np.arange(w) - center_y)*blur), (h, 1)).transpose().astype(np.float32)
-            shrinkMapy = np.tile(np.arange(w) - ((np.arange(w) - center_y)*blur), (h, 1)).transpose().astype(np.float32)
+            growMapx = np.tile(
+                np.arange(h) + ((np.arange(h) - center_x)*blur), (w, 1)).astype(np.float32)
+            shrinkMapx = np.tile(
+                np.arange(h) - ((np.arange(h) - center_x)*blur), (w, 1)).astype(np.float32)
+            growMapy = np.tile(np.arange(
+                w) + ((np.arange(w) - center_y)*blur), (h, 1)).transpose().astype(np.float32)
+            shrinkMapy = np.tile(np.arange(
+                w) - ((np.arange(w) - center_y)*blur), (h, 1)).transpose().astype(np.float32)
 
             for i in range(iterations):
                 tmp1 = cv2.remap(img, growMapx, growMapy, cv2.INTER_LINEAR)
                 tmp2 = cv2.remap(img, shrinkMapx, shrinkMapy, cv2.INTER_LINEAR)
                 img = cv2.addWeighted(tmp1, 0.5, tmp2, 0.5, 0)
-            
+
             return img
-        
+
         def place_text(word, img):
-            INITIAL_Y = [None,250,210,170,130]
+            INITIAL_Y = [None, 250, 210, 170, 130]
             words = word.split()
-            y = 270 - 35*(len(words)-1) # initial y
-            
+            y = 270 - 35*(len(words)-1)  # initial y
+
             for word in words:
-                cv2.putText(img, word, (500,y), cv2.FONT_HERSHEY_TRIPLEX, 2, (0,0,0), 3)
+                cv2.putText(img, word, (500, y),
+                            cv2.FONT_HERSHEY_TRIPLEX, 2, (0, 0, 0), 3)
                 y += 70
-            
+
             return img
-
-            formatted = word.replace(' ', '\n')
-            print(formatted)
-
-            l = len(word.split())
-            if l < 5: return (formatted, (500,250 - 50*(l-1)))
-            else: return (formatted, (500,50))
 
         def _radically_blur(f, word):
             # place image on white background
             overlay = cv2.imdecode(np.fromstring(f.read(), np.uint8), 1)
             overlay = cv2.resize(overlay, (400, 300))
-            img = np.full((500,800,3), 255, np.uint8)
+            img = np.full((500, 800, 3), 255, np.uint8)
             img[100:400, 50:450] = overlay
 
             # put text on image
@@ -565,7 +583,6 @@ class Bruh(commands.Cog):
             # return
             _, buffer = cv2.imencode(".jpg", img)
             return buffer
-        
 
         # get query keyword and word to display on image
         word = ' '.join(args)
@@ -575,9 +592,8 @@ class Bruh(commands.Cog):
             query = word[:i].replace(' ', '-')
             word = word[i+4:]
 
-        print(query, word)
-
-        r = requests.get("https://source.unsplash.com/featured/?{}".format(query))
+        r = requests.get(
+            "https://source.unsplash.com/featured/?{}".format(query))
 
         if r.status_code == 200:
             f = BytesIO(r.content)
@@ -585,8 +601,6 @@ class Bruh(commands.Cog):
             await ctx.send(file=discord.File(BytesIO(blurred), 'blur_boi.jpg'))
         else:
             await ctx.send("this big bruh moment is a big bruh moment for sure")
-
-
 
     @commands.command(name='cum', aliases=['nut'])
     async def cum(self, ctx):
@@ -617,31 +631,24 @@ class Bruh(commands.Cog):
             'https://media.discordapp.net/attachments/425056372548173834/745186855141638154/unknown.png': 16
         }
 
-        if random.randrange(int(len(links)/1.5)) == 0: await ctx.send(will_cookie)
-        else: await ctx.send(random.choices(list(links.keys()), weights=links.values(), k=1)[0], delete_after=30)
-
-        
-    @commands.command(name='shityourpants', aliases=['shitthinebritches', 'poopyourself'])
-    async def shityourpants(self, ctx):
-        if user_is_bot_contributor(ctx):
-            await self.bot.logout()
+        if random.randrange(int(len(links)/1.5)) == 0:
+            await ctx.send(will_cookie)
         else:
-            await ctx.send('No. I have eaten my fiber.')
-    
+            await ctx.send(random.choices(list(links.keys()), weights=links.values(), k=1)[0], delete_after=30)
+
     @commands.command(name='yo')
     async def yo_mama(self, ctx):
-        response = requests.get('https://www.laughfactory.com/jokes/yo-momma-jokes')
+        response = requests.get(
+            'https://www.laughfactory.com/jokes/yo-momma-jokes')
         soup = BeautifulSoup(response.text, 'html.parser')
         div = soup.find_all('div', {'class': 'joke-text'})
         jokes = [joke.find('p').text.strip() for joke in div]
         await ctx.send(random.choice(jokes))
-    
+
     @commands.command(name='delete', aliases=['d'])
     async def delete(self, ctx, *args):
         msg_history = await ctx.channel.history(limit=2).flatten()
         await msg_history[1].delete()
-    
-
 
     @commands.command(name='revolution', aliases=['uprising', 'schism', 'rebrand', 'remodel'])
     async def change_text_channel_names(self, ctx, *args):
@@ -649,74 +656,78 @@ class Bruh(commands.Cog):
         curr_guild = ctx.message.guild
         if not (curr_guild.id == 319277087401705482 and 748768498343346216 in [role.id for role in ctx.author.roles]):
             return await ctx.send('nah')
-        
+
         # get constants
-        channel_ids = [425056372548173834, 319277087401705482, 425153597148233728, 431675428110073857]
-        default_name_list = ['in-de-beninging', 'most-dangerous-lead', 'top-5-nuts', 'vernaculate']
-        
-        custom_list = ['call-an-ambulance', 'juan'] # from random youtube videos, not just funny playlist
+        channel_ids = [425056372548173834, 319277087401705482,
+                       425153597148233728, 431675428110073857]
+        default_name_list = ['in-de-beninging',
+                             'most-dangerous-lead', 'top-5-nuts', 'vernaculate']
+
+        # from random youtube videos, not just funny playlist
+        custom_list = ['call-an-ambulance', 'juan']
         channel_name_list = custom_list + self.youtube_funny_list
 
         channel_name_list_old = ['cumber', 'girlcumber', 'thunderous', 'shit-your-pants', 'yo-mama', 'thats-pretty-cringe',
-            'back-it-up-terry', 'swear', 'fellas', 'valortne', 'dawg-fam', 'dingus'] # a backup
-
+                                 'back-it-up-terry', 'swear', 'fellas', 'valortne', 'dawg-fam', 'dingus']  # a backup
 
         # pull titles from custom list
         if not args:
             selected_names = random.sample(channel_name_list, 4)
-        
+
         # add new channel name to text file
         elif args[0] == 'add':
             # try to get name
-            if len(args) == 1: return await ctx.send('provide channel name pls')
+            if len(args) == 1:
+                return await ctx.send('provide channel name pls')
             new_channel_name = args[1]
 
             # add to text file
-            with open(self.youtube_funny_file, 'a') as f:
+            with open(paths.FUNNY_YOUTUBE, 'a') as f:
                 f.write('\n' + new_channel_name)
-            
+
             # add to list in python memory
             self.youtube_funny_list.append(new_channel_name)
-            
+
             return await ctx.send('big if true')
-        
+
         # remove previous added channel item
         elif args[0] == 'remove':
             # read file, delete
-            with open(self.youtube_funny_file, 'r') as f:
+            with open(paths.FUNNY_YOUTUBE, 'r') as f:
                 filecontents = f.read().splitlines()
 
-            with open(self.youtube_funny_file, 'w') as f:
+            with open(paths.FUNNY_YOUTUBE, 'w') as f:
                 f.write('\n'.join(filecontents[:-1]))
-            
+
             # remove from list in python memory
             removed_channel_name = self.youtube_funny_list[-1]
             self.youtube_funny_list = self.youtube_funny_list[:-1]
-            
+
             return await ctx.send(f'say less (removed {removed_channel_name})')
 
-
         # pull titles from youtube playlist (not implemented yet)
-        elif args[0] == 'youtube': return await ctx.send('nah')
+        elif args[0] == 'youtube':
+            return await ctx.send('nah')
         # set titles back to current default (from June 20 2021)
-        elif args[0] == 'default': selected_names = default_name_list
+        elif args[0] == 'default':
+            selected_names = default_name_list
         # (default behavior) pull titles from custom list
-        else: selected_names = random.sample(channel_name_list, 4)
+        else:
+            selected_names = random.sample(channel_name_list, 4)
 
-        
         # now actually set the name of the channels
         for id, channel_name in zip(channel_ids, selected_names):
             print(f'changing channel id {id} to name {channel_name}')
             await curr_guild.get_channel(id).edit(name=channel_name)
-        
-        return await ctx.send('viva la cumber')
 
+        return await ctx.send('viva la cumber')
 
     @commands.command(name='rotate')
     async def rotate_vc_nicknames(self, ctx, *args):
         # get voice channel and members in vc
         curr_vc = ctx.author.voice
-        if not curr_vc: return await ctx.send('hop in a vc you dummy')
+        if not curr_vc:
+            return await ctx.send('hop in a vc you dummy')
         vc_members = curr_vc.channel.members
 
         # reset nicknames if specified
@@ -726,11 +737,10 @@ class Bruh(commands.Cog):
                     await member.edit(nick=nick)
                 except:
                     await ctx.send('could not change back name for', member.name, delete_after=30)
-            
-            self.original_nicks = {} # clear nickname dictionary
-            
+
+            self.original_nicks = {}  # clear nickname dictionary
+
             return await ctx.send(':arrow_right_hook:', delete_after=10)
-        
 
         # -- main process -- #
         # save the original nicknames, if we haven't already
@@ -739,39 +749,35 @@ class Bruh(commands.Cog):
                 self.original_nicks[member] = member.nick
 
         # get nicknames (or normal name)
-        vc_nicks = [member.nick if member.nick else member.name for member in vc_members]
+        vc_nicks = [
+            member.nick if member.nick else member.name for member in vc_members]
         sorted(vc_nicks)
 
         # rotate nicknames
-        new_first_nick = vc_nicks[-1] # save last member's nick
+        new_first_nick = vc_nicks[-1]  # save last member's nick
 
-        for i in range(len(vc_nicks)-1, 0, -1): # push all names down one
-            await vc_members[i].edit(nick = vc_nicks[i-1])
+        for i in range(len(vc_nicks)-1, 0, -1):  # push all names down one
+            await vc_members[i].edit(nick=vc_nicks[i-1])
 
-        await vc_members[0].edit(nick = new_first_nick) # complete the rotation
+        await vc_members[0].edit(nick=new_first_nick)  # complete the rotation
 
         # return
         # print([f'{member.name} -> {nick}' for member, nick in self.original_nicks.items()])
         return await ctx.send(':arrows_counterclockwise:', delete_after=10)
 
-
-
-    
-
-
     # 6/19/21 one-time command to remove asheft nicknames
-    @commands.command(name='asheftnt')
-    async def remove_asheft_nicknames(self, ctx):
-        for member in ctx.message.guild.members:
-            if member.nick == "asheft":
-                try:
-                    await member.edit(nick=None)
-                except:
-                    await ctx.send('the fella ' + member.name + ' did not have their nickname changed')
-        
-        return await ctx.send('nicknames are asheftn\'t')
+    # @commands.command(name='asheftnt')
+    # async def remove_asheft_nicknames(self, ctx):
+    #     for member in ctx.message.guild.members:
+    #         if member.nick == "asheft":
+    #             try:
+    #                 await member.edit(nick=None)
+    #             except:
+    #                 await ctx.send('the fella ' + member.name + ' did not have their nickname changed')
+
+    #     return await ctx.send('nicknames are asheftn\'t')
 
 
-def setup(bot):
-    bot.add_cog(Bruh(bot))
+async def setup(bot):
+    await bot.add_cog(Bruh(bot))
     print('Miscellaneous module loaded.')
