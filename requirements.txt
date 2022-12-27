@@ -112,7 +112,7 @@ requests == 2.18.4
 
 # discord/discord.py/discord/__main__.py: 32
 # discord/discord.py/setup.py: 1
-setuptools == 39.0.1
+setuptools == 65.5.1
 
 # discord/discord.py/docs/extensions/builder.py: 1,2
 # discord/discord.py/docs/extensions/exception_hierarchy.py: 5
